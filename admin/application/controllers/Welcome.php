@@ -40,6 +40,8 @@ class Welcome extends CI_Controller {
         $data['get_notification'] = get_notification($this->session->userdata('logged_in')['id']);
         $data['new_notifn_count'] = get_new_notification($this->session->userdata('logged_in')['id']);
         $this->load->view('templates/template', $data);
+        
+        /* This is the my new comment */
     }       
 
    
