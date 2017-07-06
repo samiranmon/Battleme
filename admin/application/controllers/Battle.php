@@ -1,0 +1,933 @@
+<?php
+
+/**
+ * Description of Battle
+ * 
+ * @author Chhanda
+ */
+class Battle extends CI_Controller {
+
+    //put your code here
+    public $sessionData;
+
+    public function __construct() {
+        parent::__construct();
+        $this->load->model('Wallet_model', 'wallet');
+        $this->load->model('battle_model', 'battles');
+        $this->load->model('tournament_model', 'tournaments');
+        $this->load->model('Friendsmodel', 'friends');
+        $this->load->model('Usermodel', 'user');
+        $this->load->model('Notificationmodel', 'notification');
+        $this->load->model('Postmodel', 'post');
+        $this->load->model('VoteModel', 'vote');
+        $this->load->model('Song_library_model', 'library');
+        $this->load->library('Common_lib');
+        $this->sessionData = get_session_data();
+    }
+
+    /**
+     * index function
+     * this function is used to list battle request/battles
+     * @return void
+     * @param 
+     * @author Chhanda
+     * */
+    /* public function index()
+      {
+      $user_id = $this->sessionData['id'] ;
+      $battleData = $this->battles->get_battle_list($user_id) ;
+      $arrData['userId'] = $user_id ;
+      $arrData['battleList'] = $battleData ;
+      $arrData['middle'] = 'battle_list';
+
+      //echo '<pre>'; print_r($arrData['tournament_status']); die;
+
+      $this->load->view('templates/template', $arrData);
+
+      } */
+
+    public function index() {
+
+        $user_id = $this->sessionData['id'];
+        $battleData = $this->battles->get_mybattle_list_categorise($user_id);
+        
+        $battle_cat = [1 =>'Rnb & pop Originals', 2 => 'RnB & Pop Covers', 3 => 'Hiphop', 4 => 'Video Battles'];
+        $battleDataArray = [];
+        if(isset($battleData) && !empty($battleData)) {
+            foreach ($battleData as $batlVal){
+                if(array_key_exists($batlVal['battle_category'], $battle_cat)){
+                    $battleDataArray[$batlVal['battle_category']][] = $batlVal;
+                }
+            }
+        }
+        //sort($battleDataArray);
+        //echo '<pre>';        print_r($battleDataArray); die;
+        
+        $arrData['userId'] = $user_id;
+        $arrData['battleList'] = $battleDataArray;
+        //$arrData['battleList'] = $battleData;
+        $arrData['battleType'] = '';
+        $arrData['battleCategoryName'] = 'My Battles';
+        $arrData['middle'] = 'battle_categories_list';
+        $arrData['div_col_unit'] = 'col-md-12';
+        //echo '<pre>'; print_r($arrData); die;
+        $arrData['rightsidebar'] = $this->friends->get_all_frnds($this->session->userdata('logged_in')['id']);
+        $arrData['get_notification'] = get_notification($this->session->userdata('logged_in')['id']);
+        $arrData['new_notifn_count'] = get_new_notification($this->session->userdata('logged_in')['id']);
+        $arrData['userdata'] = $this->user->get_user_profile($this->session->userdata('logged_in')['id']);
+        $arrData['top_songs'] = $this->library->get_top_songs();
+	$arrData['top_user'] = $this->user->get_top_user();
+        
+        $this->load->view('templates/template', $arrData);
+    }
+    
+    /**
+     * index function
+     * this function is used to list of all battle using there battle type and category
+     * @return void
+     * @param 
+     * @author Samiran
+     * */
+    public function all($battle_type = '', $battle_cat = '') {
+        $battle_category = [ 1 => 'Rnb & pop Originals', 2 => 'RnB & Pop Covers', 3 => 'Hiphop', 4 => 'Video Battles', 5 => 'Freestyle'];
+        if (!($battle_type == 'regular-battle' || $battle_type == 'cash-battle')) {
+            redirect('home');
+        }
+
+        /*if ($battle_cat == null) {
+            redirect('home');
+        }*/
+        //if cash-battle or regular-battle
+
+        $user_id = $this->sessionData['id'];
+        $battleData = $this->battles->get_battle_list_categorise($battle_type, $battle_cat);
+        
+         $battleDataArray = [];
+        if(isset($battleData) && !empty($battleData)) {
+            foreach ($battleData as $batlVal){
+                if(array_key_exists($batlVal['battle_category'], $battle_category)){
+                    $battleDataArray[$batlVal['battle_category']][] = $batlVal;
+                }
+            }
+        }
+        $arrData['battleList'] = $battleDataArray;
+        
+        $arrData['userId'] = $user_id;
+        $arrData['battleType'] = $battle_type;
+        //$arrData['battleCategoryName'] = $battle_category[base64_decode($battle_cat)];
+        $arrData['middle'] = 'battle_categories_list';
+        $arrData['div_col_unit'] = 'col-md-12';
+        
+        $arrData['userdata'] = $this->user->get_user_profile($this->session->userdata('logged_in')['id']);
+        $arrData['top_songs'] = $this->library->get_top_songs();
+	$arrData['top_user'] = $this->user->get_top_user();
+        
+        $arrData['rightsidebar'] = $this->friends->get_all_frnds($this->session->userdata('logged_in')['id']);
+        $arrData['get_notification'] = get_notification($this->session->userdata('logged_in')['id']);
+        $arrData['new_notifn_count'] = get_new_notification($this->session->userdata('logged_in')['id']);
+
+        //echo '<pre>'; print_r($arrData); die;
+
+        $this->load->view('templates/template', $arrData);
+    }
+    
+    
+    public function test_battle_list() {
+
+        $user_id = $this->sessionData['id'];
+        $battleData = $this->battles->get_mybattle_list_categorise($user_id);
+        $arrData['userId'] = $user_id;
+        $arrData['battleList'] = $battleData;
+        $arrData['battleType'] = '';
+        $arrData['battleCategoryName'] = 'My Battles';
+        $arrData['middle'] = 'test_battle_list';
+        $arrData['div_col_unit'] = 'col-md-12';
+        //echo '<pre>'; print_r($arrData); die;
+        $arrData['rightsidebar'] = $this->friends->get_all_frnds($this->session->userdata('logged_in')['id']);
+        $arrData['get_notification'] = get_notification($this->session->userdata('logged_in')['id']);
+        $arrData['new_notifn_count'] = get_new_notification($this->session->userdata('logged_in')['id']);
+        $arrData['userdata'] = $this->user->get_user_profile($this->session->userdata('logged_in')['id']);
+        $arrData['top_songs'] = $this->library->get_top_songs();
+	$arrData['top_user'] = $this->user->get_top_user();
+        
+        $this->load->view('templates/template', $arrData);
+    }
+    
+    public function freestyle_library() {
+        $user_id = $this->sessionData['id'];
+        $battleData = $this->battles->get_myfreestyle_battle($user_id);
+        $arrData['userId'] = $user_id;
+        $arrData['battleList'] = $battleData;
+        $arrData['battleType'] = '';
+        $arrData['battleCategoryName'] = 'My Battles';
+        $arrData['middle'] = 'freestyle_list';
+        $arrData['div_col_unit'] = 'col-md-12';
+        //echo '<pre>'; print_r($arrData); die;
+        $arrData['rightsidebar'] = $this->friends->get_all_frnds($this->session->userdata('logged_in')['id']);
+        $arrData['get_notification'] = get_notification($this->session->userdata('logged_in')['id']);
+        $arrData['new_notifn_count'] = get_new_notification($this->session->userdata('logged_in')['id']);
+        $arrData['userdata'] = $this->user->get_user_profile($this->session->userdata('logged_in')['id']);
+        $arrData['top_songs'] = $this->library->get_top_songs();
+	$arrData['top_user'] = $this->user->get_top_user();
+        
+        $this->load->view('templates/template', $arrData);
+    }
+
+    /**
+     * index function
+     * this function is used to list all battle request/battles
+     * @return void
+     * @param 
+     * @author Chhanda
+     * */
+    /* public function all()
+      {
+      $user_id = $this->sessionData['id'] ;
+      $battleData = $this->battles->get_battle_list() ;
+      $arrData['userId'] = $user_id ;
+      $arrData['battleList'] = $battleData ;
+      $arrData['middle'] = 'battle_list';
+      echo '<pre>'; print_r($arrData); die;
+      $this->load->view('templates/template', $arrData);
+
+      } */
+
+    /**
+     * create function
+     * this function is used create battle/challenge request
+     * @return void
+     * @param 
+     * @author Chhanda
+     * */
+    public function create($friend_id = NULL) {
+        //get friends list of logged in user
+        $arrData = array();
+        $selectedId = 0;
+        $friendOptions = '';
+        $sessionData = $this->sessionData;
+        if (!isset($sessionData['id'])) {
+            redirect('user');
+        }
+
+        $friend_list = $this->friends->get_all_frnds($sessionData['id']);
+        if (empty($friend_list)) {
+            $this->session->set_flashdata('class', 'alert-danger');
+            $this->session->set_flashdata('message', 'Request can not be sent as friend user is not present');
+            redirect('battle');
+        }
+
+        $friendOptions[''] = '--Select Friend Name--';
+        foreach ($friend_list as $key => $value) {
+            if ($value['id'] == $friend_id)
+                $selectedId = $value['id'];
+            $friendOptions[$value['id']] = ($value['firstname'] . " " . $value['lastname']);
+        }
+
+        $this->form_validation->set_rules('friend_user_id', 'Friend Name', 'trim|required');
+        $this->form_validation->set_rules('battle_name', 'Battle Name', 'trim|required');
+        $this->form_validation->set_rules('description', 'Description', 'trim|required');
+        $this->form_validation->set_rules('battle_category', 'Battle Category', 'trim|required|numeric');
+        
+        if ($this->input->post('battle_category') != 5) {
+            $this->form_validation->set_rules('media_type', 'Media Type', 'trim|required');
+            
+            if($this->input->post('media_type') == 1) {
+                $this->form_validation->set_rules('media_title', 'Media Title', 'trim|required');
+                if (empty($_FILES['media']['name'])) {
+                    $this->form_validation->set_rules('media', 'Media', 'required');
+                }
+            } else {
+                $this->form_validation->set_rules('media_id', 'choose from library', 'trim|required');
+            }
+        }
+        
+        if ($this->input->post('battle_category') == 5) {
+            $this->form_validation->set_rules('place', 'Place', 'trim|required');
+            $this->form_validation->set_rules('date_time', 'Date & Time', 'trim|required');
+        }
+        
+        if ($this->input->post('cash') == 2) {
+            $this->form_validation->set_rules('entry', 'Entry', 'callback_greater_than_one');
+        }
+
+        if ($this->form_validation->run() == TRUE) {
+
+            if ($this->input->post('battle_category') != 5) {
+                
+                if($this->input->post('media_type') == 1) {
+                    /* for start of media uploade */
+                    $mediaConfig = array(
+                        'upload_path' => $this->config->item('library_media_path'),
+                        'allowed_types' => 'mp3|wma|wav|ra|ram|rm|mid|ogg',
+                        'max_size' => '300159'
+                    );
+
+                    if ($this->input->post('battle_category') == 4) {
+                        $mediaConfig = array(
+                            'upload_path' => $this->config->item('library_media_path'),
+                            'allowed_types' => 'mp4|ogg|webm',
+                            'max_size' => '300159'
+                        );
+                    }
+
+                    $filename = $this->common_lib->upload_media('media', $mediaConfig);
+                    if (!is_array($filename)) {
+                        //save file to users library first
+                        $library_data = array(
+                            'user_id' => $sessionData['id'],
+                            'title' => $this->input->post('media_title'),
+                            'media' => $filename,
+                            'created_date' => date('Y-m-d H:i:s')
+                        );
+                        $library_id = $this->library->insert($library_data);
+                    } else {
+                        $this->session->set_flashdata('class', 'alert-danger');
+                        $this->session->set_flashdata('message', $filename['error']);
+                        redirect('battle/create/');
+                    }
+                    /* end of media uploade */
+                    
+                } else {
+                    $library_id =  $this->input->post('media_id');
+                }
+            }
+
+            foreach ($this->input->post() as $key => $val)
+                $$key = $val;
+
+            $inputData['user_id'] = $sessionData['id'];
+            $inputData['friend_user_id'] = $friend_user_id;
+            $inputData['battle_name'] = $battle_name;
+            $inputData['battle_category'] = $battle_category;
+            $inputData['description'] = $description;
+            $inputData['entry'] = (isset($entry) && $entry != '' && $sessionData['membership_id'] == 2) ? $entry : 0;
+            $inputData['place'] = $place;
+            $inputData['date_time'] = date('Y-m-d H:i:s', strtotime($date_time));
+            //echo '<pre>'; print_r($inputData); die();
+
+            $request_id = $this->battles->add_request($inputData);
+            if ($request_id > 0) {
+                
+                /* Start of the inserting media section */
+                if (isset($library_id) && $library_id > 0) {
+                    //save media in battle 
+                     if($this->input->post('media_type') == 1) { 
+                         $copyStatus = copy($this->config->item('library_media_path') . $filename, $this->config->item('battle_media_path') . $filename);
+                     }
+                    
+                    $form_data = array(
+                        'battle_id' => $request_id,
+                        'artist_id' => $sessionData['id'],
+                        'fk_song_id' => $library_id,
+                        'created_date' => date('Y-m-d H:i:s')
+                    );
+                    $this->battles->add_battle_media($form_data);
+                }
+                /* end of insert media */
+
+                /*$postContent = 'User has sent you battle challenge';
+                $data = array(
+                    'content' => $postContent,
+                    'subject_id' => $friend_user_id,
+                    'object_id' => $friend_user_id,
+                    'data_id' => $request_id,
+                    'created_on' => date("Y-m-d H:i:s", time())
+                );
+                $this->post->addpost($data);*/
+//		
+                
+                if ($this->input->post('battle_category') == 5) {
+                    //send notification to friend user
+                    $notification_msg = 'has sent you battle beat';
+                    add_notification($friend_user_id, $sessionData['id'], $notification_msg, 'freestyle_request', $request_id);
+                
+                    $this->session->set_flashdata('class', 'alert-success');
+                    $this->session->set_flashdata('message', 'Freestyle Battle beat has been sent');
+                    redirect('battle/freestyle_library');
+                } else {
+                    //send notification to friend user
+                    $notification_msg = 'has sent you battle challenge';
+                    add_notification($friend_user_id, $sessionData['id'], $notification_msg, 'battle_request', $request_id);
+                    $this->session->set_flashdata('class', 'alert-success');
+                    $this->session->set_flashdata('message', 'Battle challenge has been sent');
+                    redirect('battle');
+                }
+                
+            }
+        }
+        $arrData['friendsOpt'] = $friendOptions;
+        $arrData['selected'] = $selectedId;
+        //echo '<pre>'; print_r($arrData['friendsOpt']);
+        
+        $arrData['middle'] = 'create_battle_request';
+        $arrData['div_col_unit'] = 'col-md-12';
+        
+        $arrData['rightsidebar'] = $this->friends->get_all_frnds($this->session->userdata('logged_in')['id']);
+        $arrData['get_notification'] = get_notification($this->session->userdata('logged_in')['id']);
+        $arrData['new_notifn_count'] = get_new_notification($this->session->userdata('logged_in')['id']);
+        $arrData['userdata'] = $this->user->get_user_profile($this->session->userdata('logged_in')['id']);
+        //$arrData['top_songs'] = $this->library->get_top_songs();
+        $arrData['own_songs'] = $this->library->getUserSongs($this->session->userdata('logged_in')['id']);
+	//$arrData['top_user'] = $this->user->get_top_user();
+        
+        $this->load->view('templates/template', $arrData);
+    }
+
+    public function greater_than_one($numeric) {
+        if ($numeric <= 0) {
+            $this->form_validation->set_message('greater_than_one', 'The {field} field can not be less than one Battle Buck');
+            return FALSE;
+        } else {
+            return TRUE;
+        }
+    }
+
+    public function request($battle_id = NULL, $status = 0) {
+        if (!is_null($battle_id)) {
+            //upload songs to battle
+            if ($this->input->post('Submit') == 'Create') {
+
+                $this->form_validation->set_rules('title', 'Title', 'trim|required');
+                if($this->input->post('media_type') == 1) {
+                    if (empty($_FILES['media']['name'])) {
+                        $this->form_validation->set_rules('media', 'Song', 'trim|required');
+                    }
+                } else {
+                    $this->form_validation->set_rules('media_id', 'choose from library', 'trim|required');
+                }
+
+                $sess_data = get_session_data();
+                $user_id = $sess_data['id'];
+                if ($this->form_validation->run() == TRUE) {
+
+                    if($this->input->post('media_type') == 1) {
+                        
+                        $mediaConfig = array(
+                            'upload_path' => $this->config->item('library_media_path'),
+                            'allowed_types' => 'mp3|wma|wav|ra|ram|rm|mid|ogg',
+                            'max_size' => '20159'
+                        );
+
+                        if ($this->input->post('battle_category') == 4) {
+                            $mediaConfig = array(
+                                'upload_path' => $this->config->item('library_media_path'),
+                                'allowed_types' => 'mp4|ogg|webm',
+                                'max_size' => '300159'
+                            );
+                        }
+
+                        $filename = $this->common_lib->upload_media('media', $mediaConfig);
+
+                        if (!is_array($filename)) {
+                            //save file to users library first
+                            $library_data = array(
+                                'user_id' => $user_id,
+                                'title' => $this->input->post('title'),
+                                'media' => $filename,
+                                'created_date' => date('Y-m-d H:i:s')
+                            );
+                            $library_id = $this->library->insert($library_data);
+                            if ($library_id > 0) {
+                                //save media in battle 
+                                $copyStatus = copy($this->config->item('library_media_path') . $filename, $this->config->item('battle_media_path') . $filename);
+                                $form_data = array(
+                                    'battle_id' => $battle_id,
+                                    'artist_id' => $user_id,
+                                    'fk_song_id' => $library_id,
+                                    'created_date' => date('Y-m-d H:i:s')
+                                );
+                                $status = $this->battles->add_battle_media($form_data);
+                                if ($status) {
+                                    /* for start of the battle */
+                                    $battleData['status'] = 1;
+                                    $battleData['start_date'] = date('Y-m-d H:i:s');
+                                    $battleData['end_date'] = date("Y-m-d H:i:s", strtotime(date("Y-m-d H:i:s", strtotime(date('Y-m-d H:i:s'))) . " +7 days"));
+                                    $this->battles->update_request($battleData, array('battle_request_id' => $battle_id));
+
+                                    $notification_msg = 'has uploaded her battle song';
+                                    add_notification($this->input->post('challenger_user_id'), $user_id, $notification_msg, 'battle_request', $battle_id);
+                                    /* end of the battle script */
+
+                                    $this->session->set_flashdata('class', 'alert-success');
+                                    $this->session->set_flashdata('success', 'Song has been added to battle');
+                                    redirect('battle/request/' . $battle_id);
+                                } else {
+                                    $this->session->set_flashdata('class', 'alert-danger');
+                                    $this->session->set_flashdata('success', 'Unable to upload song. Please try again');
+                                    redirect('battle/request/' . $battle_id);
+                                }
+                            }
+                        } 
+                    
+                    } else if($this->input->post('media_type') == 2) {
+                                //save media in battle 
+                                $form_data = array(
+                                    'battle_id' => $battle_id,
+                                    'artist_id' => $user_id,
+                                    'fk_song_id' => $this->input->post('media_id'),
+                                    'created_date' => date('Y-m-d H:i:s')
+                                );
+                                $status = $this->battles->add_battle_media($form_data);
+                                if ($status) {
+                                    /* for start of the battle */
+                                    $battleData['status'] = 1;
+                                    $battleData['start_date'] = date('Y-m-d H:i:s');
+                                    $battleData['end_date'] = date("Y-m-d H:i:s", strtotime(date("Y-m-d H:i:s", strtotime(date('Y-m-d H:i:s'))) . " +7 days"));
+                                    $this->battles->update_request($battleData, array('battle_request_id' => $battle_id));
+
+                                    $notification_msg = 'has uploaded her battle song';
+                                    add_notification($this->input->post('challenger_user_id'), $user_id, $notification_msg, 'battle_request', $battle_id);
+                                    /* end of the battle script */
+
+                                    $this->session->set_flashdata('class', 'alert-success');
+                                    $this->session->set_flashdata('success', 'Song has been added to battle');
+                                    redirect('battle/request/' . $battle_id);
+                                } else {
+                                    $this->session->set_flashdata('class', 'alert-danger');
+                                    $this->session->set_flashdata('success', 'Unable to upload song. Please try again');
+                                    redirect('battle/request/' . $battle_id);
+                                }
+                    } else {
+                        $this->session->set_flashdata('class', 'alert-danger');
+                        $this->session->set_flashdata('message', $filename['error']);
+                        redirect('battle/request/' . $battle_id);
+                    }
+                    
+                    
+                }
+            }
+
+
+
+            $battle_details = $this->battles->get_battle_details($battle_id);
+            //echo '<pre>';            print_r($battle_details); 
+            $battle_media = $this->battles->get_battle_media(array('battle_id' => $battle_id));
+             //echo '<pre>';            print_r($battle_media); 
+            if (empty($battle_details))
+                redirect('/');
+
+
+            $vote_details_arr = $this->vote->get_voter_votes(array('battle_id' => $battle_id));
+            //echo '<pre>'; print_r($vote_details_arr);
+
+            if (!empty($vote_details_arr)) {
+                $voteDetails = $vote_details_arr;
+                $userWhrArr['battle_id'] = $battle_id;
+                $userWhrArr['artist_id'] = $battle_details[0]['friend_user_id'];
+
+                $battle_details[0]['friend_vote_cnt'] = $this->vote->count_vote($userWhrArr);
+                $userWhrArr['artist_id'] = $battle_details[0]['user_id'];
+                $battle_details[0]['user_vote_cnt'] = $this->vote->count_vote($userWhrArr);
+            } else {
+                $voteDetails = array();
+                $battle_details[0]['friend_vote_cnt'] = 0;
+                $battle_details[0]['user_vote_cnt'] = 0;
+            }
+
+            $postContent = '';
+            if ($status > 0) {
+                $date = date('Y-m-d');
+                if ($status == 2) {
+                    $updateData['end_date'] = $date;
+                    $msg = ' has rejected your battle request';
+                } else {
+                    //deduct coins
+                    $coinsToDeduct = $battle_details[0]['entry'];
+
+                    if ($coinsToDeduct > 0 && ($battle_details[0]['c_coins'] < $coinsToDeduct || $battle_details[0]['f_coins'] < $coinsToDeduct)) {
+                        $this->session->set_flashdata('success', 'Challenger or your coins balance less than battle charge');
+                        redirect('battle/request/' . $battle_id);
+                    }
+
+                    $msg = ' has accepted your battle request';
+                    $postContent = ' A battle has been started between ' . $battle_details[0]['challenger'] . ' and '
+                            . $battle_details[0]['friend'];
+
+                    if ($coinsToDeduct > 0) {
+
+                        $this->load->model('wallet_model', 'wallet');
+
+                        $this->wallet->deductCoins($coinsToDeduct, $battle_details[0]['friend_user_id']);
+                        $this->wallet->deductCoins($coinsToDeduct, $battle_details[0]['user_id']);
+                    }
+                }
+                $updateData['status'] = $status;
+                $is_update = $this->battles->update_request($updateData, array('battle_request_id' => $battle_id));
+                // send notification
+                add_notification($battle_details[0]['user_id'], $battle_details[0]['friend_user_id'], $msg, $type = 'battle_request', $battle_id);
+                if ($is_update && $postContent != '') {
+                    //post on wall/news feed
+                    $data = array(
+                        'content' => $postContent,
+                        'subject_id' => $battle_details[0]['user_id'],
+                        'object_id' => $battle_details[0]['user_id'],
+                        'data_id' => $battle_id,
+                        'data_type'  => 'common_wall',
+                        'created_on' => date("Y-m-d H:i:s", time())
+                    );
+                    $this->post->addpost($data);
+                    $data = array(
+                        'content' => $postContent,
+                        'subject_id' => $battle_details[0]['friend_user_id'],
+                        'object_id' => $battle_details[0]['friend_user_id'],
+                        'data_id' => $battle_id,
+                        'data_type'  => 'common_wall',
+                        'created_on' => date("Y-m-d H:i:s", time())
+                    );
+                    $this->post->addpost($data);
+                }
+
+                redirect('battle/request/' . $battle_id);
+            }
+
+
+            $arrData['battle_details'] = $battle_details[0];
+            $arrData['battle_media'] = $battle_media;
+            $arrData['vote_details'] = $voteDetails;
+
+            $arrData['support_amount'] = $this->battles->get_support_amount($battle_id);
+            $arrData['support_users'] = $this->battles->get_support_users($battle_id);
+            
+            $arrData['userdata'] = $this->user->get_user_profile($this->session->userdata('logged_in')['id']);
+            $arrData['top_songs'] = $this->library->get_top_songs();
+	    $arrData['top_user'] = $this->user->get_top_user();
+            
+            $arrData['own_songs'] = $this->library->getUserSongs($this->session->userdata('logged_in')['id']);
+            //echo '<pre>'; print_r($arrData['own_songs']); die;
+            
+            
+            $arrData['div_col_unit'] = 'col-md-12';
+            if ($battle_details[0]['status'] == 3) {
+                $arrData['middle'] = 'closed_battle_page';
+                $this->load->view('templates/template', $arrData);
+            } else {
+                if($battle_details[0]['battle_category'] == 5) {
+                     $this->load->view('freestyle_battle_page', $arrData);
+                } else {
+                     $this->load->view('battle_page', $arrData);
+                }
+            }
+            
+        } else
+            redirect('battle');
+    }
+
+    
+    public function lease_freestyle($battle_id = null, $status = null) {
+        $sessionData = $this->sessionData;
+        if (!isset($sessionData['id'])) {
+            redirect('user');
+        }
+        $battle_id = (int)base64_decode($battle_id);
+        if(!empty($battle_id) && is_int($battle_id) && $battle_id > 0) {
+            $battle_details = $this->battles->get_battle_details($battle_id);
+           
+                $date = date('Y-m-d H:i:s');
+                if ($status == 0) {
+                    $updateData['end_date'] = $date;
+                    $updateData['status'] = 2;
+                    $msg = ' has rejected your battle beat request';
+                } else {
+                    $updateData['status'] = 4;
+                    //deduct coins
+                    $coinsToDeduct = $battle_details[0]['entry']+1;
+
+                    if ($coinsToDeduct > 0 && ($battle_details[0]['c_coins'] < $coinsToDeduct || $battle_details[0]['f_coins'] < $coinsToDeduct)) {
+                        $this->session->set_flashdata('success', 'Challenger or your coins balance less than battle charge');
+                        redirect('wallet');
+                    }
+
+                    $msg = ' has accepted your battle beat';
+                    $postContent = 'A freestyle battle between the 2 artists will take '.$battle_details[0]['place'].' at this '.date('F d, g:i a',strtotime($battle_details[0]['date_time']));
+                    
+                    // 1 bb deducted from both account due to lease freestyle battle
+                    $deduct_msg = '1 bb deducted from your wallet due to lease the freestyle battle';
+                    add_notification($battle_details[0]['user_id'], $battle_details[0]['friend_user_id'], $deduct_msg, $type = 'battle_request', $battle_id);
+                    add_notification($battle_details[0]['friend_user_id'], $battle_details[0]['user_id'], $deduct_msg, $type = 'battle_request', $battle_id);
+
+                    if ($coinsToDeduct > 0) {
+                        $this->load->model('wallet_model', 'wallet');
+                        $this->wallet->deductCoins($coinsToDeduct, $battle_details[0]['friend_user_id']);
+                        $this->wallet->deductCoins($coinsToDeduct, $battle_details[0]['user_id']);
+                    }
+                }
+                
+                $is_update = $this->battles->update_request($updateData, array('battle_request_id' => $battle_id));
+                // send notification
+                add_notification($battle_details[0]['user_id'], $battle_details[0]['friend_user_id'], $msg, $type = 'battle_request', $battle_id);
+                if ($is_update && $postContent != '') {
+                    //post on wall/news feed
+                    $data = array(
+                        'content' => $postContent,
+                        'subject_id' => $battle_details[0]['user_id'],
+                        'object_id' => $battle_details[0]['user_id'],
+                        'data_id' => $battle_id,
+                        'data_type'  => 'common_wall',
+                        'created_on' => date("Y-m-d H:i:s", time()),
+                        'updated_on' => date("Y-m-d H:i:s", time()),
+                    );
+                    $this->post->addpost($data);
+                    $data = array(
+                        'content' => $postContent,
+                        'subject_id' => $battle_details[0]['friend_user_id'],
+                        'object_id' => $battle_details[0]['friend_user_id'],
+                        'data_id' => $battle_id,
+                        'data_type'  => 'common_wall',
+                        'created_on' => date("Y-m-d H:i:s", time()),
+                        'updated_on' => date("Y-m-d H:i:s", time()),
+                    );
+                    $this->post->addpost($data);
+                }
+
+                if($status==1) {
+                    $this->session->set_flashdata('class', 'alert-success');
+                    $this->session->set_flashdata('message', 'You have successfully accepted the battle bate.');
+                } else {
+                    $this->session->set_flashdata('class', 'alert-danger');
+                    $this->session->set_flashdata('message', 'You have successfully rejected the battle bate.');
+                }
+                redirect('battle/freestyle_library');
+            
+        }
+        
+        //echo $battle_id; die;
+        
+    }
+
+
+
+    public function start_notification($battle_id = null) {
+        $battle_id = $this->input->post('battle_id');
+        $sessionData = $this->sessionData;
+        if (!isset($sessionData['id'])) {
+            redirect('user');
+        }
+        
+        $battle_id = (int)base64_decode($battle_id);
+        if(!empty($battle_id) && is_int($battle_id) && $battle_id > 0) {
+            if($this->battles->is_notify($battle_id) == FALSE) {
+                
+                $result_array = $this->battles->get_timediff($battle_id);
+                if($result_array != false) {
+                    
+                    if($result_array['date_diff'] >=0 && $result_array['date_diff'] < 1) {
+                        if($result_array['time_diff'] <=5) {
+                            
+                            $battle_details = $this->battles->get_battle_details($battle_id);
+                            $msg = 'battle will begin in 5 mins';
+                            add_notification($battle_details[0]['user_id'], $battle_details[0]['friend_user_id'], $msg, $type = 'battle_request', $battle_id);
+                            add_notification($battle_details[0]['friend_user_id'], $battle_details[0]['user_id'], $msg, $type = 'battle_request', $battle_id);
+                            
+                            $this->battles->set_notify($battle_id);
+                        }
+                         
+                    }
+                    
+                }
+            } 
+            
+            
+        }
+    }
+    
+    
+    public function auto_start($battle_id = null) {
+        $battle_id = $this->input->post('battle_id');
+        $sessionData = $this->sessionData;
+        if (!isset($sessionData['id'])) {
+            redirect('user');
+        }
+            //$return_val = 0;
+        $battle_id = (int)base64_decode($battle_id);
+        if(!empty($battle_id) && is_int($battle_id) && $battle_id > 0) {
+            
+            $result_array = $this->battles->get_timediff($battle_id);
+            
+                if($result_array != false) {
+                    
+                    if($result_array['date_diff'] >=0 && $result_array['date_diff'] < 1 ) {
+                        
+                         $battle_details = $this->battles->get_battle_details($battle_id);
+                        
+                        if($result_array['time_diff'] <=1 && $result_array['time_diff'] >0 ) {
+                            
+                            // for post user wall
+                            if($this->battles->is_posted($battle_id) == FALSE) {
+                               
+                                $postContent = 'Freestyle battle will go live in 60 seconds. The artist are ' . $battle_details[0]['challenger'] . ' and '. $battle_details[0]['friend'];
+                                
+                                $data = array(
+                                    'content' => $postContent,
+                                    'subject_id' => $battle_details[0]['user_id'],
+                                    'object_id' => $battle_details[0]['user_id'],
+                                    'data_id' => $battle_id,
+                                    'data_type'  => 'common_wall',
+                                    'created_on' => date("Y-m-d H:i:s", time()),
+                                    'updated_on' => date("Y-m-d H:i:s", time()),
+                                );
+                                $this->post->addpost($data);
+                                $data = array(
+                                    'content' => $postContent,
+                                    'subject_id' => $battle_details[0]['friend_user_id'],
+                                    'object_id' => $battle_details[0]['friend_user_id'],
+                                    'data_id' => $battle_id,
+                                    'data_type'  => 'common_wall',
+                                    'created_on' => date("Y-m-d H:i:s", time()),
+                                    'updated_on' => date("Y-m-d H:i:s", time()),
+                                );
+                                $this->post->addpost($data);
+
+                                $this->battles->set_post($battle_id);
+                            }
+                            // for count down reply
+                            echo 1; // Count down popup is run
+                            die();
+                         
+                    } elseif ($result_array['time_diff'] <=0 && $result_array['time_diff'] > -1 && $battle_details[0]['status'] == 4) {
+                        /* for start of the battle */
+                        $battleData['status'] = 1;
+                        $battleData['start_date'] = date('Y-m-d H:i:s');
+                        $battleData['end_date'] = date("Y-m-d H:i:s", strtotime(date("Y-m-d H:i:s", strtotime(date('Y-m-d H:i:s'))) . " +7 days"));
+                        $this->battles->update_request($battleData, array('battle_request_id' => $battle_id));
+                    }
+                    
+                }
+            } 
+            
+            echo 0; die();
+        }
+    }
+    
+    
+    public function upload_live_voice() {
+        
+        if ($this->input->post('Submit') == 'Upload') {
+                $return_status = [];
+                $this->form_validation->set_rules('title', 'Title', 'trim|required');
+                $this->form_validation->set_rules('battle_id', 'Battle ID', 'trim|required');
+                if (empty($_FILES['media']['name'])) {
+                    $this->form_validation->set_rules('media', 'Song', 'trim|required');
+                }
+
+                $sess_data = get_session_data();
+                $user_id = $sess_data['id'];
+                $battle_id = $this->input->post('battle_id');
+                
+                if ($this->form_validation->run() == TRUE and !$_FILES['media']['error']) {
+                    
+                    //echo '<pre>'; print_r($_FILES); die;
+
+                    $filename = time().".wav";
+                    move_uploaded_file($_FILES['media']['tmp_name'], $this->config->item('library_media_path') . $filename);
+                    if (!is_array($filename)) {
+                        //save file to users library first
+                        $library_data = array(
+                            'user_id' => $user_id,
+                            'title' => $this->input->post('title'),
+                            'media' => $filename,
+                            'created_date' => date('Y-m-d H:i:s')
+                        );
+                        $library_id = $this->library->insert($library_data);
+                        if ($library_id > 0) {
+                            //save media in battle 
+                            $copyStatus = copy($this->config->item('library_media_path') . $filename, $this->config->item('battle_media_path') . $filename);
+                            $form_data = array(
+                                'battle_id' => $battle_id,
+                                'artist_id' => $user_id,
+                                'fk_song_id' => $library_id,
+                                'created_date' => date('Y-m-d H:i:s')
+                            );
+                            $status = $this->battles->add_battle_media($form_data);
+                            if ($status) {
+                                $this->session->set_flashdata('class', 'alert-success');
+                                $this->session->set_flashdata('success', 'Song has been added to battle');
+                                //redirect('battle/request/' . $battle_id);
+                                
+                                $return_status = ['status'=>1, 'url'=>  base_url().'battle/request/' . $battle_id];
+                                echo json_encode($return_status); die();
+                                
+                            } else {
+                                $this->session->set_flashdata('class', 'alert-danger');
+                                $this->session->set_flashdata('message', 'Unable to upload song. Please try again');
+                                $return_status = ['status'=>1, 'url'=>  base_url().'battle/request/' . $battle_id];
+                                echo json_encode($return_status); die();
+                            }
+                        }
+                    } else {
+
+                        $this->session->set_flashdata('class', 'alert-danger');
+                        $this->session->set_flashdata('message', $filename['error']);
+                        $return_status = ['status'=>1, 'url'=>  base_url().'battle/request/' . $battle_id];
+                        echo json_encode($return_status); die();
+                    }
+                } else {
+                    $this->session->set_flashdata('class', 'alert-danger');
+                    $this->session->set_flashdata('message', validation_errors());
+                    $return_status = ['status'=>1, 'url'=>  base_url().'battle/request/' . $battle_id];
+                    echo json_encode($return_status); die();
+                }
+            }
+    }
+
+
+
+    /* not yet used */
+
+    public function upload_media($battle_id = NULL) {
+
+        if ($this->input->post('Submit') == 'Create') {
+            //$this->form_validation->set_rules('media', 'Song', 'trim|required');
+            // if ($this->form_validation->run() == TRUE) {
+            $mediaConfig = array(
+                'upload_path' => $this->config->item('battle_media_path'),
+                'allowed_types' => 'mp3|mp4|wav'
+            );
+            $filename = $this->common_lib->upload_media('media', $mediaConfig);
+            $form_data = array(
+                'battle_id' => $battle_id,
+                'artist_id' => $user_id,
+                'title' => $this->input->post('title'),
+                'media' => $filename,
+                'created_date' => date('Y-m-d H:i:s')
+            );
+
+//		}
+//		else
+//		{
+//		    echo form_error('media');
+//		}
+        }
+    }
+
+    /**
+     * index function
+     * this function is used to list of all battle category for both cash & regular
+     * @return void
+     * @param 
+     * @author Samiran
+     * */
+    public function category($battle_cat = '') {
+        if ($battle_cat == null)
+            redirect('home');
+        //if cash-battle or regular-battle
+        $battle_category = [ 1 => 'Rnb & pop Originals', 2 => 'RnB & Pop Covers', 3 => 'Hiphop', 4 => 'Video Battles', 5 => 'Freestyle'];
+        $user_id = $this->sessionData['id'];
+        $battleData = $this->battles->get_battle_list();
+        $arrData['userId'] = $user_id;
+        $arrData['battleList'] = $battleData;
+        $arrData['battle_category'] = $battle_category;
+        $arrData['middle'] = 'battle_category';
+        $arrData['div_col_unit'] = 'col-md-12';
+        
+        $arrData['userdata'] = $this->user->get_user_profile($this->session->userdata('logged_in')['id']);
+        $arrData['top_songs'] = $this->library->get_top_songs();
+	$arrData['top_user'] = $this->user->get_top_user();
+        
+        $arrData['rightsidebar'] = $this->friends->get_all_frnds($this->session->userdata('logged_in')['id']);
+        $arrData['get_notification'] = get_notification($this->session->userdata('logged_in')['id']);
+        $arrData['new_notifn_count'] = get_new_notification($this->session->userdata('logged_in')['id']);
+        //echo '<pre>'; print_r($arrData); die;
+        $this->load->view('templates/template', $arrData);
+    }
+
+}

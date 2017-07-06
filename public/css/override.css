@@ -1,0 +1,53 @@
+.header-md .navbar-brand img {
+	max-height: 51px;
+}
+
+.navbar-brand img {
+	max-height:100px;
+}
+
+.navbar-brand{
+	min-height: 60px;
+}
+
+.btn-info:hover, .btn-info:focus, .btn-info:active, .btn-info.active, .open .dropdown-toggle.btn-info {
+  color: #fff !important;
+  background-color: #BD774C !important;
+  /*border-color: #583F37 !important;*/
+  border-color: transparent; !important;
+}
+
+button, button:active, button:hover { outline:none; }
+
+.alert {
+	text-align: center;
+	border-radius: 0px !important;
+}
+
+
+ .alert-error {}
+
+ .error {
+ 	background-color: red;
+ }
+
+ .success {
+ 	background-color: green;
+ }
+
+ .info {
+ 	background-color: blue;
+ }
+
+ .warning {
+ 	background-color: yellow;
+ }
+
+ .image-sound.image-full img {
+ 	width:50px;
+ 	height:50px;
+ }
+
+ .g-background-default {
+ 	background-color: blue !important;
+ }

@@ -1,0 +1,1 @@
+[17-Feb-2017 12:52:10 UTC] PHP Fatal error:  Call to undefined method Adminusermodel::get_admindetails() in /home2/pranay/public_html/samiran/battleme/admin/application/controllers/Profile.php on line 39
