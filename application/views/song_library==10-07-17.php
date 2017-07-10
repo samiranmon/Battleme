@@ -128,15 +128,14 @@ if ($addForm) {
                     <a class="clear" href="#"> 
                         <span class="block text-ellipsis"><?php echo $title ?></span>  
                     </a>
-                    
-                    <?php  //if($value['battle_category'] == 1 || $value['battle_category'] == 2 || $value['battle_category'] == 9) { ?>
-                    <!--<a class="btn-md btn-success buy-media buy-download-btn" href="<?//=  base_url('download/cover_song/'.base64_encode($this->encrypt->encode($song_id)))?>">Download</a>-->
-                        <?php //} ?>
-                    
-                        <?php if(isset($user_profile[0]->memberships_id) && $user_profile[0]->memberships_id != 1) {
+                    <?php 
+                        if($value['battle_category'] == 1 || $value['battle_category'] == 2 || $value['battle_category'] == 9) { ?>
+                    <a class="btn-md btn-success buy-media buy-download-btn" href="<?=  base_url('download/cover_song/'.base64_encode($this->encrypt->encode($song_id)))?>">Download</a>
+                        <?php } else {
+                            if(isset($user_profile[0]->memberships_id) && $user_profile[0]->memberships_id != 1) {
                             ?>
                             <a data-toggle="modal" media-id="<?= $song_id ?>" data-target="#buy_popup" class="btn-md btn-success buy-media buy-download-btn" href="javascript:void(0)">Buy</a>
-                        <?php } ?>
+                        <?php } } ?>
 
                 </li> 
                 <?php
