@@ -56,10 +56,11 @@
 	    $this->db->select('concat(C.firstname , " " ,C.lastname ) as challenger ,'
 		    . ' C.profile_picture as c_profile , C.coins as c_coins , user.profile_picture as f_profile , user.coins as f_coins ,'
 		    . ' C.win_cnt as c_win , C.lose_cnt as c_loss , user.win_cnt , user.lose_cnt ,'
-		    . 'concat(user.firstname , " ", user.lastname ) as friend , battle_request.* ' , FALSE);
+		    . 'concat(user.firstname , " ", user.lastname ) as friend , bc.time_duration, battle_request.* ' , FALSE);
 	    $this->db->from('battle_request');
 	    $this->db->join('user as C' , 'C.id=battle_request.user_id' , 'LEFT');
 	    $this->db->join('user' , 'user.id=battle_request.friend_user_id' , 'LEFT');
+	    $this->db->join('battle_category as bc' , 'battle_request.battle_category=bc.id');
 	    
 	   
 	    

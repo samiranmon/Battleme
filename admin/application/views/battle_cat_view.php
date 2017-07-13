@@ -40,6 +40,7 @@ $this->load->view('admin_templates/sidebar');
                 <tr>
                     <th>#ID</th>
                     <th>Category Name</th>
+                    <th>Battle time duration</th>
                     <th>Status</th>
                     <th>Created On</th>
                     <th>Actions</th>
@@ -49,6 +50,7 @@ $this->load->view('admin_templates/sidebar');
                 <tr>
                     <th>#ID</th>
                     <th>Category Name</th>
+                    <th>Battle time duration</th>
                     <th>Status</th>
                     <th>Created On</th>
                     <th>Actions</th>
@@ -59,7 +61,7 @@ $this->load->view('admin_templates/sidebar');
                     <tr>
                         <td><?php echo $k; ?></td>
                         <td><?php echo $val['name']; ?></td>
-                        
+                        <td><?php echo $val['time_duration'].' days'; ?></td>
                         <td><?php echo $val['status']==0? 'Inactive':'Active' ?></td>
                         <td><?php echo $val['created_on']; ?></td>
                         <td>

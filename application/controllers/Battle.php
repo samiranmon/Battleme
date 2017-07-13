@@ -447,7 +447,7 @@ class Battle extends CI_Controller {
                     }
                 } else {
                     $this->form_validation->set_rules('media_id', 'choose from library', 'trim|required');
-                    if ($battle_details[0]['battle_category'] == 4) {
+                    if ($battle_details[0]['battle_category'] == 4) { 
                         // for custom query
                         $this->form_validation->set_rules('media_id', 'choose from library', 'callback_check_video_file');
                     }
@@ -496,11 +496,11 @@ class Battle extends CI_Controller {
                                 );
                                 $status = $this->battles->add_battle_media($form_data);
                                 if ($status) {
-                                    $b_result_time = $this->battles->getSiteSettingById(11);
+                                    //$b_result_time = $this->battles->getSiteSettingById(11);
                                     /* for start of the battle */
                                     $battleData['status'] = 1;
                                     $battleData['start_date'] = date('Y-m-d H:i:s');
-                                    $battleData['end_date'] = date("Y-m-d H:i:s", strtotime(date("Y-m-d H:i:s", strtotime(date('Y-m-d H:i:s'))) . " +".$b_result_time['value']." days"));
+                                    $battleData['end_date'] = date("Y-m-d H:i:s", strtotime(date("Y-m-d H:i:s", strtotime(date('Y-m-d H:i:s'))) . " +".$battle_details[0]['time_duration']." days"));
                                     $this->battles->update_request($battleData, array('battle_request_id' => $battle_id));
                                     
                                     $notification_msg = 'has uploaded'.$gender.' song to the battle';
@@ -528,11 +528,10 @@ class Battle extends CI_Controller {
                                 );
                                 $status = $this->battles->add_battle_media($form_data);
                                 if ($status) {
-                                    $b_result_time = $this->battles->getSiteSettingById(11);
                                     /* for start of the battle */
                                     $battleData['status'] = 1;
                                     $battleData['start_date'] = date('Y-m-d H:i:s');
-                                    $battleData['end_date'] = date("Y-m-d H:i:s", strtotime(date("Y-m-d H:i:s", strtotime(date('Y-m-d H:i:s'))) . " +".$b_result_time['value']." days"));
+                                    $battleData['end_date'] = date("Y-m-d H:i:s", strtotime(date("Y-m-d H:i:s", strtotime(date('Y-m-d H:i:s'))) . " +".$battle_details[0]['time_duration']." days"));
                                     $this->battles->update_request($battleData, array('battle_request_id' => $battle_id));
 
                                     $notification_msg = 'has uploaded'.$gender.' song to the battle';

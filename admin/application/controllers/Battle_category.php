@@ -109,6 +109,7 @@ class Battle_category extends CI_Controller {
         $this->load->library('form_validation');
         
         $this->form_validation->set_rules('name', 'Name', 'trim|required');
+        $this->form_validation->set_rules('time_duration', 'Time duration', 'trim|required');
         $this->form_validation->set_rules('status', 'Status', 'trim|required');
         
         if($id ==null ) {
@@ -136,6 +137,7 @@ class Battle_category extends CI_Controller {
             $savedata = array(
                 'name' => ucfirst($this->input->post('name')),
                 'status' => $this->input->post('status'),
+                'time_duration' => $this->input->post('time_duration'),
                 'media' => $filename,
             );
             
