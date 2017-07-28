@@ -512,4 +512,19 @@ class Usermodel extends CI_Model {
         }
     }
     
+    public function getSecurityQuestion() {
+        $this->db->select('id, question, created_at', FALSE);
+        $this->db->from('security_question');
+        $this->db->where('status', 1);
+        //$this->db->order_by("id", "asc");
+        $this->db->order_by('rand()');
+        $this->db->limit(2);
+        $query = $this->db->get();
+        if($query->num_rows() > 0 ) {
+            return $query->result_array();
+        } else {
+            return [];
+        }
+    }
+    
 }

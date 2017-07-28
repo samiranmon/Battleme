@@ -54,6 +54,25 @@
                         echo form_error('battle_category', '<div class="error">', '</div>'); 
                         ?>
                 </div>
+                
+                <!-- for security question section -->
+                <div class="member_suggestion" style="text-align: left;">
+                    <h3 style="color: #fff; font-size: 22px; text-align: center;">Security question </h3>
+                    <?php 
+                        //echo '<pre>';
+                        //print_r($securityQuestion);
+                    if(!empty($securityQuestion)){
+                        $i = 1;
+                        foreach ($securityQuestion as $val) { ?>
+                    
+                        <?php echo $i.') '.$val['question'].'<br>'; ?>
+                        <input type="text" placeholder="" name="<?='question_'.$val['id']?>" value="<?=set_value('question_'.$val['id'])?>">
+                        <?php echo form_error('question_'.$val['id'], '<div class="error">', '</div>'); ?>
+                    
+                    <?php $i++; } }?>
+                </div>
+                <!-- end of security question -->
+                
                  
                 <p class="terms-condi"><input type="checkbox" name="terms" >Agree the <a href="<?php echo base_url('page/terms_and_conditions'); ?>" target="_blank">Terms & Policy</a> </p>
                 <?php echo form_error('terms', '<div class="error">', '</div>'); ?>

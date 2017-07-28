@@ -28,6 +28,7 @@ class User extends CI_Controller {
         $this->load->library('Common_lib');
         $this->load->library('Paypal_lib');
         $this->load->library('email');
+        $this->load->library('encrypt');
         
         $this->config->load('paypal');
          $config = array(
@@ -96,6 +97,14 @@ class User extends CI_Controller {
         }
         $arrData['battleCategory'] = $battleCatArray;
         
+        /* for dending security question */
+        if(!$this->session->userdata('_securityQue')) { 
+            $arrData['securityQuestion'] = $this->Usermodel->getSecurityQuestion();
+        } else { 
+            $arrData['securityQuestion'] = $this->session->userdata('_securityQue');
+        }
+        /* for dending security question */
+        
         //$this->load->library('form_validation');
         $validate_rule = array(
             array(
@@ -133,16 +142,23 @@ class User extends CI_Controller {
                 'label' => 'T&C',
                 'rules' => 'required'
             ),
-           /* array(
-                'field' => 'battle_category[]',
-                'label' => 'Battle Category',
-                'rules' => 'required'
-            ) */
+            
         );
+        
+        if(!empty($arrData['securityQuestion'])){ $i=1;
+            foreach ($arrData['securityQuestion'] as $val) {
+                $validate_rule[] = [
+                    'field' => 'question_'.$val['id'],
+                    'label' => 'Question '.$i,
+                    'rules' => 'trim|required',
+                ]; $i++;
+            }
+        }
         
         $this->form_validation->set_rules($validate_rule);
 
         if ($this->form_validation->run() == False) {
+            $this->session->set_userdata('_securityQue', $arrData['securityQuestion']);
             $this->load->view('register', $arrData);
         } else {
             $current_date = date("Y-m-d");
@@ -158,6 +174,7 @@ class User extends CI_Controller {
                 'user_type' => $reg_type,
                 'email' => $this->input->post('email'),
                 'password' => md5($this->input->post('password1')),
+                'encrypt_password' => $this->encrypt->encode($this->input->post('password1')),
                 'created_on' => $current_date
             );
 
@@ -174,7 +191,6 @@ class User extends CI_Controller {
             } else {
                 /* add user_memberships */
                 $user_info = $this->Usermodel->check_user_data($this->input->post('email'));
-                //print_r($user_info);
                 
                 // Update invitation table 
                     $this->db->update('invitation', ['friend_user'=>$user_info[0]->id], array('friend_email' =>  $this->input->post('email')));
@@ -192,6 +208,16 @@ class User extends CI_Controller {
                 $user_memberships_info['memberships_id'] = $this->input->post('membership');
                 $user_memberships_info['status'] = '1';
                 $this->UserMemberships->add($user_memberships_info);
+                
+                /* Insert user security question */
+                if(!empty($arrData['securityQuestion'])){ 
+                    foreach ($arrData['securityQuestion'] as $val) {
+                        $_ans = $this->input->post('question_'.$val['id']);
+                        $_ansArray = ['user_id'=>$user_info[0]->id, 'question_id' =>$val['id'], 'answer'=>$_ans, 'created_at'=>date('Y-m-d H:i:s')];
+                        $this->db->insert('security_answer', $_ansArray);     
+                    }
+                }
+                /* Insert user security question */
 
 
                 $this->load->model('Sendmailmodel');
@@ -202,6 +228,7 @@ class User extends CI_Controller {
                 $body .= "Thank you";
                 $this->Sendmailmodel->sendmail($this->input->post('email'), $subject, $body);
                 $this->session->set_flashdata('success', 'Please login to continue');
+                $this->session->set_userdata('_securityQue', '');
                 redirect('user');
             }
         }
