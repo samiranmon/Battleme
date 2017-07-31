@@ -26,6 +26,7 @@ class Admin_dashboard extends CI_Controller {
         $this->load->library('Common_lib');
 
         $this->load->library('Paypal_lib');
+        $this->load->library('encrypt');
     }
     public function index() {
         if ($this->session->userdata('admin_logged_in')) {
@@ -435,7 +436,9 @@ class Admin_dashboard extends CI_Controller {
         //print_r($data);
     }
     public function add_contentmanagement() {
-        
+        $path = base_url().'public/admin/js/ckfinder';
+        $width = '850px';
+        $this->editor($path, $width);
         $this->load->view('add_contentmanagement');
     }
     function editor($path,$width) {
@@ -494,10 +497,9 @@ class Admin_dashboard extends CI_Controller {
         }
     }
     public function edit_content_management($id) {
-        /* $path = base_url().'public/admin/js/ckfinder';
+        $path = base_url().'public/admin/js/ckfinder';
         $width = '850px';
-        $this->editor($path, $width); */
-        
+        $this->editor($path, $width);
        $data=$this->Usermodel->get_contentmanagement_details($id);
        
        $this->load->view('editcontent',$data);

@@ -432,4 +432,20 @@ class Adminusermodel extends CI_Model {
             return FALSE;
         }
     }
+    
+    public function getUserSecurityQuestion($uId = null) {
+        
+        $this->db->select('sa.id, sa.answer, sq.question');
+        $this->db->from('security_answer sa');
+        $this->db->join('security_question sq','sa.question_id=sq.id');
+        $this->db->where('sa.user_id', $uId);
+        $query = $this->db->get();
+        //echo $this->db->last_query(); die;
+        
+        if ($query->num_rows() > 0) {
+            return $query->result_array();
+        } else {
+            return FALSE;
+        }
+    }
 }
