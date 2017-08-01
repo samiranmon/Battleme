@@ -25,7 +25,7 @@
                         </li>
                         <li><a class="ajax-link" href="<?php echo base_url(); ?>admin_dashboard/get_payment_details"><i class="glyphicon glyphicon-lock"></i><span> Payments View</span></a>
                         </li>
-                        <li><a class="ajax-link" href="<?php echo base_url(); ?>admin_dashboard/get_contactus_details"><i class="glyphicon glyphicon-envelope"></i><span> View Contact us details</span></a>
+                        <li><a class="ajax-link" href="<?php echo base_url(); ?>admin_dashboard/get_contactus_details"><i class="glyphicon glyphicon-envelope"></i><span> Contact us</span></a>
                         </li>
                         <li><a class="ajax-link" href="<?php echo base_url(); ?>admin_dashboard/get_songlike_details"><i class="glyphicon glyphicon-music"></i><span> Song Like details</span></a>
                         </li>
