@@ -40,6 +40,7 @@ $this->load->view('admin_templates/sidebar');
                 <tr>
                     <th>#ID</th>
                     <th>Category Name</th>
+                    <th>Parent Category</th>
                     <th>Battle time duration</th>
                     <th>Status</th>
                     <th>Created On</th>
@@ -50,6 +51,7 @@ $this->load->view('admin_templates/sidebar');
                 <tr>
                     <th>#ID</th>
                     <th>Category Name</th>
+                    <th>Parent Category</th>
                     <th>Battle time duration</th>
                     <th>Status</th>
                     <th>Created On</th>
@@ -61,6 +63,13 @@ $this->load->view('admin_templates/sidebar');
                     <tr>
                         <td><?php echo $k; ?></td>
                         <td><?php echo $val['name']; ?></td>
+                        <td>
+                            <?php 
+                                $options = [1=>'Audio', 2=>'Video', 3=>'Freestyle'];
+                                if(isset($options[$val['parent_id']]))
+                                echo $options[$val['parent_id']]; 
+                            ?>
+                        </td>
                         <td><?php echo $val['time_duration'].' days'; ?></td>
                         <td><?php echo $val['status']==0? 'Inactive':'Active' ?></td>
                         <td><?php echo $val['created_on']; ?></td>

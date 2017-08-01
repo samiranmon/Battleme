@@ -38,6 +38,17 @@ $this->load->view('admin_templates/sidebar');
             <div class="col-md-10 col-sm-10 col-xs-10">
 
                 <div class="form-group">
+                    <label class="control-label col-sm-2" for="title">Parent Category :</label>
+                    <div class="col-sm-10">
+                        <?php 
+                            $options = [''=>'--Select parent category--', 1=>'Audio',2=>'Video',3=>'Freestyle'];
+                            echo form_dropdown('parent_id', $options, $bcategory['parent_id']==''?set_value('parent_id'):$bcategory['parent_id'], 'class="form-control" id="parent_id" placeholder="Enter Parent Category"');
+                        ?>
+                        <?php echo form_error('parent_id', '<div class="error">', '</div>'); ?>
+                    </div>
+                </div>
+                
+                <div class="form-group">
                     <label class="control-label col-sm-2" for="title">Category Name :</label>
                     <div class="col-sm-10">
                         <input type="text" class="form-control" name="name" id="name" placeholder="Enter Category Name" value="<?php echo $bcategory['name'] ?>">
