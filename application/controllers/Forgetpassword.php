@@ -141,6 +141,4 @@ class Forgetpassword extends CI_Controller {
      }
 
 
-}       
-
-    ?>
+}

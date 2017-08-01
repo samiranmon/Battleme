@@ -11,21 +11,27 @@
             </div>
             
                 <?php if($this->session->flashdata('message')) { ?>
-                <p class="text-center error"><?php echo $this->session->flashdata('message');?></p>
+                    <p class="text-center success"><?php echo $this->session->flashdata('message');?></p>
+                <?php } if($this->session->flashdata('error')) { ?>
+                <p class="text-center error"><?php echo $this->session->flashdata('error');?></p>
                 <?php } 
-                    $attributes = array('id' => 'forgetpassword');
-                    echo form_open('Forgetpassword', $attributes);
+                    $attributes = array('id' => 'contact_us');
+                    echo form_open('contactUs', $attributes);
                 ?>
             <div class="join_battle_login">
-                <h2> Forgot Password </h2>
+                <h2> Contact Us </h2>
                 
-                <input type="text" name="email" placeholder="Email">
+                <input type="text" name="email" placeholder="Enter your register mail id" value="<?php echo set_value('email'); ?>" >
                 <?php echo form_error('email', '<div class="error">', '</div>'); ?>
                 
+                <input type="text" name="subject" placeholder="Subject" value="<?php echo set_value('subject'); ?>">
+                <?php echo form_error('subject', '<div class="error">', '</div>'); ?>
+                
+                <textarea class="member_suggestion" name="message" placeholder="Message" ><?php echo set_value('message'); ?></textarea>
+                <?php echo form_error('message', '<div class="error">', '</div>'); ?>
+                
                 <input type="submit" value="Submit">
-                <p style="padding-top: 10px; color: #005590; font-weight: bold;">
-                    <a style="color: #005590;" href="<?= base_url('contactUs')?>">Or Contact to site Administrator</a>
-                </p>
+                 
                 
                 <ul>
                     <li><a href="<?php echo base_url().'user';?>">Login?</a></li>
