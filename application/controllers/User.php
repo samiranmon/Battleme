@@ -179,6 +179,16 @@ class User extends CI_Controller {
             );
 
             if ($this->input->post('membership') == 2) {
+                /* Store user security question answer */
+                if(!empty($arrData['securityQuestion'])){ 
+                    $_ansArray = [];
+                    foreach ($arrData['securityQuestion'] as $val) {
+                        $_ansArray[] = ['question_id' =>$val['id'], 'answer'=>$this->input->post('question_'.$val['id']), 'created_at'=>date('Y-m-d H:i:s')];
+                    }
+                    $this->session->set_userdata('_securityQuePremium',$_ansArray);
+                }
+                /* Store user security question answer*/
+                
                 $data['battle_category'] = $this->input->post('battle_category');
                 $this->Usermodel->addPremiumUser($data); 
                 exit();
@@ -453,7 +463,7 @@ class User extends CI_Controller {
                 //[CUSTOM] => one-samiran.brainium@gmail.com|1|2|3|8|9
                 
                 if(isset($PayPalResult['BILLINGAGREEMENTACCEPTEDSTATUS']) && $PayPalResult['BILLINGAGREEMENTACCEPTEDSTATUS'] == 1 && $PayPalResult['PAYERSTATUS'] == 'verified') {
-                    $buyerData = ['TOKEN' => $PayPalResult['TOKEN'], 'PAYERID'=>$PayPalResult['PAYERID'], 'EMAIL'=>$PayPalResult['EMAIL'], 'NAME'=>$PayPalResult['FIRSTNAME'].' '.$PayPalResult['LASTNAME'], 'BUSINESS'=>$PayPalResult['BUSINESS']];
+                    $buyerData = ['TOKEN' => $PayPalResult['TOKEN'], 'PAYERID'=>$PayPalResult['PAYERID'], 'EMAIL'=>$PayPalResult['EMAIL'], 'NAME'=>$PayPalResult['FIRSTNAME'].' '.$PayPalResult['LASTNAME'], 'BUSINESS'=> isset($PayPalResult['BUSINESS'])?$PayPalResult['BUSINESS']:''];
                     
                     $profileDetails = $this->Create_recurring_payments_profile($buyerData);
                     if(!empty($profileDetails) && isset($profileDetails['PROFILEID'])) {
@@ -461,7 +471,7 @@ class User extends CI_Controller {
                         
                         // Insert user into the table
                         $custom_data = explode('|', $PayPalResult['CUSTOM']);
-                        $user_data = ['firstname'=>$custom_data[0], 'lastname'=>$custom_data[1], 'email'=>$custom_data[2], 'password'=>$custom_data[3], 'user_type'=>'artist', 'created_on'=>date('Y-m-d')];
+                        $user_data = ['firstname'=>$custom_data[0], 'lastname'=>$custom_data[1], 'email'=>$custom_data[2], 'password'=>$custom_data[3],'encrypt_password'=>$custom_data[4], 'user_type'=>'artist', 'created_on'=>date('Y-m-d')];
                         $userId = $this->Usermodel->checkuser($user_data);
                         
                         // Insert membership table
@@ -474,7 +484,7 @@ class User extends CI_Controller {
                         $recurring_data = ['user_id'=>$userId, 'profile_id'=>$profileDetails['PROFILEID'], 
                             'token'=>$profileDetails['REQUESTDATA']['TOKEN'], 'payer_id'=> $profileDetails['REQUESTDATA']['PAYERID'],
                             'payer_name'=>$profileDetails['REQUESTDATA']['SUBSCRIBERNAME'], 'payer_email'=>$profileDetails['REQUESTDATA']['EMAIL'],
-                            'business'=>$profileDetails['REQUESTDATA']['BUSINESS'], 'payer_status'=> $profileDetails['REQUESTDATA']['PAYERSTATUS'],
+                            'business'=> isset($profileDetails['REQUESTDATA']['BUSINESS'])?$profileDetails['REQUESTDATA']['BUSINESS']:'', 'payer_status'=> $profileDetails['REQUESTDATA']['PAYERSTATUS'],
                             'amount'=>$profileDetails['REQUESTDATA']['AMT'], 'currency_code'=> $profileDetails['REQUESTDATA']['CURRENCYCODE'],
                             'profile_start_date'=>$profileDetails['REQUESTDATA']['PROFILESTARTDATE'], 'profile_status'=>1, 'created_on'=>date('Y-m-d H:i:s')];
                          $this->db->insert('recurring_payments', $recurring_data);
@@ -491,6 +501,21 @@ class User extends CI_Controller {
                             }
                         } 
                         
+                        //For insert security question and answer
+                        if($this->session->userdata('_securityQuePremium')) {
+                            $_QueAnsArray = $this->session->userdata('_securityQuePremium');
+                            if(!empty($_QueAnsArray)) {
+                                foreach ($_QueAnsArray as $key=>$val){
+                                    $_ansArray = $_QueAnsArray[$key];
+                                    $_ansArray['user_id'] = $userId;
+                                    $this->db->insert('security_answer', $_ansArray); 
+                                }
+                            }
+                            
+                            $this->session->set_userdata('_securityQuePremium','');
+                        }
+                        
+                        $this->session->set_userdata('_securityQue', '');
                         // Send mail to register user
                         $body = "Hello <b>" . $custom_data[0] . "</b><br><br>";
                         $body .= "Your account has been credited successfully. Wellcome to Your Battleme Team.<br>";

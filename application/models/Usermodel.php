@@ -270,9 +270,9 @@ class Usermodel extends CI_Model {
         // Keep in mind that each payment will ahve its own set of OrderItems
         // so don't get confused along the way.
         if(isset($data['battle_category']) && !empty($data['battle_category'])) {
-            $custom_data = $data['firstname'].'|'.$data['lastname'].'|'.$data['email'].'|'.$data['password'].'|'.implode('|', $data['battle_category']);
+            $custom_data = $data['firstname'].'|'.$data['lastname'].'|'.$data['email'].'|'.$data['password'].'|'.$data['encrypt_password'].'|'.implode('|', $data['battle_category']);
         } else {
-            $custom_data = $data['firstname'].'|'.$data['lastname'].'|'.$data['email'].'|'.$data['password'];
+            $custom_data = $data['firstname'].'|'.$data['lastname'].'|'.$data['email'].'|'.$data['password'].'|'.$data['encrypt_password'];
         }
         
         $Payments = array();
