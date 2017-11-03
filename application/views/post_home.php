@@ -194,19 +194,23 @@ echo form_open_multipart('home/', $attributes);
                     </div>
                 <?php } ?>
 
-        <?php if ($post['media'] != '' && $post['media_type'] == 2) { ?>
+        <?php if ($post['media'] != '' && $post['media_type'] == 2) { 
+                if(file_exists($this->config->item('post_media_path').$post['media'])) {
+            ?>
                     <div class="mid_pic">
                         <video width="531" controls="controls">
                             <source src="<?= base_url('uploads/post/' . $post['media']) ?>" type="video/mp4">
                         </video>
                     </div>
-                <?php } ?> 
+        <?php } } ?> 
 
-                    <?php if ($post['media'] != '' && $post['media_type'] == 3) { ?>
-                    <div class="mid_pic">
-                    <?php $this->view('responsive_player', ['path' => base_url('uploads/post/' . $post['media']), 'id' => 'voice_' . $post['id']]); ?>
-                    </div>
-        <?php } ?>
+                    <?php if ($post['media'] != '' && $post['media_type'] == 3) { 
+                        if(file_exists($this->config->item('post_media_path').$post['media'])) {
+                        ?>
+                            <div class="mid_pic">
+                            <?php $this->view('responsive_player', ['path' => base_url('uploads/post/' . $post['media']), 'id' => 'voice_' . $post['id']]); ?>
+                            </div>
+                    <?php } } ?>
 
                 <div class="mid_like">
 

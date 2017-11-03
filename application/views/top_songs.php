@@ -21,8 +21,8 @@ if (isset($top_songs) && !empty($top_songs)) {
             $artistName = ucfirst($songValue['firstname']);
             $title = substr($songValue['title'], 0,14);
             $likeCount = $songValue['likeCount'];
-
-            if (file_exists('/home2/pranay/public_html/samiran/battleme/' . $media)) {
+            
+            if (file_exists(getcwd().'/'. $media)) {
                 $song_array[] = [base_url() . $media, $title, 'Song by ' . $artistName];
             } else if (file_exists($_SERVER["DOCUMENT_ROOT"] . '/battleme/' . $media)) {
                 $song_array[] = [base_url() . $media, $title, 'Song by ' . $artistName];

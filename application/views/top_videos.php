@@ -12,7 +12,7 @@
                             if(!in_array($ext, ['mp3', 'wav', 'wma'])) {
                                 $title = $songValue['title'];
 
-                                if (file_exists('/home2/pranay/public_html/samiran/battleme/' . $media)) { ?>
+                                if (file_exists(getcwd().'/test/'.$media)) { ?>
                 
                                 <li>
                                     <span><?=$songKey+1?></span>
@@ -47,7 +47,7 @@
 
             $ext = pathinfo($songValue['media'], PATHINFO_EXTENSION);
             $media = $this->config->item('library_media_path') . $songValue['media'];
-
+            if (file_exists(getcwd().'/test/'.$media)) {
             if(!in_array($ext, ['mp3', 'wav', 'wma'])) { ?>
 <!-- Modal -->
 <div id="videoModal<?=$songKey?>" class="modal fade" role="dialog">
@@ -70,5 +70,5 @@
 
   </div>
 </div>
-<?php }}} ?>
+            <?php }}}} ?>
 <?php } ?>
