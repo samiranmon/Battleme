@@ -305,10 +305,10 @@ class Battle extends CI_Controller {
                         $source = $this->config->item('library_media_path').$uploadAck['file_name'];
                         $file_type = explode('/', $uploadAck['file_type']);
                         if($file_type[0] == 'video') {
-                            $conv_file_name = 'con_'.time().'.mp4';
+                            $conv_file_name = 'con_'.time().'.ogg';
                             $cont_file_path = $this->config->item('library_media_path').$conv_file_name;
-                            
-                            shell_exec("/usr/local/bin/ffmpeg -y -i ".$source." -ar 22050 -ab 512 -b 800k -f mp4 -s 514*362 -strict -2 -c:a aac ".$cont_file_path." 2>&1");
+                            shell_exec("/usr/local/bin/ffmpeg -i ".$source." -acodec libvorbis -vcodec libtheora -f ogg ".$cont_file_path." 2>&1");
+                            //shell_exec("/usr/local/bin/ffmpeg -y -i ".$source." -ar 22050 -ab 512 -b 800k -f mp4 -s 514*362 -strict -2 -c:a aac ".$cont_file_path." 2>&1");
                             //shell_exec("/usr/local/bin/ffmpeg -i ".$source." -f mp4 -s 800x480 -strict -2 ".$cont_file_path." 2>&1");
                             if(file_exists($source)) { unlink($source); } 
                         } else if($file_type[0] == 'audio') {
@@ -318,6 +318,7 @@ class Battle extends CI_Controller {
                             
                             if(file_exists($source)) { unlink($source); } 
                         } else {
+                            if(file_exists($source)) { unlink($source); } 
                             $this->session->set_flashdata('class', 'alert-danger');
                             $this->session->set_flashdata('message', 'File type is not allowed!');
                             redirect('battle/create/');
@@ -498,15 +499,28 @@ class Battle extends CI_Controller {
                             $source = $this->config->item('library_media_path').$uploadAck['file_name'];
                             $file_type = explode('/', $uploadAck['file_type']);
                             if($file_type[0] == 'video') {
-                                $conv_file_name = 'con_'.time().'.mp4';
+                                $conv_file_name = 'con_'.time().'.ogg';
                                 $cont_file_path = $this->config->item('library_media_path').$conv_file_name;
-                                shell_exec("/usr/local/bin/ffmpeg -i ".$source." -f mp4 -s 500x400 -strict -2 ".$cont_file_path." 2>&1");
-                                //shell_exec("/usr/local/bin/ffmpeg -i ".$source." -acodec libvorbis -vcodec libtheora -ac 2 -ab 96k -ar 44100 -b 819200 -s 1080×720 ".$cont_file_path." 2>&1");
-                                //shell_exec("ffmpeg -i ".$source." -f mp4 -s 500x400 -strict -2  ".$cont_file_path." 2>&1");
+                                shell_exec("/usr/local/bin/ffmpeg -i ".$source." -acodec libvorbis -vcodec libtheora -f ogg ".$cont_file_path." 2>&1");
                                 if(file_exists($source)) { unlink($source); }
+                            } else if($file_type[0] == 'audio') {
+                                $conv_file_name = 'con_'.time().'.mp3';
+                                $cont_file_path = $this->config->item('library_media_path').$conv_file_name;
+                                shell_exec("/usr/local/bin/ffmpeg -i ".$source." -f mp3 ".$cont_file_path." 2>&1");
+                                if(file_exists($source)) { unlink($source); } 
                             } else {
-                                $conv_file_name = $uploadAck['file_name'];
-                            } 
+                                if(file_exists($source)) { unlink($source); } 
+                                $this->session->set_flashdata('class', 'alert-danger');
+                                $this->session->set_flashdata('message', 'File type is not allowed!');
+                                redirect('battle/request/' . $battle_id);
+                            }   
+                            
+                            if(!file_exists($cont_file_path)) {
+                                $this->session->set_flashdata('class', 'alert-danger');
+                                $this->session->set_flashdata('message', 'File format is not allowed!');
+                                redirect('battle/request/' . $battle_id);
+                            }
+                            
                             //save file to users library first
                             $library_data = array(
                                 'user_id' => $user_id,
