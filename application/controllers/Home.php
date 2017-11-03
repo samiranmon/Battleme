@@ -62,7 +62,7 @@ class Home extends CI_Controller {
                     if(in_array($_SERVER['REMOTE_ADDR'], ['127.0.0.1', "::1"])){
                         $config['allowed_types'] = 'flv|FLV|mkv|MKV|jpeg|gif|jpg|png|mp4|ogg|ogv|avi|mp3';
                     }
-                    $config['max_size']	= '300480';
+                    $config['max_size']	= '1024480';
                     $config['max_width']  = 0;
                     $config['max_height']  = 0;
                     $config['remove_spaces']=TRUE;

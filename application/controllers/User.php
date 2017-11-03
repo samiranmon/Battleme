@@ -59,6 +59,8 @@ class User extends CI_Controller {
         if (empty($ffmpeg)) {
             echo 'ffmpeg not available';
         }*/
+        
+        //echo $_SERVER['SERVER_ADDR'];
 
         $sessino_array = $this->session->userdata('logged_in');
         if (isset($sessino_array['id'])) {

@@ -216,6 +216,7 @@ class Battle extends CI_Controller {
      * @author Chhanda
      * */
     public function create($friend_id = NULL) {
+        
         //get friends list of logged in user
         $arrData = array();
         $selectedId = 0;
@@ -257,7 +258,10 @@ class Battle extends CI_Controller {
             
             if($this->input->post('media_type') == 1) {
                 $this->form_validation->set_rules('media_title', 'Media Title', 'trim|required');
+                //echo '<pre>';
+                    //print_r($_FILES['media']);die;
                 if (empty($_FILES['media']['name'])) {
+                    
                     $this->form_validation->set_rules('media', 'Media', 'required');
                 }
             } else {
@@ -265,7 +269,7 @@ class Battle extends CI_Controller {
                 $this->form_validation->set_rules('media_id', 'choose from library', 'trim|required');
                  if ($this->input->post('battle_category') == 4) {
                      // for custom query
-                     $this->form_validation->set_rules('media_id', 'choose from library', 'callback_check_video_file');
+                     //$this->form_validation->set_rules('media_id', 'choose from library', 'callback_check_video_file');
                      
                  }  
             }
@@ -290,31 +294,52 @@ class Battle extends CI_Controller {
                     /* for start of media uploade */
                     $mediaConfig = array(
                         'upload_path' => $this->config->item('library_media_path'),
-                        'allowed_types' => '3gp|aa|aac|aax|act|aiff|amr|ape|au|awb|dct|dss|dvf|flac|gsm|iklax|ivs|m4a|m4b|m4p|mmf|mp3|mpc|msv|ogg|oga|mogg|opus|ra|rm|raw|sln|tta|vox|wav|wma|wv|webm',
-                        'max_size' => '300159'
+                        //'allowed_types' => '3gp|aa|aac|aax|act|aiff|amr|ape|au|awb|dct|dss|dvf|flac|gsm|iklax|ivs|m4a|m4b|m4p|mmf|mp3|mpc|msv|ogg|oga|mogg|opus|ra|rm|raw|sln|tta|vox|wav|wma|wv|webm|mp4|mp4|ogg|webm|avi|flv',
+                        'allowed_types' => '*',
+                        'max_size' => '1024159'
                     );
 
-                    if ($this->input->post('battle_category') == 4) {
-                        $mediaConfig = array(
-                            'upload_path' => $this->config->item('library_media_path'),
-                            'allowed_types' => 'mp4|ogg|webm',
-                            'max_size' => '300159'
-                        );
-                    }
-
-                    $filename = $this->common_lib->upload_media('media', $mediaConfig);
-                    if (!is_array($filename)) {
+                    $uploadAck = $this->common_lib->upload_custom_media('media', $mediaConfig);
+                    if (isset($uploadAck['file_name']) && isset($uploadAck['file_type'])) {
+                        
+                        $source = $this->config->item('library_media_path').$uploadAck['file_name'];
+                        $file_type = explode('/', $uploadAck['file_type']);
+                        if($file_type[0] == 'video') {
+                            $conv_file_name = 'con_'.time().'.mp4';
+                            $cont_file_path = $this->config->item('library_media_path').$conv_file_name;
+                            
+                            shell_exec("/usr/local/bin/ffmpeg -y -i ".$source." -ar 22050 -ab 512 -b 800k -f mp4 -s 514*362 -strict -2 -c:a aac ".$cont_file_path." 2>&1");
+                            //shell_exec("/usr/local/bin/ffmpeg -i ".$source." -f mp4 -s 800x480 -strict -2 ".$cont_file_path." 2>&1");
+                            if(file_exists($source)) { unlink($source); } 
+                        } else if($file_type[0] == 'audio') {
+                            $conv_file_name = 'con_'.time().'.mp3';
+                            $cont_file_path = $this->config->item('library_media_path').$conv_file_name;
+                            shell_exec("/usr/local/bin/ffmpeg -i ".$source." -f mp3 ".$cont_file_path." 2>&1");
+                            
+                            if(file_exists($source)) { unlink($source); } 
+                        } else {
+                            $this->session->set_flashdata('class', 'alert-danger');
+                            $this->session->set_flashdata('message', 'File type is not allowed!');
+                            redirect('battle/create/');
+                        } 
+                        
+                        if(!file_exists($cont_file_path)) {
+                            $this->session->set_flashdata('class', 'alert-danger');
+                            $this->session->set_flashdata('message', 'File format is not allowed!');
+                            redirect('battle/create/');
+                        }
+                        
                         //save file to users library first
                         $library_data = array(
                             'user_id' => $sessionData['id'],
                             'title' => $this->input->post('media_title'),
-                            'media' => $filename,
+                            'media' => $conv_file_name,
                             'created_date' => date('Y-m-d H:i:s')
                         );
                         $library_id = $this->library->insert($library_data);
                     } else {
                         $this->session->set_flashdata('class', 'alert-danger');
-                        $this->session->set_flashdata('message', $filename['error']);
+                        $this->session->set_flashdata('message', $uploadAck['error']);
                         redirect('battle/create/');
                     }
                     /* end of media uploade */
@@ -344,7 +369,7 @@ class Battle extends CI_Controller {
                 if (isset($library_id) && $library_id > 0) {
                     //save media in battle 
                      if($this->input->post('media_type') == 1) { 
-                         $copyStatus = copy($this->config->item('library_media_path') . $filename, $this->config->item('battle_media_path') . $filename);
+                         $copyStatus = copy($this->config->item('library_media_path') . $conv_file_name, $this->config->item('battle_media_path') . $conv_file_name);
                      }
                     
                     $form_data = array(
@@ -447,10 +472,10 @@ class Battle extends CI_Controller {
                     }
                 } else {
                     $this->form_validation->set_rules('media_id', 'choose from library', 'trim|required');
-                    if ($battle_details[0]['battle_category'] == 4) { 
+                    /* if ($battle_details[0]['battle_category'] == 4) { 
                         // for custom query
                         $this->form_validation->set_rules('media_id', 'choose from library', 'callback_check_video_file');
-                    }
+                    } */
                 }
 
                 $sess_data = get_session_data();
@@ -462,32 +487,37 @@ class Battle extends CI_Controller {
                         
                         $mediaConfig = array(
                             'upload_path' => $this->config->item('library_media_path'),
-                            'allowed_types' => '3gp|aa|aac|aax|act|aiff|amr|ape|au|awb|dct|dss|dvf|flac|gsm|iklax|ivs|m4a|m4b|m4p|mmf|mp3|mpc|msv|ogg|oga|mogg|opus|ra|rm|raw|sln|tta|vox|wav|wma|wv|webm',
-                            'max_size' => '300159'
+                            //'allowed_types' => '3gp|aa|aac|aax|act|aiff|amr|ape|au|awb|dct|dss|dvf|flac|gsm|iklax|ivs|m4a|m4b|m4p|mmf|mp3|mpc|msv|ogg|oga|mogg|opus|ra|rm|raw|sln|tta|vox|wav|wma|wv|webm|mp4|ogg|webm|avi|flv',
+                            'allowed_types' => '*',
+                            'max_size' => '1024159'
                         );
-
-                        if ($this->input->post('battle_category') == 4) {
-                            $mediaConfig = array(
-                                'upload_path' => $this->config->item('library_media_path'),
-                                'allowed_types' => 'mp4|ogg|webm',
-                                'max_size' => '300159'
-                            );
-                        }
-
-                        $filename = $this->common_lib->upload_media('media', $mediaConfig);
-
-                        if (!is_array($filename)) {
+                        
+                        $uploadAck = $this->common_lib->upload_custom_media('media', $mediaConfig);
+                        if (isset($uploadAck['file_name']) && isset($uploadAck['file_type'])) {
+                            
+                            $source = $this->config->item('library_media_path').$uploadAck['file_name'];
+                            $file_type = explode('/', $uploadAck['file_type']);
+                            if($file_type[0] == 'video') {
+                                $conv_file_name = 'con_'.time().'.mp4';
+                                $cont_file_path = $this->config->item('library_media_path').$conv_file_name;
+                                shell_exec("/usr/local/bin/ffmpeg -i ".$source." -f mp4 -s 500x400 -strict -2 ".$cont_file_path." 2>&1");
+                                //shell_exec("/usr/local/bin/ffmpeg -i ".$source." -acodec libvorbis -vcodec libtheora -ac 2 -ab 96k -ar 44100 -b 819200 -s 1080×720 ".$cont_file_path." 2>&1");
+                                //shell_exec("ffmpeg -i ".$source." -f mp4 -s 500x400 -strict -2  ".$cont_file_path." 2>&1");
+                                if(file_exists($source)) { unlink($source); }
+                            } else {
+                                $conv_file_name = $uploadAck['file_name'];
+                            } 
                             //save file to users library first
                             $library_data = array(
                                 'user_id' => $user_id,
                                 'title' => $this->input->post('title'),
-                                'media' => $filename,
+                                'media' => $conv_file_name,
                                 'created_date' => date('Y-m-d H:i:s')
                             );
                             $library_id = $this->library->insert($library_data);
                             if ($library_id > 0) {
                                 //save media in battle 
-                                $copyStatus = copy($this->config->item('library_media_path') . $filename, $this->config->item('battle_media_path') . $filename);
+                                $copyStatus = copy($this->config->item('library_media_path') . $conv_file_name, $this->config->item('battle_media_path') . $conv_file_name);
                                 $form_data = array(
                                     'battle_id' => $battle_id,
                                     'artist_id' => $user_id,
@@ -516,7 +546,11 @@ class Battle extends CI_Controller {
                                     redirect('battle/request/' . $battle_id);
                                 }
                             }
-                        } 
+                        } else {
+                            $this->session->set_flashdata('class', 'alert-danger');
+                            $this->session->set_flashdata('message', $uploadAck['error']);
+                            redirect('battle/request/' . $battle_id);
+                        }
                     
                     } else if($this->input->post('media_type') == 2) {
                                 //save media in battle 
@@ -546,11 +580,7 @@ class Battle extends CI_Controller {
                                     $this->session->set_flashdata('success', 'Unable to upload song. Please try again');
                                     redirect('battle/request/' . $battle_id);
                                 }
-                    } else {
-                        $this->session->set_flashdata('class', 'alert-danger');
-                        $this->session->set_flashdata('message', $filename['error']);
-                        redirect('battle/request/' . $battle_id);
-                    }
+                    } 
                     
                     
                 }

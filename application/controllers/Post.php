@@ -75,7 +75,7 @@ class Post extends CI_Controller {
                     $config['allowed_types'] = 'flv|FLV|mkv|MKV|jpeg|gif|jpg|png|mp4|ogg|ogv|avi|mp3';
                 }
 
-                $config['max_size']	= '300480';
+                $config['max_size']	= '1024480';
                 $config['max_width']    = 0;
                 $config['max_height']   = 0;
                 $config['remove_spaces']=TRUE;

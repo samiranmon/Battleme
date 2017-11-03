@@ -123,5 +123,25 @@ class Common_lib {
 	     return $file_data["file_name"];
 	}
     }
+    
+     public function upload_custom_media($fieldName = "", $configArr = array())
+    {
+	$CI_OBJ = & get_instance();
+	$CI_OBJ->load->library('upload');
+	$CI_OBJ->upload->initialize($configArr);
+	ini_set('upload_max_filesize', '1024M');
+	//ini_set('post_max_size','30M');
+	ini_set('max_execution_time','2000');
+	 if(!$CI_OBJ->upload->do_upload($fieldName)) {
+	     $CI_OBJ->upload->display_errors('<div>', '</div>');
+	   $error = array('error' => $CI_OBJ->upload->display_errors());
+            return $error;
+	} 
+	else
+	{
+	     return $file_data = $CI_OBJ->upload->data();
+	     //return $file_data["file_name"];
+	}
+    }
 
 }

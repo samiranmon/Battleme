@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>SimpleWebRTC Audio Demo</title>
+        <link rel="stylesheet" href="css/audio.css" />
+        <link rel="icon" type="image/png" href="img/favicon.png">
+
+    </head>
+    <body onload='GUM()'>
+        <div class="content cf">
+            <section>
+                <div id="requirements">
+                    <p>To use this demo, you'll need the most recent version of the Edge browser, Chrome or Firefox , and a microphone attached to your Windows 10 device.</p>
+                </div>
+                <div id="supportWarning" class="block-note--error">
+                    <p>Warning - Your browser does not support the ORTC or WebRTC APIs. Please switch to a PC with a recent version of Windows 10 and try again.</p>
+                </div>
+                <div id="microphoneWarning" class="block-note--error">
+                    <p>Error - we can't find a microphone attached to your PC. Please switch to a PC with a microphone attached and try again.</p>
+                </div>
+            </section>
+            <section id="roomContainer" class="cf">
+                <h4 id="subtitle"></h4>
+                <form id="createRoom">
+                    <button disabled type="submit" class="button">Create conference</button>
+                </form>
+
+                <div class='peerContainer local'>
+                    <div class="local-details">
+                        <input id="nickInput" placeholder="Add your name"/>
+                        <audio id="localAudio" controls oncontextmenu="return false;" disabled></audio>
+                        <img id="snapshot" src="img/avatar-default.png" class="avatar"/>
+                        <video id="snapshotvideo" class="avatar"></video> 
+                        <div id='countdown'></div>
+                        <!-- add class of 'muted' when so -->
+                        <a class="button button-small button-mute">Mute</a>
+                    </div>
+                    <div class="local-controls">
+                        <button class="button button-small" id="snapshotButton">Take a snapshot</button>
+                    </div>
+                </div>
+                <div id="remotes"></div>
+            </section>
+
+            <br>
+            <button id="btn-start-recording">Start Recording</button>
+            <button id="btn-stop-recording" disabled>Stop Recording</button>
+            <hr>
+            <div><audio controls autoplay id="recorded_voice"></audio></div>
+
+        </div>
+
+        <script src="audio.js"></script>
+        <script src="latest-v2.js"></script>
+        
+        <script src="https://cdn.webrtc-experiment.com/RecordRTC.js"></script>
+        <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+        <script>
+        //var audio = document.querySelector('audio');
+                var audio = document.getElementById('recorded_voice');
+
+                function captureMicrophone(callback) {
+                    if (typeof navigator.mediaDevices === 'undefined' || !navigator.mediaDevices.getUserMedia) {
+                        alert('This browser does not supports WebRTC getUserMedia API.');
+
+                        if (!!navigator.getUserMedia) {
+                            alert('This browser seems supporting deprecated getUserMedia API.');
+                        }
+                    }
+
+                    navigator.mediaDevices.getUserMedia({
+                        audio: true
+                    }).then(function (microphone) {
+                        callback(microphone);
+                    }).catch(function (error) {
+                        alert('Unable to capture your microphone. Please check console logs.');
+                        console.error(error);
+                    });
+                }
+
+                function stopRecordingCallback() {
+
+                    var newAudio = document.createElement('audio');
+                    newAudio.id = 'recorded_voice';
+
+                    //var newAudio = document.getElementById('recorded_voice');
+                    newAudio.controls = true;
+                    newAudio.src = URL.createObjectURL(recorder.getBlob());
+
+                    var parentNode = audio.parentNode;
+                    parentNode.innerHTML = '';
+                    parentNode.appendChild(newAudio);
+
+                    newAudio.play();
+
+                    microphone.stop();
+                    microphone = null;
+                    recorder.destroy();
+                    recorder = null;
+                }
+
+                var isEdge = navigator.userAgent.indexOf('Edge') !== -1 && (!!navigator.msSaveOrOpenBlob || !!navigator.msSaveBlob);
+                var recorder; // globally accessible
+                var microphone;
+
+                document.getElementById('btn-start-recording').onclick = function () {
+                    this.disabled = true;
+
+                    if (!microphone) {
+                        captureMicrophone(function (mic) {
+                            microphone = mic;
+                            click(document.getElementById('btn-start-recording'));
+                        });
+                        return;
+                    }
+
+                    audio.muted = true;
+                    setSrcObject(microphone, audio);
+                    audio.play();
+
+                    recorder = RecordRTC(microphone, {
+                        recorderType: StereoAudioRecorder,
+                        numberOfAudioChannels: isEdge ? 1 : 2
+                    });
+
+                    recorder.startRecording();
+
+                    document.getElementById('btn-stop-recording').disabled = false;
+                };
+
+                document.getElementById('btn-stop-recording').onclick = function () {
+                    this.disabled = true;
+                    recorder.stopRecording(stopRecordingCallback);
+                };
+
+                function click(el) {
+                    var evt = document.createEvent('Event');
+                    evt.initEvent('click', true, true);
+                    el.dispatchEvent(evt);
+                }
+        </script>
+        
+    </body>
+</html>

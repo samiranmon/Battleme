@@ -80,6 +80,8 @@ $form_attr = array('name' => 'battle_media', 'id' => 'battle_media', 'class' => 
 //print_r($voterVotes);
 
 
+//echo $_SERVER["DOCUMENT_ROOT"] ;
+
 $song_array = [];
 if (isset($own_songs) && !empty($own_songs)) {
     foreach ($own_songs as $songKey => $songValue) {
@@ -92,7 +94,7 @@ if (isset($own_songs) && !empty($own_songs)) {
 
             if (file_exists('/home2/pranay/public_html/samiran/battleme/' . $media)) {
                 $song_array[] = [base_url() . $media, $title, $song_id];
-            } else if (file_exists($_SERVER["DOCUMENT_ROOT"] . '/battleme/' . $media)) {
+            } else if (file_exists(getcwd().'/'. $media)) {
                 $song_array[] = [base_url() . $media, $title, $song_id];
             }
     }
