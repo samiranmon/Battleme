@@ -296,6 +296,7 @@ class Battle extends CI_Controller {
                         'upload_path' => $this->config->item('library_media_path'),
                         //'allowed_types' => '3gp|aa|aac|aax|act|aiff|amr|ape|au|awb|dct|dss|dvf|flac|gsm|iklax|ivs|m4a|m4b|m4p|mmf|mp3|mpc|msv|ogg|oga|mogg|opus|ra|rm|raw|sln|tta|vox|wav|wma|wv|webm|mp4|mp4|ogg|webm|avi|flv',
                         'allowed_types' => '*',
+                        'encrypt_name'  => TRUE,
                         'max_size' => '1024159'
                     );
 
@@ -490,6 +491,7 @@ class Battle extends CI_Controller {
                             'upload_path' => $this->config->item('library_media_path'),
                             //'allowed_types' => '3gp|aa|aac|aax|act|aiff|amr|ape|au|awb|dct|dss|dvf|flac|gsm|iklax|ivs|m4a|m4b|m4p|mmf|mp3|mpc|msv|ogg|oga|mogg|opus|ra|rm|raw|sln|tta|vox|wav|wma|wv|webm|mp4|ogg|webm|avi|flv',
                             'allowed_types' => '*',
+                            'encrypt_name'  => TRUE,
                             'max_size' => '1024159'
                         );
                         
