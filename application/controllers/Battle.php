@@ -813,6 +813,7 @@ class Battle extends CI_Controller {
             if($this->battles->is_notify($battle_id) == FALSE) {
                 
                 $result_array = $this->battles->get_timediff($battle_id);
+                
                 if($result_array != false) {
                     
                     if($result_array['date_diff'] >=0 && $result_array['date_diff'] < 1) {
