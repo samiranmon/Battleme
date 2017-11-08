@@ -13,6 +13,9 @@
         <link rel="stylesheet" href="<?php echo base_url(); ?>public/css/jquery.mCustomScrollbar.css">
         <link href="<?php echo base_url(); ?>public/css/battle_page_style.css" rel="stylesheet" type="text/css">
         
+        <!--For audio chat-->
+        <link rel="stylesheet" href="<?php echo base_url('public/js/audio_chat/audio.css'); ?>" />
+        
         <style type="text/css">
             .leftSVG,
             .rightSVG {
@@ -75,4 +78,4 @@
         <script src="<?php echo base_url('public/js/jquery.min.js'); ?>"></script>
     </head>
 
-    <body>
+    <body onload='GUM()'>

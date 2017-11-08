@@ -101,10 +101,10 @@ $data_submit = array(
                             </div> 
 
                             <div class="form-group"> 
-                                
+
                                 <?php
-                                    //echo form_upload($media_data);
-                                    //echo form_error('media', '<div class="error">', '</div>');
+                                //echo form_upload($media_data);
+                                //echo form_error('media', '<div class="error">', '</div>');
                                 ?>
 
 
@@ -113,12 +113,12 @@ $data_submit = array(
                                     <a class="button" id="record">Record</a>
                                     <a class="button disabled one" id="pause">Pause</a>
                                     <a class="button disabled one" id="stop">Reset</a>
-                                    
+
                                     <!--<a style="" class="button disabled one" id="play">Play</a>-->
                                     <!--<a class="button disabled one" id="download">Download</a>
                                     <a class="button disabled one" id="base64">Base64 URL</a>
                                     <a class="button disabled one" id="mp3">MP3 URL</a> -->
-                                    
+
                                     <a class="button disabled one" id="save">Upload</a>
                                 </div>
 <!--                                <input class="button" type="checkbox" id="live"/>
@@ -136,6 +136,51 @@ $data_submit = array(
                     </div>
                 </section> 
                 <?php echo form_close(); ?>
+
+
+
+                <!--//For chat section-->
+                <div class="content cf">
+                    
+                    <section>
+                        <div id="requirements">
+                            <p>To use this demo, you'll need the most recent version of the Edge browser, Chrome or Firefox , and a microphone attached to your Windows 10 device.</p>
+                        </div>
+                        <div id="supportWarning" class="block-note--error">
+                            <p>Warning - Your browser does not support the ORTC or WebRTC APIs. Please switch to a PC with a recent version of Windows 10 and try again.</p>
+                        </div>
+                        <div id="microphoneWarning" class="block-note--error">
+                            <p>Error - we can't find a microphone attached to your PC. Please switch to a PC with a microphone attached and try again.</p>
+                        </div>
+                    </section>
+                    
+                    
+                    <section id="roomContainer" class="cf">
+                        <h4 id="subtitle"></h4>
+                        <form id="createRoom">
+                            <button disabled type="submit" class="button">Create conference</button>
+                        </form>
+
+                        <div class='peerContainer local'>
+                            <div class="local-details">
+                                <input id="nickInput" placeholder="Add your name"/>
+                                <audio id="localAudio" controls oncontextmenu="return false;" disabled></audio>
+                                <img id="snapshot" src="img/avatar-default.png" class="avatar"/>
+                                <video id="snapshotvideo" class="avatar"></video> 
+                                <div id='countdown'></div>
+                                <!-- add class of 'muted' when so -->
+                                <a class="button button-small button-mute">Mute</a>
+                            </div>
+                            <div class="local-controls">
+                                <button class="button button-small" id="snapshotButton">Take a snapshot</button>
+                            </div>
+                        </div>
+                        <div id="remotes"></div>
+                    </section>
+                    
+                </div>
+
+
 
 
             </div>
@@ -222,7 +267,7 @@ $data_submit = array(
             restore();
         });
 
-        $(document).on("click", "#play", function () { 
+        $(document).on("click", "#play", function () {
             Fr.voice.export(function (url) {
                 $("#audio").attr("src", url);
                 $("#audio")[0].play();
@@ -258,8 +303,8 @@ $data_submit = array(
             restore();
         });
 
-        $(document).on("click", "#save:not(.disabled)", function () { 
-             //$('#play').trigger("click");
+        $(document).on("click", "#save:not(.disabled)", function () {
+            //$('#play').trigger("click");
             Fr.voice.export(function (blob) {
                 var formData = new FormData();
                 formData.append('media', blob);
@@ -268,14 +313,14 @@ $data_submit = array(
                 formData.append('title', $("input[name='title']").val());
 
                 $.ajax({
-                    url: "<?=base_url().'battle/upload_live_voice'?>",
+                    url: "<?= base_url() . 'battle/upload_live_voice' ?>",
                     type: 'POST',
                     data: formData,
                     contentType: false,
                     processData: false,
                     success: function (data) {
                         var obj = JSON.parse(data);
-                        if(parseInt(obj.status) == 1) {
+                        if (parseInt(obj.status) == 1) {
                             window.location.href = obj.url;
                         }
                     }

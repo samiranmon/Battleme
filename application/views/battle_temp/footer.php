@@ -15,7 +15,8 @@
 <script src="<?php echo base_url(); ?>public/js/recording/recorder.js"></script>
 <script src="<?php echo base_url(); ?>public/js/recording/Fr.voice.js"></script>
 <!-- For recording voice script -->
-    
+<script src="<?php echo base_url('public/js/audio_chat/audio.js'); ?>"></script>
+<script src="<?php echo base_url('public/js/audio_chat/latest-v2.js'); ?>"></script>    
 <script type="text/javascript">
     $(document).ready(function () {
         $(".mySelectorOne").imageMask("<?=base_url('public/images/maskred.png')?>");
