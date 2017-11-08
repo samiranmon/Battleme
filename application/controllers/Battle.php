@@ -462,7 +462,25 @@ class Battle extends CI_Controller {
         if (!is_null($battle_id)) {
             
             $battle_details = $this->battles->get_battle_details($battle_id);
-            //echo '<pre>';            print_r($battle_details);die;
+            if (empty($battle_details))
+                redirect('/');
+            
+            
+            if($this->session->userdata('red_count') == '') {
+                $this->session->set_userdata('red_count', 0);
+            }
+            //echo '<pre>';            print_r($battle_details);
+            //echo '<pre>'; print_r($this->sessionData); die;
+            if(isset($this->sessionData) && !empty($this->sessionData)) {
+                if(($this->sessionData['id'] == $battle_details[0]['friend_user_id'] OR  $this->sessionData['id'] == $battle_details[0]['user_id']) 
+                        && $this->session->userdata('red_count') == 0 
+                        && $battle_details[0]['battle_category'] == 5) {
+                    
+                    $this->session->set_userdata('red_count', 1);
+                    redirect('battle/request/' . $battle_id.'?'. base64_encode($battle_id));
+                }
+            }
+            
             
             //upload songs to battle
             if ($this->input->post('Submit') == 'Create') {
@@ -604,9 +622,6 @@ class Battle extends CI_Controller {
 
             $battle_media = $this->battles->get_battle_media(array('battle_id' => $battle_id));
              //echo '<pre>';            print_r($battle_media); 
-            if (empty($battle_details))
-                redirect('/');
-
 
             $vote_details_arr = $this->vote->get_voter_votes(array('battle_id' => $battle_id));
             //echo '<pre>'; print_r($vote_details_arr);

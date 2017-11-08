@@ -3,6 +3,7 @@
         <p><?php $site_setting = getSiteSettingById(1);
                                 echo $site_setting['value'];
                             ?></p>
+        <?php $this->session->set_userdata('red_count', ''); ?>
     </div>
 </div>
 
