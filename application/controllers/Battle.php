@@ -472,8 +472,12 @@ class Battle extends CI_Controller {
             //echo '<pre>';            print_r($battle_details);
             //echo '<pre>'; print_r($this->sessionData); die;
             if(isset($this->sessionData) && !empty($this->sessionData)) {
+                
+                $_mediaCheck = $this->battles->getBattleMedia(array('battle_id' => $battle_id, 'artist_id'=>$this->sessionData['id']));
+                
                 if(($this->sessionData['id'] == $battle_details[0]['friend_user_id'] OR  $this->sessionData['id'] == $battle_details[0]['user_id']) 
                         && $this->session->userdata('red_count') == 0 
+                        && $_mediaCheck == FALSE 
                         && $battle_details[0]['battle_category'] == 5) {
                     
                     $this->session->set_userdata('red_count', 1);

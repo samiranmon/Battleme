@@ -139,6 +139,19 @@
 	return($result->result_array());
     }
     
+    public function  getBattleMedia($whereArr = array())
+    {
+	if(!empty($whereArr))
+	    $this->db->where($whereArr);
+	$this->db->select('fk_song_id');
+	$result = $this->db->get('battle_media');
+        if( $result->num_rows() > 0 ) {
+            return TRUE;
+        } else {
+            return FALSE;
+        }
+    }
+    
     /**
      * get_running_battle
      * this function returns the running battle 

@@ -108,13 +108,13 @@ $data_submit = array(
                                 ?>
 
 
-                                <!--<audio controls src="" id="audio"></audio>-->
+                                <audio controls src="" id="audio"></audio>
                                 <div style="margin:10px;">
                                     <a class="button" id="record">Record</a>
                                     <a class="button disabled one" id="pause">Pause</a>
                                     <a class="button disabled one" id="stop">Reset</a>
 
-                                    <!--<a style="" class="button disabled one" id="play">Play</a>-->
+                                    <a style="" class="button disabled one" id="play">Play</a>
                                     <!--<a class="button disabled one" id="download">Download</a>
                                     <a class="button disabled one" id="base64">Base64 URL</a>
                                     <a class="button disabled one" id="mp3">MP3 URL</a> -->
@@ -126,7 +126,13 @@ $data_submit = array(
                                 <canvas id="level" height="200" width="500"></canvas>
 
 
-
+                                <div class="progress" style="display: none">
+                                    <div class="progress-bar" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" style="width:80%">
+                                      <span class="sr-only">70% Complete</span>
+                                    </div>
+                                </div>
+                                
+                                
                             </div> 
                         </div> 
 
@@ -140,8 +146,7 @@ $data_submit = array(
 
 
                 <!--//For chat section-->
-                <div class="content cf">
-                    
+                <div class="" style="display: none;">
                     <section>
                         <div id="requirements">
                             <p>To use this demo, you'll need the most recent version of the Edge browser, Chrome or Firefox , and a microphone attached to your Windows 10 device.</p>
@@ -154,9 +159,7 @@ $data_submit = array(
                         </div>
                     </section>
                     
-                    
-                    <section id="roomContainer" class="cf">
-                        <h4 id="subtitle"></h4>
+                    <section id="roomContainer" >
                         <form id="createRoom">
                             <button disabled type="submit" class="button">Create conference</button>
                         </form>
@@ -175,9 +178,9 @@ $data_submit = array(
                                 <button class="button button-small" id="snapshotButton">Take a snapshot</button>
                             </div>
                         </div>
+                        
                         <div id="remotes"></div>
                     </section>
-                    
                 </div>
 
 
@@ -328,6 +331,23 @@ $data_submit = array(
             }, "blob");
             restore();
         });
+        
+        
+        // For check room is created
+        var loopCount = 0;
+        var checkRoom = function() {
+            
+             if( $('#remotes').is(':empty') ) {
+                $('.progress').hide();
+            } else {
+                if(loopCount == 0) {
+                   $('.progress').show();
+                }
+                loopCount = 1;
+            }
+          };
+        setInterval(checkRoom, 1000);
+        
         
     });
 </script>

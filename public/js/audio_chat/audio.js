@@ -25,7 +25,7 @@ function setRoom(name) {
     if (document.querySelector('form#createRoom')) {
         document.querySelector('form#createRoom').remove();
     }
-    document.getElementById('subtitle').textContent =  'Link to join: ' + (framed ? document.referrer + (hasroom ? '' : '?' + name) : window.parent.location.href);
+    //document.getElementById('subtitle').textContent =  'Link to join: ' + (framed ? document.referrer + (hasroom ? '' : '?' + name) : window.parent.location.href);
 }
 
 function generateRoomName() {
