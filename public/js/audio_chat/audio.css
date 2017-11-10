@@ -233,11 +233,11 @@ hr {
 }
 
 .local-details {
-  min-height: 208px;
+/*  min-height: 208px;
   margin-bottom: 15px;
   padding: 5px;
   position: relative;
-  border: 1px solid #e6eaed;
+  border: 1px solid #e6eaed;*/
 }
 
 .nick {
@@ -257,9 +257,8 @@ hr {
 
 .button-mute {
   width: 30px;
-  position: absolute;
+ 
   bottom: 10px;
-  right: 10px;
   background: #828c8f url('../img/icons.svg') no-repeat center 5px;
   text-indent: -9999em;
   line-height: 1;

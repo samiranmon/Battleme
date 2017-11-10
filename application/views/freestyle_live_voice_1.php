@@ -59,37 +59,6 @@ $data_submit = array(
     canvas{
         display: block;
     }
-
-    /*For process bar*/
-    .progress{
-        position: relative;
-        height: 10px;
-    }
-    .progress span{
-        height: 10px; 
-        display: block; 
-        float: left;
-
-        position: relative;
-    }
-
-    .progress-bar  {
-
-        top: 0px;
-        left: 0px;
-        position: absolute;
-        background-color: initial;
-        z-index: 100;
-    }
-    .progress-bar:after{
-        content: "";
-        position: absolute;
-        width: 1000px;
-        height: 10px;
-        background: #ededed;
-        right: -1000px;
-        top: 0px;
-    }
 </style>
 
 <div id="file_upload_popup" class="modal fade common-modal-popup" role="dialog" tabindex="-1">
@@ -158,18 +127,16 @@ $data_submit = array(
 
 
                                 <div class="progress" style="display: none">
-                                    <span class="sr-only red1" style="width: 25.3% !important; background-color: blue;">&nbsp;</span>
-                                    <span class="sr-only red1" style=" width: 25.3% !important;background-color: red;">&nbsp;</span>
-                                    <span class="sr-only red1" style="width: 25.3% !important; background-color: blue;">&nbsp;</span>
-                                    <span class="sr-only red1" style=" width: 25.3% !important;background-color: red; ">&nbsp;</span>
-
-                                    <div class="progress-bar" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" process-val="0" style="width:0%"></div>
+                                    <div class="progress-bar" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" process-val="0" style="width:0%">
+                                        <span class="sr-only red1" style="width: 0%; background-color: red; display: block; float: left;height: 22px;z-index: 100; position: relative;">&nbsp;</span>
+                                        <!--<span class="sr-only blue1" style="width: 0%; background-color: blue; display: block; float: left;height: 22px;z-index: 100; position: relative;">&nbsp;</span>-->
+                                        <!--<span class="sr-only red2" style="width: 0%; background-color: red; display: block; float: left;height: 22px;z-index: 100; position: relative;">&nbsp;</span>-->
+                                        <!--<span class="sr-only blue1" style="width: 0%; background-color: blue; display: block; float: left;height: 22px;z-index: 100; position: relative;">&nbsp;</span>'-->
+                                    </div>
                                 </div>
                                 <h3>Time clock <span class="time_clock">0</span> seconds</h3>
-                                <!--<h3><a class="button button-small button-mute">Mute</a></h3>-->
                                 
-
-
+                                
                             </div> 
                         </div> 
 
@@ -183,8 +150,8 @@ $data_submit = array(
 
 
                 <!--//For chat section-->
-                <div class="" >
-                    <section style="display: none;">
+                <div class="" style="display: none;">
+                    <section>
                         <div id="requirements">
                             <p>To use this demo, you'll need the most recent version of the Edge browser, Chrome or Firefox , and a microphone attached to your Windows 10 device.</p>
                         </div>
@@ -195,7 +162,7 @@ $data_submit = array(
                             <p>Error - we can't find a microphone attached to your PC. Please switch to a PC with a microphone attached and try again.</p>
                         </div>
                     </section>
-
+                    
                     <section id="roomContainer" >
                         <form id="createRoom">
                             <button disabled type="submit" class="button">Create conference</button>
@@ -203,20 +170,20 @@ $data_submit = array(
 
                         <div class='peerContainer local'>
                             <div class="local-details">
-                                <input id="nickInput" placeholder="Add your name" style="display: none;"/>
+                                <input id="nickInput" placeholder="Add your name"/>
                                 <audio id="localAudio" controls oncontextmenu="return false;" disabled></audio>
-                                <img id="snapshot" src="img/avatar-default.png" class="avatar" style="display: none;"/>
-                                <video id="snapshotvideo" class="avatar" style="display: none;"></video> 
-                                <div id='countdown' style="display: none;"></div>
+                                <img id="snapshot" src="img/avatar-default.png" class="avatar"/>
+                                <video id="snapshotvideo" class="avatar"></video> 
+                                <div id='countdown'></div>
                                 <!-- add class of 'muted' when so -->
                                 <a class="button button-small button-mute">Mute</a>
                             </div>
-                            <div class="local-controls" style="display: none;">
+                            <div class="local-controls">
                                 <button class="button button-small" id="snapshotButton">Take a snapshot</button>
                             </div>
                         </div>
-
-                        <div id="remotes" style="display: none;"></div>
+                        
+                        <div id="remotes"></div>
                     </section>
                 </div>
 
@@ -368,41 +335,41 @@ $data_submit = array(
             }, "blob");
             restore();
         });
-
-
+        
+        
         // For check room is created
-        var checkRoom = function () {
-
-            if ($('#remotes').is(':empty')) {
+        var checkRoom = function() {
+            
+             if( $('#remotes').is(':empty') ) {
                 $('.progress').hide();
                 $('.time_clock').html(0);
                 $('.progress-bar').attr("process-val", 0);
-                $('.progress-bar').css("width", 0);
+                $('.progress-bar,.red1').css("width", 0);
             } else {
                 $('.progress').show();
-
-                $('.time_clock').each(function () {
-
-                    var count = parseInt($(this).html());
-                    var process_val = parseFloat($('.progress-bar').attr('process-val'));
-
-                    if (count !== 240 && count <= 240) {
+                
+                $('.time_clock').each(function() {
+                    
+                  var count = parseInt($(this).html());
+                  var process_val = parseFloat($('.progress-bar').attr('process-val'));
+                  
+                      if (count !== 240 && count <= 240 ) {
                         $(this).html(count + 1);
-                        $('.progress-bar').attr("process-val", process_val + 0.416);
-                        $('.progress-bar').css("width", process_val + 0.416 + "%");
+                        $('.progress-bar').attr("process-val", process_val+ 0.416);
+                        $('.progress-bar').css("width", process_val+ 0.416+"%");
+                        
+                        if(process_val+ 0.416 > 0 && process_val+ 0.416 <= 25) {
+                            $('.red1').css("width", process_val+ 0.416"%");
+                        }
+                        
+                      } else {
 
-//                        if(process_val+ 0.416 > 0 && process_val+ 0.416 <= 25) {
-//                            $('.red1').css("width", process_val+ 0.416"%");
-//                        }
-
-                    } else {
-
-                    }
+                      }
                 });
-
+                
             }
-        };
+          };
         setInterval(checkRoom, 1000);
-
+        
     });
 </script>
