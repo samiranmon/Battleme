@@ -769,7 +769,12 @@ if(($user_id == $battle_details['friend_user_id'] OR  $user_id == $battle_detail
         
     <?php  if($battle_details['status'] == 1 && ($user_id == $battle_details['friend_user_id'] OR  $user_id == $battle_details['user_id']) && $media_count == 0) { ?>
      $(window).load(function(){
-        $('#file_upload_popup').modal('show');
+         $('#file_upload_popup').modal({
+            backdrop: 'static',
+            keyboard: false,
+            show: true
+        });
+        //$('#file_upload_popup').modal('show');
     });
     <?php } ?>
         
@@ -983,7 +988,13 @@ $('#count_down_popup').on('shown.bs.modal', function () {
         $(this).html(count - 1);
       } else {
           $('#count_down_popup').modal('hide');
-          $('#file_upload_popup').modal('show');
+          //$('#file_upload_popup').modal('show');
+          
+          $('#file_upload_popup').modal({
+            backdrop: 'static',
+            keyboard: false,
+            show: true
+        });
       }
       
       

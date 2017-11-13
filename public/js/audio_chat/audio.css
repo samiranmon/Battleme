@@ -259,7 +259,7 @@ hr {
   width: 30px;
  
   bottom: 10px;
-  background: #828c8f url('../img/icons.svg') no-repeat center 5px;
+  background: #828c8f url('mute.png') no-repeat center 5px;
   text-indent: -9999em;
   line-height: 1;
   visibility: hidden;

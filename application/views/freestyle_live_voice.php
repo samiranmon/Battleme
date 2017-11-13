@@ -1,4 +1,6 @@
 <?php
+$sess_data = get_session_data();
+
 $form_attr = array('name' => 'battle_media', 'id' => 'battle_media', 'class' => '', 'data-validate' => 'parsley',);
 $title_data = array(
     'name' => 'title',
@@ -31,7 +33,7 @@ $data_submit = array(
         display: inline-block;
         vertical-align: middle;
         margin: 0px 5px;
-        padding: 5px 12px;
+        padding: 13px 46px;
         cursor: pointer;
         outline: none;
         font-size: 13px;
@@ -98,7 +100,7 @@ $data_submit = array(
         <div class="modal-content">
 
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button> 
+                <!--<button type="button" class="close" data-dismiss="modal">&times;</button>--> 
                 <h4 class="modal-title">Upload your voice</h4>
             </div>
 
@@ -158,11 +160,10 @@ $data_submit = array(
 
 
                                 <div class="progress" style="display: none">
-                                    <span class="sr-only red1" style="width: 25.3% !important; background-color: blue;">&nbsp;</span>
                                     <span class="sr-only red1" style=" width: 25.3% !important;background-color: red;">&nbsp;</span>
                                     <span class="sr-only red1" style="width: 25.3% !important; background-color: blue;">&nbsp;</span>
                                     <span class="sr-only red1" style=" width: 25.3% !important;background-color: red; ">&nbsp;</span>
-
+                                    <span class="sr-only red1" style="width: 25.3% !important; background-color: blue;">&nbsp;</span>
                                     <div class="progress-bar" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" process-val="0" style="width:0%"></div>
                                 </div>
                                 <h3>Time clock <span class="time_clock">0</span> seconds</h3>
@@ -209,7 +210,7 @@ $data_submit = array(
                                 <video id="snapshotvideo" class="avatar" style="display: none;"></video> 
                                 <div id='countdown' style="display: none;"></div>
                                 <!-- add class of 'muted' when so -->
-                                <a class="button button-small button-mute">Mute</a>
+                                <a id="mute_button" class="button button-small button-mute" style="pointer-events: none; cursor: default;">Mute</a>
                             </div>
                             <div class="local-controls" style="display: none;">
                                 <button class="button button-small" id="snapshotButton">Take a snapshot</button>
@@ -378,6 +379,7 @@ $data_submit = array(
                 $('.time_clock').html(0);
                 $('.progress-bar').attr("process-val", 0);
                 $('.progress-bar').css("width", 0);
+                $('#mute_button').hide();
             } else {
                 $('.progress').show();
 
@@ -390,10 +392,23 @@ $data_submit = array(
                         $(this).html(count + 1);
                         $('.progress-bar').attr("process-val", process_val + 0.416);
                         $('.progress-bar').css("width", process_val + 0.416 + "%");
-
-//                        if(process_val+ 0.416 > 0 && process_val+ 0.416 <= 25) {
-//                            $('.red1').css("width", process_val+ 0.416"%");
-//                        }
+                        $('#mute_button').show();
+                              
+                        if(count > 0 && count <= 1) {
+                           <?php if($sess_data['id'] == $battle_details['friend_user_id']) { ?>  
+                                 $('#mute_button').trigger('click');
+                           <?php } ?>  
+                        } else if(count > 59 && count <= 60) {
+                                 $('#mute_button').trigger('click');
+                        } else if(count > 119 && count <= 120) {
+                            $('#mute_button').trigger('click');
+                        } else if(count > 179 && count <= 180) {
+                            $('#mute_button').trigger('click');
+                        } else if(count > 238 && count <= 239) { 
+                            <?php if($sess_data['id'] == $battle_details['friend_user_id']) { ?>
+                                $('#mute_button').trigger('click');
+                            <?php } ?>
+                        }
 
                     } else {
 
