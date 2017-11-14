@@ -148,8 +148,8 @@ $data_submit = array(
                                     <a class="button disabled one" id="stop">Reset</a>
 
                                     <a style="" class="button disabled one" id="play">Play</a>
-                                    <!--<a class="button disabled one" id="download">Download</a>
-                                    <a class="button disabled one" id="base64">Base64 URL</a>
+                                    <a class="button disabled one" id="download">Download</a>
+                                    <!--<a class="button disabled one" id="base64">Base64 URL</a>
                                     <a class="button disabled one" id="mp3">MP3 URL</a> -->
 
                                     <a class="button disabled one" id="save">Upload</a>
@@ -420,4 +420,15 @@ $data_submit = array(
         setInterval(checkRoom, 1000);
 
     });
+    
+    
+    window.onbeforeunload = function(){
+      myfun();
+      return 'Are you sure you want to leave?';
+    };
+    
+    function myfun(){
+         // Write your business logic here
+        // console.log('hello');
+    }
 </script>
