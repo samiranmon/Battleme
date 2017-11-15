@@ -317,7 +317,7 @@ $data_submit = array(
         });
 
         $(document).on("click", "#download:not(.disabled)", function () {
-            Fr.voice.export(function (url) {
+            Fr.voice.export(function (url) { alert(url);
                 $("<a href='" + url + "' download='MyRecording.wav'></a>")[0].click();
             }, "URL");
             restore();
@@ -363,6 +363,10 @@ $data_submit = array(
                         var obj = JSON.parse(data);
                         if (parseInt(obj.status) == 1) {
                             window.location.href = obj.url;
+                        }
+                        if (parseInt(obj.status) == 0) {
+                            alert("Error!");
+                            //window.location.href = obj.url;
                         }
                     }
                 });

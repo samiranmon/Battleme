@@ -14,5 +14,6 @@ $config['twitter_secret_key'] = 'PZNyeHbbyhN3WvN1pC5OCfrRTZnAhNUCQ8ssE96HB6XHKfv
 $config['battle_media_path']  =  'uploads/battle/media/' ;
 $config['library_media_path'] =  'uploads/library/' ;
 $config['post_media_path']    =  'uploads/post/' ;
+$config['freestyle_composer']    =  'uploads/freestyle_composer/';
 
 

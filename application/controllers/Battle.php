@@ -930,7 +930,7 @@ class Battle extends CI_Controller {
         
         if ($this->input->post('Submit') == 'Upload') {
                 $return_status = [];
-                $this->form_validation->set_rules('title', 'Title', 'trim|required');
+                //$this->form_validation->set_rules('title', 'Title', 'trim|required');
                 $this->form_validation->set_rules('battle_id', 'Battle ID', 'trim|required');
                 if (empty($_FILES['media']['name'])) {
                     $this->form_validation->set_rules('media', 'Song', 'trim|required');
@@ -940,9 +940,37 @@ class Battle extends CI_Controller {
                 $user_id = $sess_data['id'];
                 $battle_id = $this->input->post('battle_id');
                 
-                if ($this->form_validation->run() == TRUE and !$_FILES['media']['error']) {
+                if ($this->form_validation->run() == TRUE ) {
                     
-                    //echo '<pre>'; print_r($_FILES); die;
+                    $one = $this->config->item('freestyle_composer').'248b38898eea2ab53f98a650f5e29980';
+                    $two = $this->config->item('freestyle_composer').'9f0d4e79bdd34c0dcac5544a88ef7b5f';
+                    $finl_dest = $this->config->item('freestyle_composer').'test1.mp3';
+                    
+                    //shell_exec("/usr/local/bin/ffmpeg -i ".$source." -acodec libvorbis -vcodec libtheora -f ogg ".$cont_file_path." 2>&1");
+                    //echo shell_exec("/usr/local/bin/ffmpeg -i ".$one." -i ".$two." -filter_complex amerge -ac 2 -c:a libmp3lame -q:a 4 ".$finl_dest." 2>&1");
+                    echo shell_exec("/usr/local/bin/ffmpeg -i ".$one." -i ".$two." -filter_complex '[0:0][1:0]concat=n=2:v=0:a=1[out]' -map '[out]' ".$finl_dest." 2>&1");
+                    die;
+                    
+                    $mediaConfig = array(
+                            'upload_path' => $this->config->item('freestyle_composer'),
+                            //'allowed_types' => '3gp|aa|aac|aax|act|aiff|amr|ape|au|awb|dct|dss|dvf|flac|gsm|iklax|ivs|m4a|m4b|m4p|mmf|mp3|mpc|msv|ogg|oga|mogg|opus|ra|rm|raw|sln|tta|vox|wav|wma|wv|webm|mp4|ogg|webm|avi|flv',
+                            'allowed_types' => '*',
+                            'encrypt_name'  => TRUE,
+                            'max_size' => '1024159'
+                        );
+                        
+                    $uploadAck = $this->common_lib->upload_custom_media('media', $mediaConfig);
+                    echo '<pre>'; print_r($uploadAck); die;
+                    
+                    if (isset($uploadAck['file_name']) && isset($uploadAck['file_type'])) {
+                        
+                    }
+                    
+                    
+                    
+                    echo $this->config->item(''); die;
+                    
+                    echo '<pre>'; print_r($_FILES); 
 
                     $filename = time().".wav";
                     move_uploaded_file($_FILES['media']['tmp_name'], $this->config->item('library_media_path') . $filename);
@@ -988,9 +1016,12 @@ class Battle extends CI_Controller {
                         echo json_encode($return_status); die();
                     }
                 } else {
+                    
+                    echo '<pre>'; print_r(validation_errors()); die();
+                    
                     $this->session->set_flashdata('class', 'alert-danger');
                     $this->session->set_flashdata('message', validation_errors());
-                    $return_status = ['status'=>1, 'url'=>  base_url().'battle/request/' . $battle_id];
+                    $return_status = ['status'=>0, 'url'=>  base_url().'battle/request/' . $battle_id];
                     echo json_encode($return_status); die();
                 }
             }
