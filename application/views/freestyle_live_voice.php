@@ -124,6 +124,7 @@ $data_submit = array(
                         <div class="form-group"> 
                             <input name="challenger_user_id" value="<?= $battle_details['user_id'] ?>" type="hidden">
                             <input type="hidden" name="battle_id" value="<?= $battle_details['battle_request_id'] ?>">
+                            <input type="hidden" name="media_count" value="0">
 
                             <div class="form-group"> 
                                 <label>Title</label> 
@@ -142,7 +143,7 @@ $data_submit = array(
 
 
                                 <audio controls src="" id="audio"></audio>
-                                <div style="margin:10px;">
+                                <div style="margin:10px; display: none;">
                                     <a class="button" id="record">Record</a>
                                     <a class="button disabled one" id="pause">Pause</a>
                                     <a class="button disabled one" id="stop">Reset</a>
@@ -352,6 +353,8 @@ $data_submit = array(
                 formData.append('Submit', 'Upload');
                 formData.append('battle_id', $("input[name='battle_id']").val());
                 formData.append('title', $("input[name='title']").val());
+                formData.append('media_count', $("input[name='media_count']").val());
+                
 
                 $.ajax({
                     url: "<?= base_url() . 'battle/upload_live_voice' ?>",
@@ -402,16 +405,48 @@ $data_submit = array(
                            <?php if($sess_data['id'] == $battle_details['friend_user_id']) { ?>  
                                  $('#mute_button').trigger('click');
                            <?php } ?>  
+                            
+                            <?php if($sess_data['id'] == $battle_details['user_id']) { ?>
+                                     $('#record:not(.disabled)').trigger('click');
+                            <?php } ?>
+                               
                         } else if(count > 59 && count <= 60) {
                                  $('#mute_button').trigger('click');
+                                 <?php if($sess_data['id'] == $battle_details['user_id']) { ?>
+                                     $("input[name='media_count']").val(1);
+                                     $('#save:not(.disabled)').trigger('click');
+                                 <?php } ?>
+                                     
+                                 <?php if($sess_data['id'] == $battle_details['friend_user_id']) { ?>
+                                         $('#record:not(.disabled)').trigger('click');
+                                <?php } ?>
                         } else if(count > 119 && count <= 120) {
                             $('#mute_button').trigger('click');
+                            <?php if($sess_data['id'] == $battle_details['friend_user_id']) { ?>
+                                 $("input[name='media_count']").val(1);
+                                 $('#save:not(.disabled)').trigger('click');
+                            <?php } ?>
+                            <?php if($sess_data['id'] == $battle_details['user_id']) { ?>
+                                     $('#stop:not(.disabled)').trigger('click');
+                                     $('#record:not(.disabled)').trigger('click');
+                            <?php } ?>
                         } else if(count > 179 && count <= 180) {
                             $('#mute_button').trigger('click');
+                            <?php if($sess_data['id'] == $battle_details['user_id']) { ?>
+                                 $("input[name='media_count']").val(2);
+                                 $('#save:not(.disabled)').trigger('click');
+                            <?php } ?>
+                            <?php if($sess_data['id'] == $battle_details['friend_user_id']) { ?>
+                                  $('#stop:not(.disabled)').trigger('click');
+                                  $('#record:not(.disabled)').trigger('click');
+                            <?php } ?>
                         } else if(count > 238 && count <= 239) { 
                             <?php if($sess_data['id'] == $battle_details['friend_user_id']) { ?>
                                 $('#mute_button').trigger('click');
+                                $("input[name='media_count']").val(2);
+                                $('#save:not(.disabled)').trigger('click');
                             <?php } ?>
+                                $('#stop:not(.disabled)').trigger('click');
                         }
 
                     } else {

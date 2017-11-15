@@ -942,14 +942,14 @@ class Battle extends CI_Controller {
                 
                 if ($this->form_validation->run() == TRUE ) {
                     
-                    $one = $this->config->item('freestyle_composer').'248b38898eea2ab53f98a650f5e29980';
+                   /* $one = $this->config->item('freestyle_composer').'248b38898eea2ab53f98a650f5e29980';
                     $two = $this->config->item('freestyle_composer').'9f0d4e79bdd34c0dcac5544a88ef7b5f';
                     $finl_dest = $this->config->item('freestyle_composer').'test1.mp3';
                     
                     //shell_exec("/usr/local/bin/ffmpeg -i ".$source." -acodec libvorbis -vcodec libtheora -f ogg ".$cont_file_path." 2>&1");
                     //echo shell_exec("/usr/local/bin/ffmpeg -i ".$one." -i ".$two." -filter_complex amerge -ac 2 -c:a libmp3lame -q:a 4 ".$finl_dest." 2>&1");
                     echo shell_exec("/usr/local/bin/ffmpeg -i ".$one." -i ".$two." -filter_complex '[0:0][1:0]concat=n=2:v=0:a=1[out]' -map '[out]' ".$finl_dest." 2>&1");
-                    die;
+                    die; */
                     
                     $mediaConfig = array(
                             'upload_path' => $this->config->item('freestyle_composer'),
