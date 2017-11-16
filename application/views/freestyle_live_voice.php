@@ -143,10 +143,10 @@ $data_submit = array(
                                 </div>
 <!--                                <input class="button" type="checkbox" id="live"/>
                                 <label for="live">Live Output</label>-->
-                                <canvas id="level" height="50" width="500"></canvas>
+                                <canvas id="level" height="150" width="535"></canvas>
 
 
-                                <div class="progress" style="display: none">
+                                <div class="progress" style="display: none; margin-top: 10px;">
                                     <span class="sr-only red1" style=" width: 25.3% !important;background-color: red;">&nbsp;</span>
                                     <span class="sr-only red1" style="width: 25.3% !important; background-color: blue;">&nbsp;</span>
                                     <span class="sr-only red1" style=" width: 25.3% !important;background-color: red; ">&nbsp;</span>
@@ -247,7 +247,7 @@ $data_submit = array(
                 var bufferLength = analyser.frequencyBinCount;
                 var dataArray = new Uint8Array(bufferLength);
 
-                WIDTH = 500, HEIGHT = 200;
+                WIDTH = 535, HEIGHT = 150;
                 canvasCtx = $("#level")[0].getContext("2d");
                 canvasCtx.clearRect(0, 0, WIDTH, HEIGHT);
 
@@ -366,6 +366,7 @@ $data_submit = array(
         });
 
 
+    $('#file_upload_popup').on('shown.bs.modal', function () {
         // For check room is created
         var checkRoom = function () {
 
@@ -375,6 +376,7 @@ $data_submit = array(
                 $('.progress-bar').attr("process-val", 0);
                 $('.progress-bar').css("width", 0);
                 $('#mute_button').hide();
+                $('#stop:not(.disabled)').trigger('click');
             } else {
                 $('.progress').show();
 
@@ -445,6 +447,8 @@ $data_submit = array(
             }
         };
         setInterval(checkRoom, 1000);
+    });    
+        
 
     });
     

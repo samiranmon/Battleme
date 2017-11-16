@@ -947,6 +947,8 @@ $(document).ready(function(){
             });
         });
         
+        
+<?php if($battle_details['status']==4) { ?>        
 // freestyle artist send notification 
 sendNotification();
 setInterval(sendNotification, 15000);
@@ -978,6 +980,8 @@ function autoStartFreestyle() {
         }
     });
 }
+
+<?php } ?>
 
 // count down script
 $('#count_down_popup').on('shown.bs.modal', function () { 
