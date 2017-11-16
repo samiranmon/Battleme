@@ -509,6 +509,30 @@
         }
     }
     
+    public function get_freestyle_media_track($where = []) {
+         $this->db->select('*');
+        $this->db->from('freestyle_media_tracker');
+        $this->db->where($where);
+        $query = $this->db->get();
+
+        if ( $query->num_rows() > 0 ) {
+            return $query->row_array();
+        } else {
+            return false;
+        }
+    }
+    
+    public function set_freestyle_media_track($where = []) {
+        $this->db->insert('freestyle_media_tracker', $where);
+        //$lastid = $this->db->insert_id();
+        return TRUE;
+    }
+    
+    public function delete_freestyle_media_track($where = []) {
+        $this->db->where($where);
+        $this->db->delete('freestyle_media_tracker');
+    }
+    
     
  }
  

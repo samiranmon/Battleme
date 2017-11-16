@@ -101,7 +101,7 @@ $data_submit = array(
 
             <div class="modal-header">
                 <!--<button type="button" class="close" data-dismiss="modal">&times;</button>--> 
-                <h4 class="modal-title">Upload your voice</h4>
+                <h4 class="modal-title">Freestyle Battle</h4>
             </div>
 
             <div class="modal-body">
@@ -116,9 +116,9 @@ $data_submit = array(
                 <?= form_open_multipart('battle/upload_live_voice', $form_attr) ?>
                 <section class="panel-default panel"> 
 
-                    <header class="panel-heading"> 
+<!--                    <header class="panel-heading"> 
                         <span class="h4">Upload Recording</span> 
-                    </header> 
+                    </header> -->
                     <div class="panel-body"> 
 
                         <div class="form-group"> 
@@ -127,23 +127,9 @@ $data_submit = array(
                             <input type="hidden" name="media_count" value="0">
 
                             <div class="form-group"> 
-                                <label>Title</label> 
-                                <?php
-                                echo form_input($title_data);
-                                echo form_error('title', '<div class="error">', '</div>');
-                                ?>
-                            </div> 
-
-                            <div class="form-group"> 
-
-                                <?php
-                                //echo form_upload($media_data);
-                                //echo form_error('media', '<div class="error">', '</div>');
-                                ?>
-
-
-                                <audio controls src="" id="audio"></audio>
+                                
                                 <div style="margin:10px; display: none;">
+                                    <audio controls src="" id="audio"></audio>
                                     <a class="button" id="record">Record</a>
                                     <a class="button disabled one" id="pause">Pause</a>
                                     <a class="button disabled one" id="stop">Reset</a>
@@ -157,7 +143,7 @@ $data_submit = array(
                                 </div>
 <!--                                <input class="button" type="checkbox" id="live"/>
                                 <label for="live">Live Output</label>-->
-                                <canvas id="level" height="200" width="500"></canvas>
+                                <canvas id="level" height="50" width="500"></canvas>
 
 
                                 <div class="progress" style="display: none">
@@ -167,6 +153,7 @@ $data_submit = array(
                                     <span class="sr-only red1" style="width: 25.3% !important; background-color: blue;">&nbsp;</span>
                                     <div class="progress-bar" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" process-val="0" style="width:0%"></div>
                                 </div>
+                                <br>
                                 <h3>Time clock <span class="time_clock">0</span> seconds</h3>
                                 <!--<h3><a class="button button-small button-mute">Mute</a></h3>-->
                                 
@@ -318,7 +305,7 @@ $data_submit = array(
         });
 
         $(document).on("click", "#download:not(.disabled)", function () {
-            Fr.voice.export(function (url) { alert(url);
+            Fr.voice.export(function (url) { 
                 $("<a href='" + url + "' download='MyRecording.wav'></a>")[0].click();
             }, "URL");
             restore();
@@ -365,10 +352,11 @@ $data_submit = array(
                     success: function (data) {
                         var obj = JSON.parse(data);
                         if (parseInt(obj.status) == 1) {
-                            window.location.href = obj.url;
+                            alert('Freestyle battle has been completed');
+                            //window.location.href = obj.url;
                         }
                         if (parseInt(obj.status) == 0) {
-                            alert("Error!");
+                            alert(obj.msg);
                             //window.location.href = obj.url;
                         }
                     }

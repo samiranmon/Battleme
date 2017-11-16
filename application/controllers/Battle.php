@@ -929,102 +929,123 @@ class Battle extends CI_Controller {
     public function upload_live_voice() {
         
         if ($this->input->post('Submit') == 'Upload') {
-                $return_status = [];
-                //$this->form_validation->set_rules('title', 'Title', 'trim|required');
-                $this->form_validation->set_rules('battle_id', 'Battle ID', 'trim|required');
-                if (empty($_FILES['media']['name'])) {
-                    $this->form_validation->set_rules('media', 'Song', 'trim|required');
-                }
-
-                $sess_data = get_session_data();
-                $user_id = $sess_data['id'];
-                $battle_id = $this->input->post('battle_id');
+            
+            $sess_data = get_session_data();
+            $user_id = $sess_data['id'];
+            $return_status = [];
                 
-                if ($this->form_validation->run() == TRUE ) {
-                    
-                   /* $one = $this->config->item('freestyle_composer').'248b38898eea2ab53f98a650f5e29980';
-                    $two = $this->config->item('freestyle_composer').'9f0d4e79bdd34c0dcac5544a88ef7b5f';
-                    $finl_dest = $this->config->item('freestyle_composer').'test1.mp3';
-                    
-                    //shell_exec("/usr/local/bin/ffmpeg -i ".$source." -acodec libvorbis -vcodec libtheora -f ogg ".$cont_file_path." 2>&1");
-                    //echo shell_exec("/usr/local/bin/ffmpeg -i ".$one." -i ".$two." -filter_complex amerge -ac 2 -c:a libmp3lame -q:a 4 ".$finl_dest." 2>&1");
-                    echo shell_exec("/usr/local/bin/ffmpeg -i ".$one." -i ".$two." -filter_complex '[0:0][1:0]concat=n=2:v=0:a=1[out]' -map '[out]' ".$finl_dest." 2>&1");
-                    die; */
-                    
-                    $mediaConfig = array(
-                            'upload_path' => $this->config->item('freestyle_composer'),
-                            //'allowed_types' => '3gp|aa|aac|aax|act|aiff|amr|ape|au|awb|dct|dss|dvf|flac|gsm|iklax|ivs|m4a|m4b|m4p|mmf|mp3|mpc|msv|ogg|oga|mogg|opus|ra|rm|raw|sln|tta|vox|wav|wma|wv|webm|mp4|ogg|webm|avi|flv',
-                            'allowed_types' => '*',
-                            'encrypt_name'  => TRUE,
-                            'max_size' => '1024159'
-                        );
-                        
-                    $uploadAck = $this->common_lib->upload_custom_media('media', $mediaConfig);
-                    echo '<pre>'; print_r($uploadAck); die;
-                    
-                    if (isset($uploadAck['file_name']) && isset($uploadAck['file_type'])) {
-                        
+            $this->form_validation->set_rules('battle_id', 'Battle ID', 'trim|required');
+            if (empty($_FILES['media']['name'])) {
+                $this->form_validation->set_rules('media', 'Song', 'trim|required');
+            }
+                
+            $battle_id = $this->input->post('battle_id');
+            $sequence_number = $this->input->post('media_count');
+                
+            if ($this->form_validation->run() == TRUE && isset($user_id)) {
+                
+                $mediaConfig = array(
+                        'upload_path' => $this->config->item('freestyle_composer'),
+                        //'allowed_types' => '3gp|aa|aac|aax|act|aiff|amr|ape|au|awb|dct|dss|dvf|flac|gsm|iklax|ivs|m4a|m4b|m4p|mmf|mp3|mpc|msv|ogg|oga|mogg|opus|ra|rm|raw|sln|tta|vox|wav|wma|wv|webm|mp4|ogg|webm|avi|flv',
+                        'allowed_types' => '*',
+                        'encrypt_name'  => TRUE,
+                        'max_size' => '1024159'
+                    );
+                
+                if($sequence_number == 1) {
+                    $track_info = $this->battles->get_freestyle_media_track(['battle_id' =>$battle_id, 'user_id'=>$user_id,'sequence_number'=>1]);
+                    if(!empty($track_info)) {
+                        if(file_exists($this->config->item('freestyle_composer').$track_info['filename'])) { 
+                            unlink($this->config->item('freestyle_composer').$track_info['filename']); 
+                           // delete record
+                            $this->battles->delete_freestyle_media_track(['id'=> $track_info['id']]);
+                        }
                     }
-                    
-                    
-                    
-                    echo $this->config->item(''); die;
-                    
-                    echo '<pre>'; print_r($_FILES); 
-
-                    $filename = time().".wav";
-                    move_uploaded_file($_FILES['media']['tmp_name'], $this->config->item('library_media_path') . $filename);
-                    if (!is_array($filename)) {
-                        //save file to users library first
-                        $library_data = array(
-                            'user_id' => $user_id,
-                            'title' => $this->input->post('title'),
-                            'media' => $filename,
-                            'created_date' => date('Y-m-d H:i:s')
-                        );
-                        $library_id = $this->library->insert($library_data);
-                        if ($library_id > 0) {
-                            //save media in battle 
-                            $copyStatus = copy($this->config->item('library_media_path') . $filename, $this->config->item('battle_media_path') . $filename);
-                            $form_data = array(
-                                'battle_id' => $battle_id,
-                                'artist_id' => $user_id,
-                                'fk_song_id' => $library_id,
-                                'created_date' => date('Y-m-d H:i:s')
-                            );
-                            $status = $this->battles->add_battle_media($form_data);
-                            if ($status) {
-                                $this->session->set_flashdata('class', 'alert-success');
-                                $this->session->set_flashdata('success', 'Song has been added to battle');
-                                //redirect('battle/request/' . $battle_id);
+                    /* for upload in freestyle composer directory and insert into track database */
+                     $uploadAck = $this->common_lib->upload_custom_media('media', $mediaConfig);
+                        if (isset($uploadAck['file_name']) && isset($uploadAck['file_type'])) {
+                            $this->battles->set_freestyle_media_track(['battle_id' =>$battle_id, 'user_id'=>$user_id,'sequence_number'=>$sequence_number,'filename'=>$uploadAck['file_name'],'created_on'=>date('Y-m-d H:i:s')]);
+                        }
+                }
+                
+                if($sequence_number == 2) {
+                    //1. file upload
+                    $uploadAck = $this->common_lib->upload_custom_media('media', $mediaConfig);
+                        if (isset($uploadAck['file_name']) && isset($uploadAck['file_type'])) {
+                            
+                            $track_info = $this->battles->get_freestyle_media_track(['battle_id' =>$battle_id, 'user_id'=>$user_id,'sequence_number'=>1]);
+                            if(!empty($track_info)) {
                                 
-                                $return_status = ['status'=>1, 'url'=>  base_url().'battle/request/' . $battle_id];
-                                echo json_encode($return_status); die();
+                                $first_media = $this->config->item('freestyle_composer').$track_info['filename'];
+                                $second_media = $this->config->item('freestyle_composer').$uploadAck['file_name'];
+                                
+                                $filename = time().".mp3";
+                                $finl_dest = $this->config->item('library_media_path').$filename;
+                                shell_exec("/usr/local/bin/ffmpeg -i ".$first_media." -i ".$second_media." -filter_complex '[0:0][1:0]concat=n=2:v=0:a=1[out]' -map '[out]' ".$finl_dest." 2>&1");
+                                
+                                if(file_exists($finl_dest)) { 
+                                    
+                                    //save file to users library first
+                                    $library_data = array(
+                                        'user_id' => $user_id,
+                                        'title' => $this->input->post('title'),
+                                        'media' => $filename,
+                                        'created_date' => date('Y-m-d H:i:s')
+                                    );
+                                    $library_id = $this->library->insert($library_data);
+                                    if ($library_id > 0) {
+                                        //save media in battle 
+                                        $copyStatus = copy($this->config->item('library_media_path') . $filename, $this->config->item('battle_media_path') . $filename);
+                                        $form_data = array(
+                                            'battle_id' => $battle_id,
+                                            'artist_id' => $user_id,
+                                            'fk_song_id' => $library_id,
+                                            'created_date' => date('Y-m-d H:i:s')
+                                        );
+                                        $status = $this->battles->add_battle_media($form_data);
+                                        if ($status) {
+                                            $this->session->set_flashdata('class', 'alert-success');
+                                            $this->session->set_flashdata('success', 'Song has been added to battle');
+                                            
+                                            // delete data from freestyle composer and database
+                                            if(file_exists($first_media)) { 
+                                                unlink($first_media); 
+                                            }
+                                            if(file_exists($second_media)) { 
+                                                unlink($second_media); 
+                                            }
+                                            $this->battles->delete_freestyle_media_track(['id'=> $track_info['id']]);
+                                            
+                                            
+                                            $return_status = ['status'=>1, 'url'=>  base_url().'battle/request/' . $battle_id];
+                                            echo json_encode($return_status); die();
+
+                                        } 
+                                    }
+                                    
+                                } else {
+                                    //SHELL EXECUTION FAIL
+                                    $return_status = ['status'=>0, 'msg'=>  'shell execution failed!'];
+                                    echo json_encode($return_status); die();
+                                }
                                 
                             } else {
-                                $this->session->set_flashdata('class', 'alert-danger');
-                                $this->session->set_flashdata('message', 'Unable to upload song. Please try again');
-                                $return_status = ['status'=>1, 'url'=>  base_url().'battle/request/' . $battle_id];
+                                // ENTWORK ERROR
+                                $return_status = ['status'=>0, 'msg'=>  'First sequence is not uploaded!'];
                                 echo json_encode($return_status); die();
                             }
+                            
                         }
-                    } else {
-
-                        $this->session->set_flashdata('class', 'alert-danger');
-                        $this->session->set_flashdata('message', $filename['error']);
-                        $return_status = ['status'=>1, 'url'=>  base_url().'battle/request/' . $battle_id];
-                        echo json_encode($return_status); die();
-                    }
-                } else {
-                    
-                    echo '<pre>'; print_r(validation_errors()); die();
-                    
-                    $this->session->set_flashdata('class', 'alert-danger');
-                    $this->session->set_flashdata('message', validation_errors());
-                    $return_status = ['status'=>0, 'url'=>  base_url().'battle/request/' . $battle_id];
-                    echo json_encode($return_status); die();
                 }
+
+                
+            } else {
+                $this->session->set_flashdata('class', 'alert-danger');
+                $this->session->set_flashdata('message', validation_errors());
+                $return_status = ['status'=>0, 'msg'=>  'Form validation error!'];
+                echo json_encode($return_status); die();
             }
+        }
     }
 
 

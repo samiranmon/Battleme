@@ -12,13 +12,4 @@ echo shell_exec("ffmpeg -i ".$source2." -vn -ab 192k -acodec libmp3lame -ac 2 ".
 //ffmpeg -i uploads/aetzlertest.mp3 -i uploads/yo9.mp3 -filter_complex amerge -ac 2 -c:a libmp3lame -q:a 4 uploads/output_merge.mp3 // Done
 
 
-$mediaConfig = array(
-                            'upload_path' => $this->config->item('library_media_path'),
-                            //'allowed_types' => '3gp|aa|aac|aax|act|aiff|amr|ape|au|awb|dct|dss|dvf|flac|gsm|iklax|ivs|m4a|m4b|m4p|mmf|mp3|mpc|msv|ogg|oga|mogg|opus|ra|rm|raw|sln|tta|vox|wav|wma|wv|webm|mp4|ogg|webm|avi|flv',
-                            'allowed_types' => '*',
-                            'encrypt_name'  => TRUE,
-                            'max_size' => '1024159'
-                        );
-                        
-                        $uploadAck = $this->common_lib->upload_custom_media('media', $mediaConfig);
-                        if (isset($uploadAck['file_name']) && isset($uploadAck['file_type'])) {
+ 
