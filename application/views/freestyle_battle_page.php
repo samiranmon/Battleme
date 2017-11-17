@@ -155,7 +155,7 @@ if ($user_id > 0) {
         <!-- Modal content-->
         <div class="modal-content">
             <div class="modal-header">
-                 <button type="button" class="close" data-dismiss="modal">&times;</button> 
+                 <!--<button type="button" class="close" data-dismiss="modal">&times;</button>--> 
                  <h4 class="modal-title">Count down is started</h4>
             </div>
 
@@ -762,7 +762,11 @@ if(($user_id == $battle_details['friend_user_id'] OR  $user_id == $battle_detail
         
     <?php if($battle_details['status'] == 4 && $battle_details['battle_category'] == 5) { ?>
         $(window).load(function(){
-        $('#freestyle_beat_popup').modal('show');
+        $('#freestyle_beat_popup').modal({
+            backdrop: 'static',
+            keyboard: false,
+            show: true
+        });
     });
     <?php } ?>
 
@@ -974,7 +978,11 @@ function autoStartFreestyle() {
         success: function (data) {
             if(data == 1) {
                 $('#freestyle_beat_popup').modal('hide');
-                $('#count_down_popup').modal('show');
+                $('#count_down_popup').modal({
+                    backdrop: 'static',
+                    keyboard: false,
+                    show: true
+                });
             }
                 
         }

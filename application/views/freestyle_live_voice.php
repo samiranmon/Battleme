@@ -220,6 +220,7 @@ $data_submit = array(
 
 <!-- For recording voice -->
 <script type="text/javascript">
+    
     function restore() {
         $("#record, #live").removeClass("disabled");
         $("#pause").replaceWith('<a class="button one" id="pause">Pause</a>');
@@ -227,6 +228,9 @@ $data_submit = array(
         Fr.voice.stop();
     }
     $(document).ready(function () {
+        
+        var _uploadStatus = 0;
+        
         $(document).on("click", "#record:not(.disabled)", function () {
             elem = $(this);
             Fr.voice.record($("#live").is(":checked"), function () {
@@ -341,7 +345,7 @@ $data_submit = array(
                 formData.append('battle_id', $("input[name='battle_id']").val());
                 formData.append('title', $("input[name='title']").val());
                 formData.append('media_count', $("input[name='media_count']").val());
-                
+                //var _uploadStatus = 0;
 
                 $.ajax({
                     url: "<?= base_url() . 'battle/upload_live_voice' ?>",
@@ -353,8 +357,11 @@ $data_submit = array(
                         var obj = JSON.parse(data);
                         if (parseInt(obj.status) == 1) {
                             $(window).unbind('beforeunload');
-                            alert('Freestyle battle has been completed');
-                            window.location.href = obj.url;
+                            _uploadStatus = 1;
+                            if(parseInt($('.time_clock').html()) >= 240) {
+                                alert('Freestyle battle has been completed');
+                                window.location.href = obj.url;
+                            }
                         }
                         if (parseInt(obj.status) == 0) {
                             alert(obj.msg);
@@ -439,7 +446,13 @@ $data_submit = array(
                             <?php } ?>
                                 $('#stop:not(.disabled)').trigger('click');
                         }
-
+                        
+                        // Success update
+                        if(_uploadStatus == 1) {
+                            alert('Freestyle battle has been completed');
+                            //window.location.href = obj.url;
+                        }
+                        
                     } else {
 
                     }
