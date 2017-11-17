@@ -352,8 +352,9 @@ $data_submit = array(
                     success: function (data) {
                         var obj = JSON.parse(data);
                         if (parseInt(obj.status) == 1) {
+                            $(window).unbind('beforeunload');
                             alert('Freestyle battle has been completed');
-                            //window.location.href = obj.url;
+                            window.location.href = obj.url;
                         }
                         if (parseInt(obj.status) == 0) {
                             alert(obj.msg);
@@ -453,13 +454,16 @@ $data_submit = array(
     });
     
     
-    window.onbeforeunload = function(){
+    $(window).bind('beforeunload', function(){
+        return 'Changes that you made may not be saved';
+    });
+    
+    /* window.onbeforeunload = function(){
       myfun();
       return 'Are you sure you want to leave?';
     };
-    
+     window.onbeforeunload = null;
     function myfun(){
-         // Write your business logic here
-        // console.log('hello');
-    }
+    } */
+    
 </script>

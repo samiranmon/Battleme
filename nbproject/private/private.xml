@@ -6,7 +6,6 @@
             <file>file:/opt/lampp/htdocs/battleme/application/controllers/Battle.php</file>
             <file>file:/opt/lampp/htdocs/battleme/audio_chat/index.html</file>
             <file>file:/opt/lampp/htdocs/battleme/audio_chat/test_ffmpeg.php</file>
-            <file>file:/opt/lampp/htdocs/battleme/application/views/freestyle_battle_page.php</file>
             <file>file:/opt/lampp/htdocs/battleme/application/views/freestyle_live_voice.php</file>
         </group>
     </open-files>
