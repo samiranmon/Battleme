@@ -154,11 +154,10 @@ $data_submit = array(
                                     <div class="progress-bar" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" process-val="0" style="width:0%"></div>
                                 </div>
                                 <br>
-                                <h3>Time clock <span class="time_clock">0</span> seconds</h3>
-                                <!--<h3><a class="button button-small button-mute">Mute</a></h3>-->
                                 
-
-
+                                <h3 style="margin-top: 10px;">Time clock <span class="time_clock">0</span> seconds</h3>
+                                <p id="process_text" style="margin-top: 10px;"></p>
+                                
                             </div> 
                         </div> 
 
@@ -356,6 +355,7 @@ $data_submit = array(
                     success: function (data) {
                         var obj = JSON.parse(data);
                         if (parseInt(obj.status) == 1) {
+                            $('#process_text').html('');
                             $(window).unbind('beforeunload');
                             _uploadStatus = 1;
                             if(parseInt($('.time_clock').html()) >= 240) {
@@ -445,6 +445,9 @@ $data_submit = array(
                                 $('#save:not(.disabled)').trigger('click');
                             <?php } ?>
                                 $('#stop:not(.disabled)').trigger('click');
+                                
+                                // Process voice uploading
+                                $('#process_text').html('Voice uploading ...');
                         }
                         
                         // Success update
