@@ -277,6 +277,7 @@ class Battle extends CI_Controller {
         
         if ($this->input->post('battle_category') == 5) {
             //$this->form_validation->set_rules('place', 'Place', 'trim|required');
+            $this->form_validation->set_rules('freesty_library_id', 'Library id', 'trim|required');
             $this->form_validation->set_rules('date_time', 'Date & Time', 'trim|required');
         }
         
@@ -360,6 +361,7 @@ class Battle extends CI_Controller {
             $inputData['battle_category'] = $battle_category;
             $inputData['description'] = $description;
             $inputData['entry'] = (isset($entry) && $entry != '' && $sessionData['membership_id'] == 2) ? $entry : 0;
+            $inputData['freesty_library_id'] = isset($freesty_library_id) ? $freesty_library_id : '';
             //$inputData['place'] = $place;
             $inputData['date_time'] = date('Y-m-d H:i:s', strtotime($date_time));
             //echo '<pre>'; print_r($inputData); die();

@@ -11,5 +11,4 @@ echo shell_exec("ffmpeg -i ".$source2." -vn -ab 192k -acodec libmp3lame -ac 2 ".
 
 //ffmpeg -i uploads/aetzlertest.mp3 -i uploads/yo9.mp3 -filter_complex amerge -ac 2 -c:a libmp3lame -q:a 4 uploads/output_merge.mp3 // Done
 
-
  

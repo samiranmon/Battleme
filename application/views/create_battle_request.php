@@ -212,6 +212,7 @@ $form_attr = array('name' => 'frm_battle', 'id' => 'frm_battle', 'class' => '', 
             </div> 
 
             <footer class="panel-footer text-right bg-light lter"> 
+                <input type="hidden" name="freesty_library_id" >
 <?php echo form_submit($data_submit) ?>
             </footer> 
         </section> 
@@ -255,23 +256,19 @@ $form_attr = array('name' => 'frm_battle', 'id' => 'frm_battle', 'class' => '', 
               <h4 class="modal-title">Freestyle beat library</h4>
             </div>
           
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="col-md-4"></div>
-                    <div class="col-md-4">
-                        <p>A charge of 1Battle Buck will be deducted from your wallet for freestyle beat lease.
-                        Do you accept</p>
-                        <input type="button" name="free_accept" value="Accept" style="color: green;">
-                        <input type="button" name="free_accept" value="Cancel" style="color: red;">
-                    </div>
-                    <div class="col-md-4"> </div>
-                </div>
-            </div>
-          
           <div class="clear"></div>
             <div class="row">
                 <div class="freeSoundWidget">
                     <ul class="own-song-list"></ul>
+                </div>
+            </div>
+          
+            <div class="row">
+                <div class="col-md-12">
+                        <p>A charge of 1 Battle Buck will be deducted from your wallet for freestyle beat lease.
+                        Do you want to accept?</p>
+                        <input type="button" name="free_accept" value="Accept" style="color: green;">
+                        <input type="button" name="free_accept" value="Cancel" style="color: red;">
                 </div>
             </div>
           
@@ -368,7 +365,14 @@ $free_songs_str = json_encode($free_song_array);
         // form submit if freestyle accepted
         $('input[name="free_accept"]').on('click', function () {
             if($(this).val()=='Accept') { 
-                $('#frm_battle').submit();
+                
+                if($("input:radio[name='flibrary_id']").is(":checked")) {
+                    var flibrary_id = $("input[name='flibrary_id']:checked").val();
+                    $("input[name='freesty_library_id']").val(flibrary_id);
+                    $('#frm_battle').submit();
+                } else {
+                    alert('Please check freestyle library');
+                }
             } else {
                  window.location.href = "<?php echo base_url('battle/create')?>";
             }
@@ -444,7 +448,7 @@ $free_songs_str = json_encode($free_song_array);
 
     for (i = 0; i < sLan; i++) {
         var songCount = i + 1;
-        $(".freeSoundWidget ul").append("<li><div class=audioleft><a href=javascript:void(0)>" + soundArr[i][1] + "</a></div><div class=audioleft><audio><source src='" + soundArr[i][0] + "'  type=audio/mpeg></audio><button class=Soundplay></button><button class=Soundpause></button></div><div class=audioright><a onclick='freestyleDownload(" + soundArr[i][2] + ")' href='javascript:void(0)'>Download</a></div></li>");
+        $(".freeSoundWidget ul").append("<li><span><input type='radio' name='flibrary_id' value='" + soundArr[i][2] + "' ></span><div class=audioleft><a href=javascript:void(0)>" + soundArr[i][1] + "</a></div><div class=audioleft><audio><source src='" + soundArr[i][0] + "'  type=audio/mpeg></audio><button class=Soundplay></button><button class=Soundpause></button></div><div class=audioright><a onclick='freestyleDownload(" + soundArr[i][2] + ")' href='javascript:void(0)'>Download</a></div></li>");
     }
     var aud = new Audio();
     var pp;
