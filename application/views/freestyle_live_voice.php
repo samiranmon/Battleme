@@ -155,6 +155,13 @@ $data_submit = array(
                                 </div>
                                 <br>
                                 
+                                <?php 
+                                    $fstyle_path = $this->config->item('freestyle_library') . $fstyle_lib_song['media'];
+                                    if(isset($fstyle_lib_song['media']) && file_exists(getcwd().'/'.$fstyle_path)) {
+                                ?>
+                                <audio id="freestyle_lib_id" src="<?=base_url($fstyle_path)?>"></audio>
+                                <?php } ?>
+                                
                                 <h3 style="margin-top: 10px;">Time clock <span class="time_clock">0</span> seconds</h3>
                                 <p id="process_text" style="margin-top: 10px;"></p>
                                 
@@ -385,7 +392,10 @@ $data_submit = array(
                 $('.progress-bar').css("width", 0);
                 $('#mute_button').hide();
                 $('#stop:not(.disabled)').trigger('click');
+                // For play library sound
+                $("#freestyle_lib_id")[0].pause();
             } else {
+                $("#freestyle_lib_id")[0].play();
                 $('.progress').show();
 
                 $('.time_clock').each(function () {

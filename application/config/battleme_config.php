@@ -15,5 +15,6 @@ $config['battle_media_path']  =  'uploads/battle/media/' ;
 $config['library_media_path'] =  'uploads/library/' ;
 $config['post_media_path']    =  'uploads/post/' ;
 $config['freestyle_composer']    =  'uploads/freestyle_composer/';
+$config['freestyle_library']    =  'uploads/freestyle_library/';
 
 

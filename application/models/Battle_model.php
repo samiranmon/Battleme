@@ -482,6 +482,18 @@
             return FALSE;
         }
     }
+    public function getFerrstyleSingle($battleId ='') {
+        $this->db->select('fl.id,fl.media,fl.title');
+        $this->db->from('battle_request');
+        $this->db->join('freestyle_beat_library as fl' , 'battle_request.freesty_library_id=fl.id');
+        //$this->db->where(['status'=>1]);
+        $query = $this->db->get();
+        if ($query->num_rows() > 0) {
+            return $query->row_array();
+        } else {
+            return FALSE;
+        }
+    }
     
     public function getSingleLibrary($id) {
         $this->db->select('*');

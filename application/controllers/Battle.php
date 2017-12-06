@@ -728,6 +728,7 @@ class Battle extends CI_Controller {
                 
             } else {
                 if($battle_details[0]['battle_category'] == 5) {
+                     $arrData['fstyle_lib_song'] = $this->battles->getFerrstyleSingle($battle_id);
                      $this->load->view('freestyle_battle_page', $arrData);
                     // $this->load->view('freestyle_audio_chat', $arrData);
                 } else {
