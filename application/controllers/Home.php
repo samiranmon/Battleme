@@ -90,9 +90,10 @@ class Home extends CI_Controller {
                         if($file_type[0] == 'video') {
                             $media_type = 2; // for video
                             
-                            $conv_file_name = 'con_'.time().'.ogg';
+                            $conv_file_name = 'con_'.time().'.mp4';
                             $cont_file_path = $this->config->item('post_media_path').$conv_file_name;
-                            shell_exec("/usr/local/bin/ffmpeg -i ".$this->config->item('post_media_path').$media_file." -acodec libvorbis -vcodec libtheora -f ogg ".$cont_file_path." 2>&1");
+                            shell_exec("/usr/local/bin/ffmpeg -i ".$this->config->item('post_media_path').$media_file." -y -vcodec libx264 -crf 18 -pix_fmt yuv420p -qcomp 0.8 -preset medium -acodec aac -strict -2 -b:a 400k -x264-params ref=4 -profile:v baseline -level 3.1 -movflags +faststart ".$cont_file_path);
+                            //shell_exec("/usr/local/bin/ffmpeg -i ".$this->config->item('post_media_path').$media_file." -acodec libvorbis -vcodec libtheora -f ogg ".$cont_file_path." 2>&1");
                             if(file_exists($this->config->item('post_media_path').$media_file)) { unlink($this->config->item('post_media_path').$media_file); } 
                             $media_file = $conv_file_name;
                             
@@ -464,22 +465,75 @@ class Home extends CI_Controller {
     
     public function resize_image($image_name) { 
         $this->load->library('image_lib');
+        
+        $this->image_lib->clear();
+        $config=array();
+        $config['image_library'] = 'gd2';
+        $config['source_image'] = $this->config->item('post_media_path').$image_name;
+        
+        if (function_exists('exif_read_data')) {
+             $exif = exif_read_data($this->config->item('post_media_path').$image_name);
+             if(isset($exif['Orientation'])) {
+                  switch($exif['Orientation']) {
+                       case 3:
+                           $config['rotation_angle']='180';
+                           break;
+                       case 6:
+                           $config['rotation_angle']='270';
+                           break;
+                       case 8:
+                           $config['rotation_angle']='90';
+                           break;
+                    } 
+                $this->image_lib->initialize($config);
+                $this->image_lib->rotate();
+             }
+        }
+        
+        
         $config['image_library'] = 'gd2';
         $config['source_image'] = $this->config->item('post_media_path'). $image_name;
         $config['create_thumb'] = FALSE;
         $config['new_image'] = 'thumb_' . $image_name;
         $config['maintain_ratio'] = TRUE;
-        $config['width'] = 531;
-        $config['height'] = 248;
+//        $config['width'] = 531;
+//        $config['height'] = 248;
+        $config['width'] = 600;
+        $config['height'] = 300;
             
         $this->image_lib->clear();
-        $this->image_rotation($config['source_image']);
+        //$this->image_rotation($config['source_image']);
         $this->image_lib->initialize($config);
         $this->image_lib->resize();
     }
     
     public function medium_resize_image($image_name) {
         $this->load->library('image_lib');
+        
+        $this->image_lib->clear();
+        $config=array();
+        $config['image_library'] = 'gd2';
+        $config['source_image'] = $this->config->item('post_media_path').$image_name;
+        
+        if (function_exists('exif_read_data')) {
+             $exif = exif_read_data($this->config->item('post_media_path').$image_name);
+             if(isset($exif['Orientation'])) {
+                  switch($exif['Orientation']) {
+                       case 3:
+                           $config['rotation_angle']='180';
+                           break;
+                       case 6:
+                           $config['rotation_angle']='270';
+                           break;
+                       case 8:
+                           $config['rotation_angle']='90';
+                           break;
+                    } 
+                $this->image_lib->initialize($config);
+                $this->image_lib->rotate();
+             }
+        }
+        
         $config['image_library'] = 'gd2';
         $config['source_image'] = $this->config->item('post_media_path'). $image_name;
         $config['create_thumb'] = FALSE;
@@ -487,9 +541,9 @@ class Home extends CI_Controller {
         $config['maintain_ratio'] = TRUE;
         $config['width'] = 700;
         $config['height'] = 500;    
+        $config['master_dim'] = 'height';
 
         $this->image_lib->clear();
-        $this->image_rotation($config['source_image']);
         $this->image_lib->initialize($config);
         $this->image_lib->resize();
     }
