@@ -784,7 +784,7 @@ if (isset($own_songs) && !empty($own_songs)) {
             </div>
             
             <div class="modal-body">
-                 <video width="400" controls="controls">
+                 <video width="100%" controls="controls">
                     <source type="video/mp4" src="<?=base_url($challenger_mediaPath)?>"></source>
                  </video>
             </div>
@@ -808,7 +808,7 @@ if (isset($own_songs) && !empty($own_songs)) {
             </div>
             
             <div class="modal-body">
-                 <video width="400" controls="controls">
+                 <video width="100%" controls="controls">
                     <source type="video/mp4" src="<?=base_url($friend_media_path)?>"></source>
                  </video>
             </div>

@@ -680,7 +680,7 @@ if(($user_id == $battle_details['friend_user_id'] OR  $user_id == $battle_detail
             </div>
             
             <div class="modal-body">
-                 <video width="400" controls="controls">
+                 <video width="100%" controls="controls">
                     <source type="video/mp4" src="<?=base_url($challenger_mediaPath)?>"></source>
                  </video>
             </div>
@@ -704,7 +704,7 @@ if(($user_id == $battle_details['friend_user_id'] OR  $user_id == $battle_detail
             </div>
             
             <div class="modal-body">
-                 <video width="400" controls="controls">
+                 <video width="100%" controls="controls">
                     <source type="video/mp4" src="<?=base_url($friend_media_path)?>"></source>
                  </video>
             </div>

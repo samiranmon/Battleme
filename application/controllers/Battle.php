@@ -307,9 +307,10 @@ class Battle extends CI_Controller {
                         $source = $this->config->item('library_media_path').$uploadAck['file_name'];
                         $file_type = explode('/', $uploadAck['file_type']);
                         if($file_type[0] == 'video') {
-                            $conv_file_name = 'con_'.time().'.ogg';
+                            $conv_file_name = 'con_'.time().'.mp4';
                             $cont_file_path = $this->config->item('library_media_path').$conv_file_name;
-                            shell_exec("/usr/local/bin/ffmpeg -i ".$source." -acodec libvorbis -vcodec libtheora -f ogg ".$cont_file_path." 2>&1");
+                            shell_exec("/usr/local/bin/ffmpeg -i ".$source." -y -vcodec libx264 -crf 18 -pix_fmt yuv420p -qcomp 0.8 -preset medium -acodec aac -strict -2 -b:a 400k -x264-params ref=4 -profile:v baseline -level 3.1 -movflags +faststart ".$cont_file_path);
+                            //shell_exec("/usr/local/bin/ffmpeg -i ".$source." -acodec libvorbis -vcodec libtheora -f ogg ".$cont_file_path." 2>&1");
                             //shell_exec("/usr/local/bin/ffmpeg -y -i ".$source." -ar 22050 -ab 512 -b 800k -f mp4 -s 514*362 -strict -2 -c:a aac ".$cont_file_path." 2>&1");
                             //shell_exec("/usr/local/bin/ffmpeg -i ".$source." -f mp4 -s 800x480 -strict -2 ".$cont_file_path." 2>&1");
                             if(file_exists($source)) { unlink($source); } 
@@ -525,9 +526,10 @@ class Battle extends CI_Controller {
                             $source = $this->config->item('library_media_path').$uploadAck['file_name'];
                             $file_type = explode('/', $uploadAck['file_type']);
                             if($file_type[0] == 'video') {
-                                $conv_file_name = 'con_'.time().'.ogg';
+                                $conv_file_name = 'con_'.time().'.mp4';
                                 $cont_file_path = $this->config->item('library_media_path').$conv_file_name;
-                                shell_exec("/usr/local/bin/ffmpeg -i ".$source." -acodec libvorbis -vcodec libtheora -f ogg ".$cont_file_path." 2>&1");
+                                shell_exec("/usr/local/bin/ffmpeg -i ".$source." -y -vcodec libx264 -crf 18 -pix_fmt yuv420p -qcomp 0.8 -preset medium -acodec aac -strict -2 -b:a 400k -x264-params ref=4 -profile:v baseline -level 3.1 -movflags +faststart ".$cont_file_path);
+                                //shell_exec("/usr/local/bin/ffmpeg -i ".$source." -acodec libvorbis -vcodec libtheora -f ogg ".$cont_file_path." 2>&1");
                                 if(file_exists($source)) { unlink($source); }
                             } else if($file_type[0] == 'audio') {
                                 $conv_file_name = 'con_'.time().'.mp3';
