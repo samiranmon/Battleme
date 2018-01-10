@@ -1043,6 +1043,7 @@ body {
 }
 .friend-item{
    border: 1px solid #f0f0f0;
+   min-height:165px;
    padding: 15px;
 }
 .friend-item .frind-img{
@@ -2028,4 +2029,8 @@ input:-ms-input-placeholder, textarea::-ms-input-placeholder {
 input::-webkit-input-placeholder, textarea::-webkit-input-placeholder {
     color: #aaa;
     font-size: 14px;
+}
+
+.alert-success {
+    float :left; width:100%; margin-top: 15px;
 }

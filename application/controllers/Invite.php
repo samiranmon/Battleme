@@ -109,8 +109,10 @@ class Invite extends CI_Controller {
 
                             $battle_details = $this->battles->get_battle_details($battle_id);
                             $msg = 'battle will begin in 5 mins';
-                            add_notification($battle_details[0]['user_id'], $battle_details[0]['friend_user_id'], $msg, $type = 'battle_request', $battle_id);
+                            //add_notification($battle_details[0]['user_id'], $battle_details[0]['friend_user_id'], $msg, $type = 'battle_request', $battle_id);
+                            //add_notification($battle_details[0]['friend_user_id'], $battle_details[0]['user_id'], $msg, $type = 'battle_request', $battle_id);
                             add_notification($battle_details[0]['friend_user_id'], $battle_details[0]['user_id'], $msg, $type = 'battle_request', $battle_id);
+                            add_notification($battle_details[0]['user_id'], $battle_details[0]['friend_user_id'], $msg, $type = 'battle_request', $battle_id);
 
                             $this->battles->set_notify($battle_id);
                         }

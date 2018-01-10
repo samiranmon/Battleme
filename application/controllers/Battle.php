@@ -768,7 +768,13 @@ class Battle extends CI_Controller {
                     }
 
                     $msg = ' has accepted your Freestyle Battle Challenge';
-                    $postContent = 'A freestyle battle between those 2 artists will take place at the '.date('F d, g:i a',strtotime($battle_details[0]['date_time']));
+                    $userDtl = $this->user->getSingleUser($battle_details[0]['user_id']);
+                    $user_name = ucfirst($userDtl['firstname'].' '.$userDtl['lastname']);
+                    
+                    $fUserDtl = $this->user->getSingleUser($battle_details[0]['friend_user_id']);
+                    $friend_name = ucfirst($fUserDtl['firstname'].' '.$fUserDtl['lastname']);
+                            
+                    $postContent = 'A freestyle battle between '.$user_name.' and '.$friend_name.' will take place on '.date('F d, g:i a',strtotime($battle_details[0]['date_time']));
                     
                     // 1 bb deducted from both account due to lease freestyle battle
                     $deduct_msg = '1 bb deducted from your wallet due to lease the freestyle battle';
@@ -846,8 +852,10 @@ class Battle extends CI_Controller {
                             
                             $battle_details = $this->battles->get_battle_details($battle_id);
                             $msg = 'battle will begin in 5 mins';
-                            add_notification($battle_details[0]['user_id'], $battle_details[0]['friend_user_id'], $msg, $type = 'battle_request', $battle_id);
+                            //add_notification($battle_details[0]['user_id'], $battle_details[0]['friend_user_id'], $msg, $type = 'battle_request', $battle_id);
+                            //add_notification($battle_details[0]['friend_user_id'], $battle_details[0]['user_id'], $msg, $type = 'battle_request', $battle_id);
                             add_notification($battle_details[0]['friend_user_id'], $battle_details[0]['user_id'], $msg, $type = 'battle_request', $battle_id);
+                            add_notification($battle_details[0]['user_id'], $battle_details[0]['friend_user_id'], $msg, $type = 'battle_request', $battle_id);
                             
                             $this->battles->set_notify($battle_id);
                         }
@@ -886,7 +894,7 @@ class Battle extends CI_Controller {
                             if($this->battles->is_posted($battle_id) == FALSE) {
                                
                                 //$postContent = 'Freestyle battle will begin in 60 seconds. The artist are ' . $battle_details[0]['challenger'] . ' and '. $battle_details[0]['friend'];
-                                $postContent = 'Freestyle battle will begin in 60 seconds and to click the post to view the battle';
+                                $postContent = 'A Freestyle Battle will take place in 60 seconds click this post to view Battle';
                                 
                                 $data = array(
                                     'content' => $postContent,

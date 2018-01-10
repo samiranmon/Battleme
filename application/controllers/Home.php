@@ -472,24 +472,27 @@ class Home extends CI_Controller {
         $config['source_image'] = $this->config->item('post_media_path').$image_name;
         
         if (function_exists('exif_read_data')) {
-             $exif = exif_read_data($this->config->item('post_media_path').$image_name);
-             if(isset($exif['Orientation'])) {
-                  switch($exif['Orientation']) {
-                       case 3:
-                           $config['rotation_angle']='180';
-                           break;
-                       case 6:
-                           $config['rotation_angle']='270';
-                           break;
-                       case 8:
-                           $config['rotation_angle']='90';
-                           break;
-                    } 
-                $this->image_lib->initialize($config);
-                $this->image_lib->rotate();
-             }
+            try {
+                $exif = @exif_read_data($this->config->item('post_media_path').$image_name);
+                 if(isset($exif['Orientation'])) {
+                      switch($exif['Orientation']) {
+                           case 3:
+                               $config['rotation_angle']='180';
+                               break;
+                           case 6:
+                               $config['rotation_angle']='270';
+                               break;
+                           case 8:
+                               $config['rotation_angle']='90';
+                               break;
+                        } 
+                    $this->image_lib->initialize($config);
+                    $this->image_lib->rotate();
+                 }
+            } catch(Exception $e) {
+              //echo 'Message: ' .$e->getMessage();
+            }
         }
-        
         
         $config['image_library'] = 'gd2';
         $config['source_image'] = $this->config->item('post_media_path'). $image_name;
@@ -516,22 +519,27 @@ class Home extends CI_Controller {
         $config['source_image'] = $this->config->item('post_media_path').$image_name;
         
         if (function_exists('exif_read_data')) {
-             $exif = exif_read_data($this->config->item('post_media_path').$image_name);
-             if(isset($exif['Orientation'])) {
-                  switch($exif['Orientation']) {
-                       case 3:
-                           $config['rotation_angle']='180';
-                           break;
-                       case 6:
-                           $config['rotation_angle']='270';
-                           break;
-                       case 8:
-                           $config['rotation_angle']='90';
-                           break;
-                    } 
-                $this->image_lib->initialize($config);
-                $this->image_lib->rotate();
-             }
+            try {
+                $exif = @exif_read_data($this->config->item('post_media_path').$image_name);
+                 if(isset($exif['Orientation'])) {
+                      switch($exif['Orientation']) {
+                           case 3:
+                               $config['rotation_angle']='180';
+                               break;
+                           case 6:
+                               $config['rotation_angle']='270';
+                               break;
+                           case 8:
+                               $config['rotation_angle']='90';
+                               break;
+                        } 
+                    $this->image_lib->initialize($config);
+                    $this->image_lib->rotate();
+                 }
+            } catch(Exception $e) {
+              //echo 'Message: ' .$e->getMessage();
+            }
+             
         }
         
         $config['image_library'] = 'gd2';
