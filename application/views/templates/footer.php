@@ -46,7 +46,7 @@ $mCustomScrollbarId = substr($mCustomScrollbarId, 0,-1);
 
 <script type="text/javascript" src="<?php echo base_url(); ?>public/js/bootstrap-responsive-tabs.min.js"></script>
 
-<script>$( function() { //$( '.audio_' ).audioPlayer(); 
+<script>$( function() { $( '.audio_' ).audioPlayer(); 
     } );</script>
 
 <script type="text/javascript" src="<?php echo base_url(); ?>public/js/jquery.mCustomScrollbar.concat.min.js"></script>

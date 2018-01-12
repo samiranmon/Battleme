@@ -85,10 +85,28 @@
                      $likeCount = $value['likeCount'];
 
                      $file_ext = pathinfo($value['media'], PATHINFO_EXTENSION);
+                     if(file_exists(getcwd() . '/uploads/library/' . $value['media']) && $value['media'] !='') {
                      ?>
 
 
                     <li class="list-group-item ">
+                        
+
+                             <?php 
+                                 if ( in_array($file_ext, ['mp4','ogg','webm'] ) ) { ?>
+                                        <video width="100%" controls="controls">
+                                            <source type="video/mp4" src="<?=base_url().$media?>"></source>
+                                        </video>
+                                 <?php } else { 
+                                     $this->view('responsive_player', ['path'=>base_url().$media, 'id'=>$key]); 
+                                     //$this->view('jplayer', ['path'=>base_url().$media, 'id'=>$key]); 
+                                 }
+                             ?> 
+
+                        <a class="clear" href="javascript:void(0)"> 
+                            <span class="block text-ellipsis"><?php echo $title ?></span>
+                        </a>&nbsp;
+                        
                         <span class="pull-right padder">
                             <a data-toggle="button" dataid="<?php echo $song_id; ?>" alt="<?php echo $user_id ?>" class="btn btn-default  active songLike"> 
                                 <span class="text-active"> 
@@ -97,19 +115,6 @@
                                 </span>     
                             </a> 
                         </span>
-
-                             <?php 
-                             if(file_exists(getcwd() . '/uploads/library/' . $value['media']) && $value['media'] !='') {
-                                 if ( in_array($file_ext, ['mp4','ogg','webm'] ) ) { ?>
-                                        <video width="400" controls="controls">
-                                            <source type="video/mp4" src="<?=base_url().$media?>"></source>
-                                        </video>
-                                 <?php } else { $this->view('responsive_player', ['path'=>base_url().$media, 'id'=>$key]); }
-                             }  ?> 
-
-                        <a class="clear" href="javascript:void(0)"> 
-                            <span class="block text-ellipsis"><?php echo $title ?></span>
-                        </a>&nbsp;
                         
                         <?php if($value['battle_media']==NULL && $value['tournament_media']==NULL) { ?>
                             <a title="Delete Library" class="clear glyphicon glyphicon-trash" onclick="deleteLibrary('<?=  base64_encode($value['sId'])?>')" href="javascript:void(0);"> 
@@ -118,7 +123,7 @@
 
                     </li> 
                  <?php
-                 }
+                 } }
              } else {
                  echo "<div class='alert alert-danger'>User has not uploaded any song</div>";
              }

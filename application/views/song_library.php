@@ -101,9 +101,8 @@ if ($addForm) {
                 $artist = $value['user_id'];
                 $title = $value['title'];
                 $likeCount = $value['likeCount'];
+                if(file_exists(getcwd() . '/uploads/library/' . $value['media']) && $value['media'] !='') {
                 ?>
-
-
                 <li class="list-group-item clearfix">
                     <span class="pull-right padder">
                         <a data-toggle="button" dataid="<?php echo $song_id ?>" alt='<?php echo $user_id ?>' class="btn btn-default songLike active"> 
@@ -119,11 +118,7 @@ if ($addForm) {
                         </a> 
                     </span>
 
-                    <?php
-                     if(file_exists(getcwd() . '/uploads/library/' . $value['media']) && $value['media'] !='') {
-                            $this->view('responsive_player', ['path' => base_url() . $media, 'id' => $key]);
-                        }
-                    ?>
+                    <?php $this->view('responsive_player', ['path' => base_url() . $media, 'id' => $key]); ?>
 
                     <a class="clear" href="#"> 
                         <span class="block text-ellipsis"><?php echo $title ?></span>  
@@ -140,7 +135,7 @@ if ($addForm) {
 
                 </li> 
                 <?php
-            }
+            } }
         } else {
             echo "<div class='alert alert-danger'>User has not uploaded any song</div>";
         }
