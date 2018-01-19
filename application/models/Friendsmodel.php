@@ -73,7 +73,7 @@ class Friendsmodel extends CI_Model {
                 . " inner join (select memberships_id, user_id from user_memberships where status=1) um on friend_list.resource_id=um.user_id "
                 . " WHERE friend_list.user_id = " . $userid . " AND (friend_list.active = 1) AND um.memberships_id != 3"; */
             
-	    $sql = "SELECT user.* FROM user "
+	    $sql = "SELECT user.*, um.memberships_id FROM user "
                 . " inner join (select memberships_id, user_id from user_memberships where status=1) um on user.id=um.user_id "
                 . " WHERE user.id != " . $userid . " AND um.memberships_id != 3";
 	    $query = $this->db->query($sql);
@@ -84,7 +84,19 @@ class Friendsmodel extends CI_Model {
         
     }
     
+    public function get_membership($userid = NULL) {
+        if(!is_null($userid)){
+	    $sql = "SELECT um.memberships_id FROM user "
+                . " inner join (select memberships_id, user_id from user_memberships where status=1 order by id desc) um on user.id=um.user_id "
+                . " WHERE user.id = " . $userid;
+	    $query = $this->db->query($sql);
+	    return $query->row_array();
+	}
+	else
+	    return NULL;
+    }
 
+    
     /**
      * get_all_frnds
      * this function retreives all friends of user

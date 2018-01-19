@@ -2034,3 +2034,36 @@ input::-webkit-input-placeholder, textarea::-webkit-input-placeholder {
 .alert-success {
     float :left; width:100%; margin-top: 15px;
 }
+
+ul.own-song-list{
+    overflow: hidden;
+    padding: 0px;
+    margin: 0px;
+}
+.own-song-list > li {
+    width: 100%;
+    float:none; 
+    display: inline-block;
+    padding: 10px 0px 10px 15px;
+}
+/* .own-song-list > li { background:#f3f3f3 } */
+.own-song-list > li:nth-child(odd) { background:#fbf9f9 } 
+.own-song-list > li:nth-child(even) { background:#efefef }
+.own-song-list > li:hover {
+    background: #7e8354;
+}
+.own-song-list > li:hover a {
+    color: #fff !important; 
+}
+.own-song-list .audioleft {
+    width: 87%;
+}
+#frm_battle .modal-footer,#frm_battle .modal-header {
+    background: #efefef;
+}
+
+@media screen and (max-width:767px) and (min-width: 200px) {
+    .own-song-list .audioleft {
+        width: 75%;
+    }
+}

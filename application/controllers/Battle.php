@@ -1130,5 +1130,15 @@ class Battle extends CI_Controller {
         //echo '<pre>'; print_r($arrData); die;
         $this->load->view('templates/template', $arrData);
     }
+    
+    public function find_membership() {
+        $user_id = $this->input->post('user_id');
+        $rs = $this->friends->get_membership($user_id);
+        if(isset($rs['memberships_id'])) {
+            echo $rs['memberships_id'];
+        } else {
+            echo 0;
+        }
+    }
 
 }

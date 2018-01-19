@@ -128,7 +128,7 @@ if ($addForm) {
                     <!--<a class="btn-md btn-success buy-media buy-download-btn" href="<?//=  base_url('download/cover_song/'.base64_encode($this->encrypt->encode($song_id)))?>">Download</a>-->
                         <?php //} ?>
                     
-                        <?php if(isset($user_profile[0]->memberships_id) && $user_profile[0]->memberships_id != 1) {
+                        <?php if(isset($user_profile[0]->memberships_id) && $user_profile[0]->memberships_id == 2) {
                             ?>
                             <a data-toggle="modal" media-id="<?= $song_id ?>" data-target="#buy_popup" class="btn-md btn-success buy-media buy-download-btn" href="javascript:void(0)">Buy</a>
                         <?php } ?>

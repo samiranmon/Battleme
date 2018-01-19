@@ -120,18 +120,16 @@ $form_attr = array('name' => 'frm_battle', 'id' => 'frm_battle', 'class' => '', 
                     </div>
                 </div> 
 
-                <?php
-                $sess_data = get_session_data();
-                if ($sess_data['membership_id'] == 2) {
-                    ?>
+                <?php  $sess_data = get_session_data(); ?>
                     <div class="form-group"> 
                         <div class="col-md-12 col-sm-12 col-xs-12">
                             <label>Battle Type</label>
                             <select name="cash" >
                                 <option value="1" <?php echo set_select('cash', '1'); ?>>Regular Battles</option>
+                                <?php if ($sess_data['membership_id'] == 2) { ?>
                                 <option value="2" <?php echo set_select('cash', '2'); ?>>Cash Battles</option>
+                                <?php } ?>
                             </select>
-
 
                             <div class="cash-battle" style="display: none;">
                                 </br><label>Entry</label> 
@@ -141,7 +139,6 @@ $form_attr = array('name' => 'frm_battle', 'id' => 'frm_battle', 'class' => '', 
                             </div>
                         </div>
                     </div>
-<?php } ?>
 
 
                 <div class="form-group"> 
@@ -322,6 +319,33 @@ $free_songs_str = json_encode($free_song_array);
 
 <script type="text/javascript">
     $(document).ready(function () {
+        
+        // For check Selected user membership
+        $('select[name="friend_user_id"]').change(function () {
+            $('.cash-battle').hide();
+            if ($('select[name=friend_user_id]').val() != '') {
+                $('#Submit').prop('disabled',true);
+                var user_id = ($(this).val());
+                 $.ajax({
+                    type: "POST",
+                    url: "<?php echo base_url() ?>battle/find_membership/",
+                    data: {user_id: user_id},
+                    success: function (data) {
+                         if(data == 1 || data == 0 ){
+                             $('select[name="cash"]').find('option[value*=2]').prop('disabled',true); 
+                             $('select[name="cash"]').find('option[value*=1]').prop('selected',true);
+                         } else if(data == 2) {
+                             $('select[name="cash"]').find('option[value*=2]').prop('disabled',false); 
+                             $('select[name="cash"]').find('option[value*=1]').prop('selected',true);
+                         }
+                         $('#Submit').prop('disabled',false);
+                    }
+                });
+                 
+            }
+        }).change();
+        // End for check Selected user membership
+        
         $('select[name="cash"]').change(function () {
             if ($('select[name=cash]').val() == 2) {
                 $('.cash-battle').show();

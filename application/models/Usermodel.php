@@ -137,7 +137,7 @@ class Usermodel extends CI_Model {
 	    $sql= "SELECT u.*, um.memberships_id, (SELECT COUNT(user_id)  FROM user_follow WHERE user_id = ".$id
                         .") AS following,(SELECT COUNT(following_frnd_id)  FROM user_follow WHERE following_frnd_id = "
                         .$id.") AS follower FROM user as u "
-                        . "inner join (select memberships_id, user_id from user_memberships group by `user_id` desc) um on u.id=um.user_id "
+                        . "inner join (select memberships_id, user_id from user_memberships where status = 1 group by `id` desc) um on u.id=um.user_id "
                         . "where u.id = ".$id;
 		return $this->db->query($sql)->result();
 	}
@@ -173,7 +173,9 @@ class Usermodel extends CI_Model {
     
     public function get_top_user()
     {
-	$sql = "select * from user WHERE user_type = 'artist' ORDER BY win_cnt desc limit 100 " ;
+	//$sql = "select * from user WHERE user_type = 'artist' ORDER BY win_cnt desc limit 100 " ;
+	$sql = "select * from user inner join user_memberships um on user.id = um.user_id  WHERE um.memberships_id = 2 and um.status = 1 group by user.id ORDER BY user.win_cnt desc limit 100" ;
+        
 	$res = $this->db->query($sql);
 	if($res->num_rows() > 0 )
 	{

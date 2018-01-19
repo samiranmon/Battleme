@@ -307,6 +307,11 @@ class Tournament extends CI_Controller {
         //Add media
         $sess_data = get_session_data();
         $user_id = $sess_data['id'];
+        if(isset($sess_data['membership_id']) && ($sess_data['membership_id'] == 1 || $sess_data['membership_id'] == 3 )) {
+            $this->session->set_flashdata('class', 'alert-danger');
+            $this->session->set_flashdata('message', 'Want to participate in tournaments? Upgrade to Premium membership so you can Put Your Money Where Your Mouth is and let the cash flow in!');
+            redirect('tournament/request/' . $tournament_id);
+        }
         if($_POST) {
             $tournament_id = $this->input->post('tournament_id');
         }
