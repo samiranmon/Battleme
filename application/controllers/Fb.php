@@ -28,7 +28,7 @@ class Fb extends CI_Controller {
         $user = $facebook->getUser(); // Get the facebook user id
         $profile = NULL;
         $logout = NULL;
-
+        
         if ($user) {
             try {
                 $profile = $facebook->api('/me');  //Get the facebook user profile data
@@ -39,7 +39,8 @@ class Fb extends CI_Controller {
                 error_log($e);
                 $user = NULL;
             }
-
+            //echo '<pre>';        print_r($profile); die;
+            
             $this->load->model('Usermodel');
             $this->load->model('UserMemberships');
 
@@ -69,6 +70,49 @@ class Fb extends CI_Controller {
             $this->session->set_userdata('logged_in', $data);
 
             redirect('home');
+        }
+    }
+    
+    public function fb_api_login(){
+        $data = $this->input->post('data');
+        
+        //echo '<pre>';        print_r($data); die;
+        
+        if(isset($data['id'])) {
+            $this->load->model('Usermodel');
+            $this->load->model('UserMemberships');
+            
+            $firstname = $data['name'];
+            $lastname = '';
+            if (strpos($data['name'], ' ') !== false) {
+                $name = explode(' ', $data['name']);
+                $firstname = $name[0];
+                $lastname = $name[1];
+            } 
+
+            $array = array('firstname' => $firstname,
+                'lastname' => $lastname,
+                'email' => isset($data['email'])?$data['email']:'',
+                'fb_id' => $data['id'],
+                'user_type' => 'fan',
+                'created_on' => date("Y-m-d"));
+
+            $result = $this->Usermodel->fb_api_adduser($array);
+
+            $return['fb_id'] = $data['id'];
+            $return['id'] = $result['id'];
+            $return['profile_picture'] = '';
+            $return['cover_picture'] = '';
+            $return['user_type'] = $result['user_type'];
+            $return['name'] = ucwords($result['firstname'].' '.$result['lastname']);
+
+            $membership = $this->UserMemberships->get_membership_fb(array('user_id' => $result['id']));
+            if (!empty($membership)) {
+                $return['membership_id'] = $membership['memberships_id'];
+                $return['membership_name'] = '';
+            }
+            $this->session->set_userdata('logged_in', $return);
+            echo 1; 
         }
     }
 

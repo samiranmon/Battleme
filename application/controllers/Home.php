@@ -41,6 +41,7 @@ class Home extends CI_Controller {
      * */
     public function index() {
         $this->load->helper('form');
+        
         $data['userdata'] = $this->Usermodel->get_user_profile($this->session->userdata('logged_in')['id']);
         //echo '<pre>';        print_r($data['userdata']); die;
         

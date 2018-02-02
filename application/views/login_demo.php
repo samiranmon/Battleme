@@ -20,7 +20,8 @@
     cookie:true, // enable cookies to allow the server to access the session
     status:true, // check login status
     xfbml:true, // parse XFBML
-    oauth: true //enable Oauth
+    oauth: true, //enable Oauth
+    version: 'v2.12'
     });
     };
     //Read the baseurl from the config.php file
@@ -35,22 +36,35 @@
     //Onclick for fb login
     $(document).ready(function(){
         $('#facebook_login').click(function(e) {
-
             FB.login(function(response) {
-                console.log(response);
-            if(response.authResponse) {
-            parent.location ='<?php echo base_url('fb/fblogin'); ?>'; //redirect uri after closing the facebook popup
-            }
-            },{scope: 'email,user_birthday,user_location,user_work_history,user_hometown,user_photos'}); //permissions for facebook
+                if (response.status === 'connected'){ 
+                    FB.api('/me?fields=id,email,name', function(data) {
+                        //console.log( data) // it will not be null ;)
+                        if(data.id !='' && data.name!='') { 
+                             $.ajax({
+                                type: "POST",
+                                url: "<?php echo base_url() ?>fb/fb_api_login/",
+                                //data: {data_id: data.id, name: data.name, email: data.email},
+                                data: {data: data},
+                                success: function (data) {
+                                    //alert(data);
+                                    if(data == 1) {
+                                        window.location = "<?php echo base_url() ?>home/";
+                                    }
+                                }
+                            });
+                        }
+                        
+                    }, {scope: 'email'}) 
+                }
+            });
         });
         
+        
         if($(window).width() <= 767){
-        
-        var wraperHeight = $(window).height();
-        $(".wrapper").height(wraperHeight);
-          
+            var wraperHeight = $(window).height();
+            $(".wrapper").height(wraperHeight);
         }
-        
     });
     
     

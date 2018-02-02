@@ -318,7 +318,9 @@ class Adminusermodel extends CI_Model {
 
     public function update_contactus_email($id) {
         $data = array('status' => 1);
-        $this->db->update('contact_us', $data, array('id' => $id));
+        //$this->db->update('contact_us', $data, array('id' => $id));
+        $this->db->update('contact_us', $data);
+        $this->db->where_in('id',$id);
     }
 
     public function get_songlike_details() {

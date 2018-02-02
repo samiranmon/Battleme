@@ -569,9 +569,9 @@ class Admin_dashboard extends CI_Controller {
         //print_r($data);
     }
     public function add_template_management() {
-        $path = base_url().'public/admin/js/ckfinder';
-        $width = '765px';
-        $this->editor($path, $width);
+        //$path = base_url().'public/admin/js/ckfinder';
+        //$width = '765px';
+        //$this->editor($path, $width);
         $this->load->view('add_emailtemplate_management');
     }
     public function save_email_template_details() {
@@ -619,9 +619,9 @@ class Admin_dashboard extends CI_Controller {
         }
     }
     public function edit_email_management($id) {
-        $path = base_url().'public/admin/js/ckfinder';
-        $width = '765px';
-        $this->editor($path, $width);
+        //$path = base_url().'public/admin/js/ckfinder';
+        //$width = '765px';
+        //$this->editor($path, $width);
        $data=$this->Usermodel->get_emailtempmanagement_details($id);
        
        $this->load->view('edit_emailtemplate',$data);

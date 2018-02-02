@@ -203,7 +203,7 @@
                     if($val['artist_id']==$looserId) {
                         //send notification to voter
                         $looseUsr = $this->user->getSingleUser($val['artist_id']);
-                        $notification_msg = 'The artist you voted for '.$looseUsr['firstname'].', has looses the battle '.$val['battle_name'];
+                        $notification_msg = 'The artist you voted for '.$looseUsr['firstname'].', has lost the battle '.$val['battle_name'];
                         add_notification($val['voter_id'], $val['artist_id'], $notification_msg);
                     } 
                     

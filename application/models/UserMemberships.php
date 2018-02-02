@@ -110,7 +110,23 @@ class UserMemberships extends CI_Model {
 	
     }
     
-     /**
+    function get_membership_fb($whereArr = array()) {
+        $whereArr['status'] = 1; 
+        $query = $this->db->get_where('user_memberships', $whereArr);
+        if($query->num_rows() > 0) {
+	    return $query->row_array();
+	} else {
+            $whereArr['memberships_id'] = 3;
+            $whereArr['created_on'] = date('Y-m-d H:i:s');
+            $this->db->insert('user_memberships', $whereArr);
+            
+            $query = $this->db->get_where('user_memberships', ['id' =>$this->db->insert_id()]);
+            return $query->row_array();
+        }
+    }
+
+
+    /**
      * get_membership_details
      * Get membership details
      * @access	public

@@ -58,7 +58,21 @@ class Usermodel extends CI_Model {
 
     }
     
-    /**
+    public function fb_api_adduser($data=[]) {
+        $this->db->where('fb_id', $data['fb_id']);
+        if($data['email'] != NULL)
+        $this->db->or_where('email', $data['email']);
+        $query = $this->db->get('user');
+        //echo $this->db->last_query();
+        if ($query->num_rows() > 0) {
+            return $query->row_array();
+        } else {
+            $this->db->insert('user', $data);
+            return $this->db->get_where('user', array('id' => $this->db->insert_id()))->row_array();
+        }
+    }
+
+        /**
      * checkuser function
      * @param $data
      * @return void
