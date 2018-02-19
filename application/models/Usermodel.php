@@ -188,7 +188,7 @@ class Usermodel extends CI_Model {
     public function get_top_user()
     {
 	//$sql = "select * from user WHERE user_type = 'artist' ORDER BY win_cnt desc limit 100 " ;
-	$sql = "select * from user inner join user_memberships um on user.id = um.user_id  WHERE um.memberships_id = 2 and um.status = 1 group by user.id ORDER BY user.win_cnt desc limit 100" ;
+	$sql = "select user.* from user inner join user_memberships um on user.id = um.user_id  WHERE um.memberships_id = 2 and um.status = 1 group by user.id ORDER BY user.win_cnt desc limit 100" ;
         
 	$res = $this->db->query($sql);
 	if($res->num_rows() > 0 )
@@ -540,6 +540,18 @@ class Usermodel extends CI_Model {
             return $query->result_array();
         } else {
             return [];
+        }
+    }
+    
+    public function count_platinum_mics($userId = NULL) {
+        $this->db->select('count(`tournament_group_id`) as tlatinum_count', FALSE);
+        $this->db->where('tournament_group', $userId);
+        $this->db->where('round', 6);
+        $query = $this->db->get('tournament_groups');
+        if($query->num_rows() > 0 ) {
+            return $query->row_array();
+        } else {
+            return NULL;
         }
     }
     

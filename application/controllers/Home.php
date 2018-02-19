@@ -172,7 +172,7 @@ class Home extends CI_Controller {
 	$data['top_user'] = $this->Usermodel->get_top_user();
         $data['likes'] = $this->Postmodel->get_postlikes();
         $data['comments'] = $this->Postmodel->getcomments();
-        //echo '<pre>'; print_r($data['comments']); die;
+        //echo '<pre>'; print_r($data['top_user']); die;
         
         // for wall section
         /*$total_row = $this->Postmodel->getRccordCountCommonWall($this->session->userdata('logged_in')['id']); 

@@ -2,11 +2,10 @@
     $this->load->view('admin_templates/header');
     $this->load->view('admin_templates/topbar');
     $this->load->view('admin_templates/sidebar');
-   $base_url='http://mydevfactory.com/~pranay/samiran/battleme/';
    //$base_url='http://localhost/battleme';
  ?>
 
-<script type="text/javascript" src="<?php echo $base_url; ?>public/tinymce/tinymce.min.js"></script>
+<script type="text/javascript" src="<?php echo base_url(); ?>public/admin/js/tinymce/tinymce.min.js"></script>
 <script type="text/javascript">
 tinymce.init({
   selector: 'textarea',  // change this value according to your HTML
@@ -164,5 +163,3 @@ tinymce.init({
  
 <?php
     $this->load->view('admin_templates/footer');
-   
- ?>

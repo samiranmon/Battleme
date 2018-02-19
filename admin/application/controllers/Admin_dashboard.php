@@ -436,9 +436,9 @@ class Admin_dashboard extends CI_Controller {
         //print_r($data);
     }
     public function add_contentmanagement() {
-        $path = base_url().'public/admin/js/ckfinder';
-        $width = '850px';
-        $this->editor($path, $width);
+//        $path = base_url().'public/admin/js/ckfinder';
+//        $width = '850px';
+//        $this->editor($path, $width);
         $this->load->view('add_contentmanagement');
     }
     function editor($path,$width) {
@@ -497,9 +497,9 @@ class Admin_dashboard extends CI_Controller {
         }
     }
     public function edit_content_management($id) {
-        $path = base_url().'public/admin/js/ckfinder';
-        $width = '850px';
-        $this->editor($path, $width);
+//        $path = base_url().'public/admin/js/ckfinder';
+//        $width = '850px';
+//        $this->editor($path, $width);
        $data=$this->Usermodel->get_contentmanagement_details($id);
        
        $this->load->view('editcontent',$data);

@@ -1,6 +1,10 @@
 <?php
 $user_session_data = $this->session->userdata('logged_in');
 $user_id = $user_session_data['id'];
+if(isset($platinum_mics) && !empty($platinum_mics))
+    $platinum_mics_count = $platinum_mics['tlatinum_count'];
+else 
+    $platinum_mics_count = 0;
 //print_r($user_session_data);
 ?>
 <style type="text/css">
@@ -102,7 +106,7 @@ $user_id = $user_session_data['id'];
                 }
             ?>
             <li>Gold Mics : <span><?= $user_profile[0]->win_cnt ?></span></li>
-            <li>Platinum Mics : <span>0</span></li>
+            <li>Platinum Mics : <span><?php echo $platinum_mics_count; ?></span></li>
             <li>Diamond Mics : <span>0</span></li>
             <li>Blood Mics : <span><?= $user_profile[0]->lose_cnt?></span></li>
             <?php } ?>

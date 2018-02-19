@@ -116,10 +116,10 @@
                             </a> 
                         </span>
                         
-                        <?php if($value['battle_media']==NULL && $value['tournament_media']==NULL) { ?>
+                        <?php //if($value['battle_media']==NULL && $value['tournament_media']==NULL) { ?>
                             <a title="Delete Library" class="clear glyphicon glyphicon-trash" onclick="deleteLibrary('<?=  base64_encode($value['sId'])?>')" href="javascript:void(0);"> 
                             </a>
-                        <?php } ?>
+                        <?php //} ?>
 
                     </li> 
                  <?php

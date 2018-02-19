@@ -53,6 +53,7 @@ class Profile extends CI_Controller {
         //echo '<pre>';        print_r($data['comments']); die;
 
         $data['userdata'] = $this->Usermodel->get_user_profile($user_id);
+        $data['platinum_mics'] = $this->Usermodel->count_platinum_mics($user_id);
         $data['user_profile'] = $this->Usermodel->get_user_profile($user_id);
         $data['getfollowing'] = $this->Friendsmodel->get_following_friends($user_id);
         $data['getfollowers'] = $this->Friendsmodel->get_followers($user_id);
@@ -241,6 +242,55 @@ class Profile extends CI_Controller {
     }
 
     /**
+     * update function
+     * loads the update profile page
+     * @access public
+     * @return void
+     * @author 
+     * */
+    public function update_password() {
+        //get friends list of logged in user
+        $arrData = array();
+        $sessionData = $this->session->userdata('logged_in');
+        if (!isset($sessionData['id'])) {
+            redirect('user');
+        }
+        $arrData['middle'] = 'update_password';
+        $arrData['div_col_unit'] = 'col-md-12';
+
+        $arrData['user_profile'] = $arrData['userdata'] = $this->Usermodel->get_user_profile($this->session->userdata('logged_in')['id']);
+        if($arrData['user_profile'][0]->email != NULL && $arrData['user_profile'][0]->password != NULL ) {
+            redirect('home'); }
+        $arrData['rightsidebar'] = $this->Friendsmodel->get_all_frnds($this->session->userdata('logged_in')['id']);
+        $arrData['get_notification'] = get_notification($this->session->userdata('logged_in')['id']);
+        $arrData['new_notifn_count'] = get_new_notification($this->session->userdata('logged_in')['id']);
+        
+        if($arrData['user_profile'][0]->email == NULL)
+        $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email|is_unique[user.email]');
+        $this->form_validation->set_rules('password', 'Password', 'trim|required|alpha_numeric');
+        $this->form_validation->set_rules('confirm_password', 'Confirm Password', 'required|matches[password]');
+                           
+        if ($this->form_validation->run() == true) {
+            $data = ['password' => md5($this->input->post('password'))];
+            if($this->input->post('email') != NULL)
+                $data['email'] = $this->input->post('email');
+
+            $status = $this->Usermodel->update_user_profile($sessionData['id'], $data);
+            if ($status) {
+                $this->session->set_flashdata('class', 'alert-success');
+                $this->session->set_flashdata('post_message', "Password has been updated successfully");
+            } else {
+                $this->session->set_flashdata('class', 'alert-danger');
+                $this->session->set_flashdata('post_message', "Unable to update. Please try again!");
+            }
+
+            redirect('home');
+        }
+
+        $this->load->view('templates/template', $arrData);
+    }
+    
+    /**
      * edit_profile function
      * this function edits user profile
      * @access public
@@ -377,7 +427,8 @@ class Profile extends CI_Controller {
     function upload_image($name) {
         $target_dir = 'uploads/profile_picture/';
         $config['upload_path'] = $target_dir;
-        $config['allowed_types'] = 'gif|jpg|png|jpeg|GIF|JPG|PNG|JPEG';
+        $config['allowed_types'] = '*';
+        //$config['allowed_types'] = 'gif|jpg|png|jpeg|GIF|JPG|PNG|JPEG';
         $config['encrypt_name'] = TRUE;
         $config['create_thumb'] = TRUE;
         $config['maintain_ratio'] = FALSE;
@@ -393,12 +444,24 @@ class Profile extends CI_Controller {
         if (!$this->upload->do_upload($name)) {
             return array('error' => $this->upload->display_errors());
         } else {
-            $data = array('upload_data' => $this->upload->data());
-            // $thumbnail = $data['upload_data']['raw_name'].'_thumb'.$data['upload_data']['file_ext'];
-            $this->resize_image($data['upload_data']['file_name']);
-            $this->resize_image_130x130($data['upload_data']['file_name']);
-            $this->big_resize_image($data['upload_data']['file_name']);
-            return $data['upload_data']['file_name'];
+            
+            $mediaArray = $this->upload->data();
+            $media_file = $mediaArray['file_name'];
+
+             $file_type = explode('/', $mediaArray['file_type']);
+            if($file_type[0] == 'image' && $mediaArray['is_image'] == 1) {
+                // $data = array('upload_data' => $this->upload->data());
+                // $thumbnail = $data['upload_data']['raw_name'].'_thumb'.$data['upload_data']['file_ext'];
+                $this->resize_image($media_file);
+                $this->resize_image_130x130($media_file);
+                $this->big_resize_image($media_file);
+                return $media_file;
+            } else {
+                if(file_exists(getcwd() . '/uploads/profile_picture/' . $media_file))
+                    unlink(getcwd() . '/uploads/profile_picture/' . $media_file);
+                 return array('error' => 'The filetype you are attempting to upload is not allowed.');
+            }
+            
         }
     }
 
@@ -413,7 +476,7 @@ class Profile extends CI_Controller {
     function upload_cover_image($name) {
         $target_dir = 'uploads/cover_picture/';
         $config['upload_path'] = $target_dir;
-        $config['allowed_types'] = 'gif|jpg|png|jpeg|GIF|JPG|PNG|JPEG';
+        $config['allowed_types'] = '*';
        // $config['max_size']             = 70000;
         $config['create_thumb'] = FALSE;
         $config['maintain_ratio'] = TRUE;
@@ -428,11 +491,19 @@ class Profile extends CI_Controller {
         if (!$this->upload->do_upload($name)) {
             return array('error' => $this->upload->display_errors());
         } else {
-            $data = array('upload_data' => $this->upload->data());
-            //echo '<pre>'; print_r($data); die(); 
-            // $thumbnail = $data['upload_data']['raw_name'].'_thumb'.$data['upload_data']['file_ext'];
-            $this->cover_resize_image($data['upload_data']['file_name']);
-            return 'resize_'.$data['upload_data']['file_name'];
+            
+            $mediaArray = $this->upload->data();
+            $media_file = $mediaArray['file_name'];
+
+             $file_type = explode('/', $mediaArray['file_type']);
+            if($file_type[0] == 'image' && $mediaArray['is_image'] == 1) {
+                $this->cover_resize_image($media_file);
+                return 'resize_'.$media_file;
+            } else {
+                if(file_exists(getcwd() . '/uploads/cover_picture/' . $media_file))
+                    unlink(getcwd() . '/uploads/cover_picture/' . $media_file);
+                 return array('error' => 'The filetype you are attempting to upload is not allowed.');
+            }
         }
     }
 
@@ -444,7 +515,7 @@ class Profile extends CI_Controller {
      * @author 
      * */
     public function resize_image($image_name) {
-        $this->load->library('image_lib');
+        /* $this->load->library('image_lib');
         $config['image_library'] = 'gd2';
         $config['source_image'] = 'uploads/profile_picture/' . $image_name;
         $config['create_thumb'] = FALSE;
@@ -455,11 +526,50 @@ class Profile extends CI_Controller {
 
         $this->image_lib->clear();
         $this->image_lib->initialize($config);
+        $this->image_lib->resize(); */
+        
+        $this->load->library('image_lib');
+        $this->image_lib->clear();
+        $config=array();
+        $config['image_library'] = 'gd2';
+        $config['source_image'] = 'uploads/profile_picture/' . $image_name;
+        
+        if (function_exists('exif_read_data')) {
+            try {
+                $exif = @exif_read_data('uploads/profile_picture/' . $image_name);
+                 if(isset($exif['Orientation'])) {
+                      switch($exif['Orientation']) {
+                           case 3:
+                               $config['rotation_angle']='180';
+                               break;
+                           case 6:
+                               $config['rotation_angle']='270';
+                               break;
+                           case 8:
+                               $config['rotation_angle']='90';
+                               break;
+                        } 
+                    $this->image_lib->initialize($config);
+                    $this->image_lib->rotate();
+                 }
+            } catch(Exception $e) {
+              //echo 'Message: ' .$e->getMessage();
+            }
+        }
+        
+        $config['create_thumb'] = FALSE;
+        $config['new_image'] = 'thumb_' . $image_name;
+        $config['maintain_ratio'] = FALSE;
+        $config['width'] = 80;
+        $config['height'] = 80;
+            
+        $this->image_lib->clear();
+        $this->image_lib->initialize($config);
         $this->image_lib->resize();
     }
     
     public function resize_image_130x130($image_name) {
-        $this->load->library('image_lib');
+        /* $this->load->library('image_lib');
         $config['image_library'] = 'gd2';
         $config['source_image'] = 'uploads/profile_picture/' . $image_name;
         $config['create_thumb'] = FALSE;
@@ -470,12 +580,51 @@ class Profile extends CI_Controller {
 
         $this->image_lib->clear();
         $this->image_lib->initialize($config);
+        $this->image_lib->resize(); */
+        //-----------------
+        $this->load->library('image_lib');
+        $this->image_lib->clear();
+        $config=array();
+        $config['image_library'] = 'gd2';
+        $config['source_image'] = 'uploads/profile_picture/' . $image_name;
+        
+        if (function_exists('exif_read_data')) {
+            try {
+                $exif = @exif_read_data('uploads/profile_picture/' . $image_name);
+                 if(isset($exif['Orientation'])) {
+                      switch($exif['Orientation']) {
+                           case 3:
+                               $config['rotation_angle']='180';
+                               break;
+                           case 6:
+                               $config['rotation_angle']='270';
+                               break;
+                           case 8:
+                               $config['rotation_angle']='90';
+                               break;
+                        } 
+                    $this->image_lib->initialize($config);
+                    $this->image_lib->rotate();
+                 }
+            } catch(Exception $e) {
+              //echo 'Message: ' .$e->getMessage();
+            }
+        }
+        
+        $config['create_thumb'] = FALSE;
+        $config['new_image'] = 'uploads/profile_picture/130x130/'.$image_name;
+        $config['maintain_ratio'] = FALSE;
+        $config['width'] = 130;
+        $config['height'] = 130;
+            
+        $this->image_lib->clear();
+        $this->image_lib->initialize($config);
         $this->image_lib->resize();
     }
     
     
     public function big_resize_image($image_name) {
-        $this->load->library('image_lib');
+        /* $this->load->library('image_lib');
         $config['image_library'] = 'gd2';
         $config['source_image'] = 'uploads/profile_picture/' . $image_name;
         $config['create_thumb'] = FALSE;
@@ -486,11 +635,50 @@ class Profile extends CI_Controller {
 
         $this->image_lib->clear();
         $this->image_lib->initialize($config);
+        $this->image_lib->resize(); */
+        //----------
+        $this->load->library('image_lib');
+        $this->image_lib->clear();
+        $config=array();
+        $config['image_library'] = 'gd2';
+        $config['source_image'] = 'uploads/profile_picture/' . $image_name;
+        
+        if (function_exists('exif_read_data')) {
+            try {
+                $exif = @exif_read_data('uploads/profile_picture/' . $image_name);
+                 if(isset($exif['Orientation'])) {
+                      switch($exif['Orientation']) {
+                           case 3:
+                               $config['rotation_angle']='180';
+                               break;
+                           case 6:
+                               $config['rotation_angle']='270';
+                               break;
+                           case 8:
+                               $config['rotation_angle']='90';
+                               break;
+                        } 
+                    $this->image_lib->initialize($config);
+                    $this->image_lib->rotate();
+                 }
+            } catch(Exception $e) {
+              //echo 'Message: ' .$e->getMessage();
+            }
+        }
+        
+        $config['create_thumb'] = FALSE;
+        $config['new_image'] = 'medium_' . $image_name;
+        $config['maintain_ratio'] = FALSE;
+        $config['width'] = 565;
+        $config['height'] = 441;
+            
+        $this->image_lib->clear();
+        $this->image_lib->initialize($config);
         $this->image_lib->resize();
     }
     
     public function cover_resize_image($image_name) {
-        $this->load->library('image_lib');
+       /* $this->load->library('image_lib');
         $config['image_library'] = 'gd2';
         $config['source_image'] = 'uploads/cover_picture/' . $image_name;
         $config['create_thumb'] = FALSE;
@@ -499,6 +687,47 @@ class Profile extends CI_Controller {
         $config['width'] = 800;
         $config['height'] = 250;
 
+        $this->image_lib->clear();
+        $this->image_lib->initialize($config);
+        if($this->image_lib->resize()) {
+            unlink(getcwd() . '/uploads/cover_picture/' .$image_name);
+        } */
+        // ---------------
+        $this->load->library('image_lib');
+        $this->image_lib->clear();
+        $config=array();
+        $config['image_library'] = 'gd2';
+        $config['source_image'] = 'uploads/cover_picture/' . $image_name;
+        
+        if (function_exists('exif_read_data')) {
+            try {
+                $exif = @exif_read_data('uploads/cover_picture/' . $image_name);
+                 if(isset($exif['Orientation'])) {
+                      switch($exif['Orientation']) {
+                           case 3:
+                               $config['rotation_angle']='180';
+                               break;
+                           case 6:
+                               $config['rotation_angle']='270';
+                               break;
+                           case 8:
+                               $config['rotation_angle']='90';
+                               break;
+                        } 
+                    $this->image_lib->initialize($config);
+                    $this->image_lib->rotate();
+                 }
+            } catch(Exception $e) {
+              //echo 'Message: ' .$e->getMessage();
+            }
+        }
+        
+        $config['create_thumb'] = FALSE;
+        $config['new_image'] = 'resize_' . $image_name;
+        $config['maintain_ratio'] = FALSE;
+        $config['width'] = 800;
+        $config['height'] = 250;
+            
         $this->image_lib->clear();
         $this->image_lib->initialize($config);
         if($this->image_lib->resize()) {
@@ -545,6 +774,7 @@ class Profile extends CI_Controller {
           die; */
 
         $data['userfriend'] = $this->Friendsmodel->get_all_frnds($frnd_id);
+        $data['platinum_mics'] = $this->Usermodel->count_platinum_mics($frnd_id);
         $data['friend_id'] = $frnd_id;
         $data['pic_update'] = FALSE;
         $this->load->view('profile', $data);

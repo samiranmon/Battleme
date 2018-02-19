@@ -1425,6 +1425,7 @@ class CI_Image_lib {
 	 */
 	public function image_create_gd($path = '', $image_type = '')
 	{
+            ini_set ('gd.jpeg_ignore_warning', 1);
 		if ($path === '')
 		{
 			$path = $this->full_src_path;

@@ -25,6 +25,7 @@
     <?php if ($this->router->fetch_class().'/'.$this->router->fetch_method()=='user/index' 
             || $this->router->fetch_class().'/'.$this->router->fetch_method()=='user/login'
             || $this->router->fetch_class().'/'.$this->router->fetch_method()=='contactUs/index'
+            || $this->router->fetch_class().'/'.$this->router->fetch_method()=='login/index'
             || $this->router->fetch_class().'/'.$this->router->fetch_method()=='forgetpassword/index') { ?>
         <body class="repeated-background">
     <?php } else { ?>

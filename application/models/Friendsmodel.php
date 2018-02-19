@@ -108,7 +108,7 @@ class Friendsmodel extends CI_Model {
 	if(!is_null($userid)){
 	    $sql = "SELECT user.* FROM user "
                 . " JOIN friend_list ON user.id = friend_list.resource_id"
-                . " WHERE friend_list.user_id = " . $userid . " AND (friend_list.active = 1)";
+                . " WHERE friend_list.user_id = " . $userid . " AND (friend_list.active = 1) GROUP BY user.id";
 	    $query = $this->db->query($sql);
 	    return $query->result_array();
 	}
@@ -226,7 +226,7 @@ class Friendsmodel extends CI_Model {
                     . " TIMESTAMPDIFF(SECOND,updated_on,now()) as time_diff"
                     . " FROM user "
                 . " JOIN friend_list ON user.id = friend_list.resource_id"
-                . " WHERE friend_list.user_id = " . $userid . " AND (friend_list.active = 1)";
+                . " WHERE friend_list.user_id = " . $userid . " AND (friend_list.active = 1) GROUP BY user.id";
             //echo $sql; die;
 	    $query = $this->db->query($sql);
 	    return $query->result_array();
