@@ -131,7 +131,7 @@
     {
 	if(!empty($whereArr))
 	    $this->db->where($whereArr);
-	$this->db->select('song_library.title , song_library.media ,'
+	$this->db->select('song_library.title , song_library.media, song_library.file_type,'
                 . ' battle_media.media_id , battle_media.artist_id, battle_media.fk_song_id,'
                 . ' (select count(id) from `likes` where post_id = battle_media.fk_song_id and post_type="song" and likes.battle_id = battle_media.battle_id) as like_count');
 	 $this->db->join('song_library' , 'song_library.song_id=battle_media.fk_song_id' , 'LEFT');

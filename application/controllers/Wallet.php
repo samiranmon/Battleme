@@ -47,8 +47,8 @@
              
             //Set variables for paypal form
             $paypalURL = 'https://www.sandbox.paypal.com/cgi-bin/webscr'; //test PayPal api url
-            $paypalID = 'inder.bajaj-seller@wwindia.com'; //business email
-            $returnURL = base_url().'wallet/success'; //payment success url
+            $paypalID = 'amit@ccs.com'; //business email
+            $returnURL = base_url().'wallet/fund_add_success'; //payment success url
             $cancelURL = base_url().'wallet/cancel'; //payment cancel url
             $notifyURL = base_url().'wallet/ipn'; //ipn url
 
@@ -84,9 +84,18 @@
          	 
      }
     
+    public function fund_add_success() {
+        $paypalInfo = $this->input->post();
+        if(isset($paypalInfo['txn_id'])) {
+//             $this->session->set_flashdata('class' , 'alert-success');
+             $this->session->set_flashdata('fund_success' , 'Your fund has been added successfully');
+         redirect('wallet/index/');
+        }
+    }
+             
     function success(){
         //get the transaction data
-        $paypalInfo = $this->input->get();
+        $paypalInfo = $this->input->post();
         
         $data['item_number'] = $paypalInfo['item_number']; 
         $data['txn_id'] = $paypalInfo["tx"];
@@ -100,16 +109,20 @@
      }
      
      function cancel(){
-        
         $data['middle'] = 'payment_cancel';
         $this->load->view('templates/template', $data);
-        
      }
      
      function ipn(){
         //paypal return transaction details array
         $paypalInfo    = $this->input->post();
-
+        
+        /* $this->email->from('your@battleme.hiphop', 'Your Name');
+        $this->email->to('samiran.brainium@gmail.com');
+        $this->email->subject('Return Paypal setting');
+        $this->email->message(json_encode($paypalInfo));
+        $this->email->send(); */
+        
         $data['user_id'] = $paypalInfo['custom'];
         $data['product_id']    = $paypalInfo["item_number"];
         $data['txn_id']    = $paypalInfo["txn_id"];

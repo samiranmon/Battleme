@@ -55,7 +55,7 @@
      public function get_top_songs()
      {
 	 $result = array();
-	 $this->db->select("`song_id` as sId , song_library.`user_id`, `media`, `title`, `created_date` , user.firstname , user.lastname 
+	 $this->db->select("`song_id` as sId ,song_library.file_type, song_library.`user_id`, `media`, `title`, `created_date` , user.firstname , user.lastname 
 		 , (select count(*) FROM likes where post_id = sId AND post_type='song') as likeCount");
 	 $this->db->from('song_library') ;
 	 $this->db->join('user' , 'user.id = song_library.user_id' , 'LEFT');

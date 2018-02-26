@@ -29,12 +29,14 @@ if (!empty($battle_media))
             $challenger_title = $title;
             $challenger_song_id = $value['fk_song_id'];
             $challenger_like_count = $value['like_count'];
+            $challenger_file_type = $value['file_type'];
         }
         if ($battle_details['friend_user_id'] == $value['artist_id']) {
             $friend_media_path = $path;
             $friend_title = $title;
             $friend_song_id = $value['fk_song_id'];
             $friend_like_count = $value['like_count'];
+            $friend_file_type = $value['file_type'];
         }
     }
 //echo "<pre>";
@@ -362,7 +364,7 @@ if (isset($own_songs) && !empty($own_songs)) {
                     <div class="song_name_inner">
                         <h3><?=$challenger_title?></h3>&nbsp;
 
-                        <?php if($battle_details['battle_category'] == 4) { ?>
+                        <?php if($challenger_file_type == 2) { ?>
                             <a href="javascript:void(0)" data-target="#challenger_video_popup" data-toggle="modal"><i class="fa fa-play" aria-hidden="true"></i></a>
                         <?php } else { //base_url($challenger_mediaPath)?>
                             <audio id="challengerAudio">
@@ -434,7 +436,7 @@ if (isset($own_songs) && !empty($own_songs)) {
                     <?php if($friend_media_path != '') { ?>
                     <div class="song_name_inner">
                         <h3><?=$friend_title?></h3>&nbsp;
-                        <?php if($battle_details['battle_category'] == 4) { ?>
+                        <?php if($friend_file_type == 2) { ?>
                              <a href="javascript:void(0)" data-target="#friend_video_popup" data-toggle="modal"><i class="fa fa-play" aria-hidden="true"></i></a>
                         <?php } else { ?>
                              <audio id="friendAudio">

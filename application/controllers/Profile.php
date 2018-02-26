@@ -819,17 +819,17 @@ class Profile extends CI_Controller {
 
             $msg = 'To download the media click ';
             $msg .= '<a href="' . $downloadLink . '">Here</a>';
-            $this->email->from('noreply@mydevfactory.com', 'Your Battleme Team');
+            $this->email->from('noreply@battleme.hiphop', 'Your Battleme Team');
             $this->email->to($userdata[0]->email);
             $this->email->set_mailtype("html");
 
-            $this->email->subject('Your download media link');
+            $this->email->subject('Battleme.hiphop download link');
             $this->email->message($msg);
             $this->email->send();
 
 
             $this->session->set_userdata('class', 'alert-success');
-            $this->session->set_userdata('buy_message', "Your payment has been received successfully. <br>Please check your mail. Download link is sended to your mail account");
+            $this->session->set_userdata('buy_message', "Your payment has been received successfully. <br>Please check your mail. Download link is sent to your mail account");
             redirect('welcome');
         } else {
             $this->session->set_userdata('class', 'alert-danger');
