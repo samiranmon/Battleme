@@ -2,7 +2,6 @@
     $this->load->view('admin_templates/header');
     $this->load->view('admin_templates/topbar');
     $this->load->view('admin_templates/sidebar');
-   $base_url='http://mydevfactory.com/~pranay/samiran/battleme/';
  ?>
 <script src="<?php echo base_url(); ?>public/admin/admin_js/script-for-delivery-cost-management.js"></script>
 
@@ -11,10 +10,10 @@
             <div>
     <ul class="breadcrumb">
         <li>
-            <a href="#">Home</a>
+            <a href="<?= base_url('admin_dashboard')?>">Home</a>
         </li>
         <li>
-            <a href="#">Dashboard</a>
+            <a href="<?= base_url('admin_dashboard/get_sitesetting_details')?>">Site Setting</a>
         </li>
     </ul>
 </div>
@@ -35,8 +34,11 @@
   <div class="form-group">
     <label class="control-label col-sm-2" for="email"><?php echo $name?>:</label>
     <div class="col-sm-10">
-        
+        <?php if($id == 2) { ?>
+        <input type="text" id="setting_value" readonly="" class="form-control" name="value" placeholder="Enter <?php echo $name?>" value="<?php echo $value?>">
+        <?php } else { ?>
         <input type="text" class="form-control" name="value" placeholder="Enter <?php echo $name?>" value="<?php echo $value?>">
+        <?php } ?>
      
     </div>
   </div>
@@ -82,6 +84,17 @@
     
 
     <hr>
+<script type="text/javascript">
+$(document).ready(function(){
+    $('#status').on('change', function(){
+        if($(this).val() == 1) {
+            $('#setting_value').val('Live Account');
+        } else { 
+            $('#setting_value').val('Sandbox Account');
+        }
+    }).change();
+});
+</script>
 
 <!--    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
          aria-hidden="true">
@@ -105,5 +118,3 @@
  
 <?php
     $this->load->view('admin_templates/footer');
-   
- ?>

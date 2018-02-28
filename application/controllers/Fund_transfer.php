@@ -6,6 +6,9 @@ if (!defined('BASEPATH'))
 class Fund_transfer extends CI_Controller {
     
     public $userData;
+    public $paypalMode;
+    public $paypalSetting;
+    
     function __construct() { 
         parent::__construct();
         $data = $this->session->userdata('logged_in');
@@ -22,8 +25,31 @@ class Fund_transfer extends CI_Controller {
 
         // Load PayPal library
         $this->config->load('paypal');
+//        $this->config->load('breadcrumbs');
+//        $this->config->set_item('hide_number', 'your value');
+        
+        $paypal_mode = $this->wallet->getSiteSettingById(2);
+         if(isset($paypal_mode['status']) && $paypal_mode['status'] == 0) {
+             $this->paypalMode = TRUE;
+              $this->paypalSetting = $this->wallet->getPaypalSettingById(2);
+         } else {
+             $this->paypalMode = FALSE;
+             $this->paypalSetting = $this->wallet->getPaypalSettingById(3);
+         }
 
         $config = array(
+            'Sandbox' => $this->paypalMode, // Sandbox / testing mode option.
+            'APIUsername' => $this->paypalSetting['api_username'], // PayPal API username of the API caller
+            'APIPassword' => $this->paypalSetting['api_password'], // PayPal API password of the API caller
+            'APISignature' => $this->paypalSetting['api_signature'], // PayPal API signature of the API caller
+            'APISubject' => '', // PayPal API subject (email address of 3rd party user that has granted API permission for your app)
+            'APIVersion' => $this->config->item('APIVersion'), // API version you'd like to use for your call.  You can set a default version in the class and leave this blank if you want.
+            'DeviceID' => $this->config->item('DeviceID'),
+            'ApplicationID' => $this->paypalSetting['application_id'],
+            'DeveloperEmailAccount' => $this->config->item('DeveloperEmailAccount')
+        ); 
+        
+         /* $config = array(
             'Sandbox' => $this->config->item('Sandbox'), // Sandbox / testing mode option.
             'APIUsername' => $this->config->item('APIUsername'), // PayPal API username of the API caller
             'APIPassword' => $this->config->item('APIPassword'), // PayPal API password of the API caller
@@ -33,8 +59,8 @@ class Fund_transfer extends CI_Controller {
             'DeviceID' => $this->config->item('DeviceID'),
             'ApplicationID' => $this->config->item('ApplicationID'),
             'DeveloperEmailAccount' => $this->config->item('DeveloperEmailAccount')
-        );
-
+        ); */
+         
         if ($config['Sandbox']) {
             // Show Errors
             error_reporting(E_ALL);

@@ -278,6 +278,20 @@ class Adminusermodel extends CI_Model {
             return $row;
         }
     }
+    public function get_paypal_details($id) {
+        $this->db->select('*');
+        $this->db->from('paypal_setting');
+
+        $this->db->where('id', $id);
+
+
+        $query = $this->db->get();
+
+        if ($query->num_rows() > 0) {
+            $row = $query->row_array();
+            return $row;
+        }
+    }
 
     public function save_facebook_data($data) {
 
@@ -321,6 +335,13 @@ class Adminusermodel extends CI_Model {
         //$this->db->update('contact_us', $data, array('id' => $id));
         $this->db->update('contact_us', $data);
         $this->db->where_in('id',$id);
+    }
+    
+    public function set_paypal_setting($id = null, $data = []) {
+        $data['updated_on'] = date('Y-m-d H:i:s');
+        $this->db->update('paypal_setting', $data, ['id'=>$id]);
+//        echo $this->db->last_query(); echo $id; die;
+        return true;
     }
 
     public function get_songlike_details() {

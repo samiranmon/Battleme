@@ -66,7 +66,7 @@
                  <td><?php echo $val['id']; ?></td>
                 <td><?php echo $val['pagename']; ?></td>
                 <td><?php echo $val['pageurl']; ?></td>
-                <td><?php echo substr($val['pagecontent'],0,300).'...'; ?></td>
+                <td><?php echo substr($val['pagecontent'],0,100).'...'; ?></td>
                 <td><?php echo $val['meta_description']; ?></td>
                 <td><?php echo $val['meta_keyword']; ?></td>
                 <td><?php echo $val['meta_author']; ?></td>

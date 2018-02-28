@@ -16,12 +16,16 @@ class User extends CI_Controller {
      * @return void
      * @author 
      * */
+    public $paypalMode;
+    public $paypalSetting;
+    
     public function __construct() {
         parent::__construct();
         $this->load->model('UserMemberships');
         $this->load->model('Usermodel');
         $this->load->model('Song_library_model' , 'songs');
         $this->load->model('Friendsmodel', 'friends');
+        $this->load->model('wallet_model' , 'wallet');
          
         $this->load->helper('randomstring_helper');
         $this->load->library('user_agent');
@@ -31,7 +35,29 @@ class User extends CI_Controller {
         $this->load->library('encrypt');
         
         $this->config->load('paypal');
-         $config = array(
+        
+        $paypal_mode = $this->wallet->getSiteSettingById(2);
+         if(isset($paypal_mode['status']) && $paypal_mode['status'] == 0) {
+             $this->paypalMode = TRUE;
+              $this->paypalSetting = $this->wallet->getPaypalSettingById(2);
+         } else {
+             $this->paypalMode = FALSE;
+             $this->paypalSetting = $this->wallet->getPaypalSettingById(3);
+         }
+
+        $config = array(
+            'Sandbox' => $this->paypalMode, // Sandbox / testing mode option.
+            'APIUsername' => $this->paypalSetting['api_username'], // PayPal API username of the API caller
+            'APIPassword' => $this->paypalSetting['api_password'], // PayPal API password of the API caller
+            'APISignature' => $this->paypalSetting['api_signature'], // PayPal API signature of the API caller
+            'APISubject' => '', // PayPal API subject (email address of 3rd party user that has granted API permission for your app)
+            'APIVersion' => $this->config->item('APIVersion'), // API version you'd like to use for your call.  You can set a default version in the class and leave this blank if you want.
+            'DeviceID' => $this->config->item('DeviceID'),
+            'ApplicationID' => $this->paypalSetting['application_id'],
+            'DeveloperEmailAccount' => $this->config->item('DeveloperEmailAccount')
+        ); 
+        
+         /* $config = array(
             'Sandbox' => $this->config->item('Sandbox'), // Sandbox / testing mode option.
             'APIUsername' => $this->config->item('APIUsername'), // PayPal API username of the API caller
             'APIPassword' => $this->config->item('APIPassword'), // PayPal API password of the API caller
@@ -41,7 +67,7 @@ class User extends CI_Controller {
             'DeviceID' => $this->config->item('DeviceID'),
             'ApplicationID' => $this->config->item('ApplicationID'),
             'DeveloperEmailAccount' => $this->config->item('DeveloperEmailAccount')
-        );
+        ); */
          
         $this->load->library('paypal/Paypal_pro', $config, 'paypal_pro');
     }
@@ -463,6 +489,7 @@ class User extends CI_Controller {
             {
                  // Success block
                 //[CUSTOM] => one-samiran.brainium@gmail.com|1|2|3|8|9
+                //echo '<pre>'; print_r($PayPalResult); die;
                 
                 if(isset($PayPalResult['BILLINGAGREEMENTACCEPTEDSTATUS']) && $PayPalResult['BILLINGAGREEMENTACCEPTEDSTATUS'] == 1 && $PayPalResult['PAYERSTATUS'] == 'verified') {
                     $buyerData = ['TOKEN' => $PayPalResult['TOKEN'], 'PAYERID'=>$PayPalResult['PAYERID'], 'EMAIL'=>$PayPalResult['EMAIL'], 'NAME'=>$PayPalResult['FIRSTNAME'].' '.$PayPalResult['LASTNAME'], 'BUSINESS'=> isset($PayPalResult['BUSINESS'])?$PayPalResult['BUSINESS']:''];

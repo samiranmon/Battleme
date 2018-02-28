@@ -9,6 +9,33 @@
 	 parent::__construct();
      }
      
+     
+      public function getSiteSettingById($id=null) {
+        $this->db->select('*');
+        $this->db->from('sitesetting');
+        $this->db->where('id', $id );
+        $query = $this->db->get();
+
+        if ( $query->num_rows() > 0 )
+        {
+            $row = $query->row_array();
+            return $row;
+        }
+    }
+    
+      public function getPaypalSettingById($id=null) {
+        $this->db->select('*');
+        $this->db->from('paypal_setting');
+        $this->db->where('id', $id );
+        $query = $this->db->get();
+
+        if ( $query->num_rows() > 0 )
+        {
+            $row = $query->row_array();
+            return $row;
+        }
+    }
+     
     /**
      * add_request
      * this function save the payment transactions
@@ -19,10 +46,12 @@
     {
 	if(!empty($inputArr))
 	{
-	    $this->db->insert('payments' , $inputArr) ;
-            $insert_id =  $this->db->insert_id();
-                
-            return $insert_id;
+            $query = $this->db->get_where('payments', array('txn_id' => $inputArr['txn_id'], 'user_id' => $inputArr['user_id']));
+            if ($query->num_rows() < 1) {
+                $this->db->insert('payments' , $inputArr) ;
+                $insert_id =  $this->db->insert_id();
+                return $insert_id;
+            } 
 	}
     }
     
