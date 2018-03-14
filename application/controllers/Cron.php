@@ -177,15 +177,17 @@ class Cron extends CI_Controller {
     
     public function test() {
         echo 'Hello';
-        /* $this->load->library('email');
+        $request = $_POST;
+         $this->load->library('email');
 
-        $this->email->from('noreply@battleme.hiphop', 'Your Battleme Team');
+        $this->email->from('noreply@battleme.hiphop', 'SKRILL');
         $this->email->to('samiran.brainium@gmail.com');
 
-        $this->email->subject('Email Test');
-        $this->email->message('Testing the email class.');
+        $this->email->subject('SKRILL Email Test');
+//        $this->email->message('Testing the email class.');
+        $this->email->message(json_encode($request));
 
-        $this->email->send(); */
+        $this->email->send(); 
     }
 
 

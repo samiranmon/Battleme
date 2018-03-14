@@ -183,7 +183,9 @@ class User extends CI_Controller {
             }
         }
         
+        $this->form_validation->set_message('is_unique', 'That %s has already been registered please register a new email');
         $this->form_validation->set_rules($validate_rule);
+        
 
         if ($this->form_validation->run() == False) {
             $this->session->set_userdata('_securityQue', $arrData['securityQuestion']);
@@ -271,7 +273,6 @@ class User extends CI_Controller {
             }
         }
     }
-
     /**
      * login
      * 
