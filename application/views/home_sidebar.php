@@ -87,6 +87,9 @@
                 
                 <li <?php if($path_name == 'invite/index') echo 'class="active"'; ?>> 
                     <a href="<?php echo base_url('invite') ?>">Refer a friend</a> </li>
+                
+                <li <?php if($path_name == 'contactUs/get_in_touch') echo 'class="active"'; ?>> 
+                    <a href="<?php echo base_url('contactUs/get_in_touch') ?>">Contact us</a> </li>
 
         </ul>
     </div>
