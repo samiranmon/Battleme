@@ -14,7 +14,7 @@
 <script src="<?php echo base_url() ?>public/js/parsley/parsley.extend.js"></script>
 <?php
 $selectStr = 'class="form-control"';
-
+if(!isset($user_dtl['email'])) { $user_dtl['email'] = ''; }
 $name = array(
     'name' => 'name',
     'id' => 'name',

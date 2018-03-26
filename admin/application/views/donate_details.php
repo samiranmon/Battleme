@@ -43,7 +43,9 @@
             </tr>
         </tfoot>
         <tbody>
-            <?php foreach($donate as $val) {?>
+            <?php 
+            if(!empty($donate)) {
+                foreach($donate as $val) { ?>
             <tr>
                  <td><?php echo $val['firstname']; ?></td>
                 <td>
@@ -56,7 +58,7 @@
                 
                 ?></td>
             </tr>
-           <?php } ?>
+            <?php } } ?>
         </tbody>
     </table>
 

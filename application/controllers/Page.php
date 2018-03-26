@@ -52,7 +52,25 @@ class Page extends CI_Controller {
         
         $this->load->view('templates/template', $arrData);
         
-    }       
+    }     
+    
+       public function how_it_works() {
+        
+        $user_id = $this->sessionData['id'];
+        $arrData['middle'] = 'cms_page';
+        $arrData['div_col_unit'] = 'col-md-12';
+        $arrData['page_details'] = $this->user->getCmsPage(8);
+        //echo '<pre>'; print_r($arrData); die;
+        $arrData['rightsidebar'] = $this->friends->get_all_frnds($this->session->userdata('logged_in')['id']);
+        $arrData['get_notification'] = get_notification($this->session->userdata('logged_in')['id']);
+        $arrData['new_notifn_count'] = get_new_notification($this->session->userdata('logged_in')['id']);
+        $arrData['userdata'] = $this->user->get_user_profile($this->session->userdata('logged_in')['id']);
+        //$arrData['top_songs'] = $this->library->get_top_songs();
+	//$arrData['top_user'] = $this->user->get_top_user();
+        
+        $this->load->view('templates/template', $arrData);
+        
+    } 
 
    
 }

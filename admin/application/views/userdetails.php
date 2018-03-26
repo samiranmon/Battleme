@@ -56,6 +56,7 @@
             <?php 
             
              //print_r($user);
+                if(!empty($user)) {
                 foreach($user as $val) { ?>
             <tr>
                 <td><?php echo $val['firstname']; ?></td>
@@ -107,7 +108,7 @@
 </a>
                 </td>
             </tr>
-           <?php } ?>
+           <?php } } ?>
         </tbody>
     </table>
 

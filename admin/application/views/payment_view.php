@@ -53,7 +53,9 @@
             </tr>
         </tfoot>
         <tbody>
-            <?php foreach($payments as $val) {?>
+            <?php 
+            if(!empty($payments)) {
+                foreach($payments as $val) {?>
             <tr>
                  <td><?php echo $val['txn_id']; ?></td>
                 <td><?php echo $val['firstname'].' '.$val['lastname']; ?></td>
@@ -62,7 +64,7 @@
                 <td><?php echo $val['payer_email']; ?></td>
                 <td><?php echo $val['payment_status']; ?></td>
             </tr>
-           <?php } ?>
+                <?php } } ?>
         </tbody>
     </table>
 

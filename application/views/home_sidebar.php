@@ -57,7 +57,7 @@
                 </ul>
             </li>
 
-            <?php if ($sessionData['user_type'] == 'artist' && isset($sessionData)) { ?>
+            <?php if (($sessionData['membership_id'] == 2 || $sessionData['membership_id'] == 1) && isset($sessionData)) { ?>
                 <li <?php if($path_name == 'battle/create') echo 'class="active"'; ?>> 
                     <a href="<?= base_url('battle/create') ?>"> 
                         <span class="font-bold">Create Battle</span> 
@@ -81,12 +81,15 @@
                 </li>
             <?php } ?>
 
-            <?php if ($sessionData['user_type'] == 'artist' && isset($sessionData)) { ?>
+            <?php if (($sessionData['membership_id'] == 2 || $sessionData['membership_id'] == 1) && isset($sessionData)) { ?>
                 <li <?php if($path_name == 'tournament/index') echo 'class="active"'; ?>> <a href="<?php echo base_url('tournament') ?>"> My Tournaments</a> </li>
             <?php } ?>
                 
                 <li <?php if($path_name == 'invite/index') echo 'class="active"'; ?>> 
                     <a href="<?php echo base_url('invite') ?>">Refer a friend</a> </li>
+                
+                <li <?php if($path_name == 'page/how_it_works') echo 'class="active"'; ?>> 
+                    <a href="<?php echo base_url('page/how_it_works') ?>">How It Works</a> </li>
                 
                 <li <?php if($path_name == 'contactUs/get_in_touch') echo 'class="active"'; ?>> 
                     <a href="<?php echo base_url('contactUs/get_in_touch') ?>">Contact us</a> </li>

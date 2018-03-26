@@ -37,6 +37,7 @@ class Admin_dashboard extends CI_Controller {
 
             $data = $this->Adminusermodel->get_count_user_battle();
 
+            $data1 = [];
             foreach ($data['allmember_count'] as $key => $value) {
                 $data1[$key] = $value;
             }
@@ -60,8 +61,10 @@ class Admin_dashboard extends CI_Controller {
     /* User Management start */
 
     public function get_user_details() {
+        $data = [];
         $data = $this->Usermodel->get_all_user();
 
+        if(!empty($data)) {
         foreach ($data as $key => $value) {
             $data[$key] = (array) $value;
             //$data[$key]['id']
@@ -71,7 +74,7 @@ class Admin_dashboard extends CI_Controller {
             } else {
                 $data[$key]['member_type'] = 'Not Subscribed';
             }
-        }
+        } }
         $data = array('user' => $data);
         //print_r($data['user'][0]['member_type']);
         $this->load->view('userdetails', $data);

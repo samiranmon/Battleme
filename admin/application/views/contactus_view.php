@@ -58,7 +58,9 @@ $this->load->view('admin_templates/sidebar');
                 </tr>
             </tfoot>
             <tbody>
-                <?php foreach ($contactus as $val) { ?>
+                <?php 
+                if(!empty($contactus)) {
+                    foreach ($contactus as $val) { ?>
                     <tr>
                         <td><input type="checkbox" class="checkbox" onchange="updateemailid(<?php echo $val['id']; ?>)" id="<?php echo $val['id']; ?>" value="<?php echo $val['id']; ?>"/></td>
                         <td><?php echo $val['email']; ?></td>
@@ -121,7 +123,7 @@ $this->load->view('admin_templates/sidebar');
                             </div>
                         </td>
                     </tr>
-<?php } ?>
+<?php } } ?>
             </tbody>
         </table>
         <div id="replyall" class="modal fade" role="dialog">

@@ -42,7 +42,7 @@ class Hire_singer extends CI_Controller {
         
         $user_id = $this->sessionData['id'];
         $registerSinger = $this->hire->getRegisterSinger($user_id);
-        //echo '<pre>';        print_r($registerSinger); die();
+//        echo '<pre>';        print_r($registerSinger); die();
         
         $gender = [1 =>'male', 2 => 'female'];
         $registerSingerArray = [];

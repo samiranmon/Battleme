@@ -101,7 +101,10 @@ $sess_data = get_session_data();
                                                     <span>Voice Clip : </span>
                                                     <a href="javascript:void(0)" class="voice_play" song-id="<?=$value['id']?>"><em class="play_btn"></em></a>
                                                     <a href="javascript:void(0)" class="voice_pause" song-id="<?=$value['id']?>"><em class="pass_btn"></em></a>
-                                                    <?php if($value['status'] == 0 && $value['status'] != NULL ) { ?>
+                                                    
+                                                    <?php 
+                                                        $hire_status = $this->hire->getIsHired($value['user_id']);
+                                                    if($hire_status['status'] == 0 && $hire_status['status'] != NULL ) { ?>
                                                         <a href="javascript:void(0)" class="hire_btn">Hired</a> 
                                                     <?php } else { ?>
                                                         <a href="javascript:void(0)" data-toggle="modal" hired-uid="<?=$value['user_id']?>" data-target="#hireModal" class="hire_btn">Hire</a> 

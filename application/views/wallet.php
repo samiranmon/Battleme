@@ -62,7 +62,7 @@ $refund_submit = array(
             <!--<img src="< ?php echo base_url().'assets/images/'.$product['image']; ?>" alt="">-->
             <div class="caption">
                 <div class="amount_field_text">
-                    <div class="amount_field">$ <input name="amount" min="1" step="1" value="1" type="number" /></div>
+                    <div class="amount_field">$ <input name="amount" min="10" step="1" value="10" type="number" /></div>
                 <h4 class="amout_text"><a href="javascript:void(0);"><?php echo 'Amount'; ?></a></h4> 
                 </div>
                 <?php echo form_submit($data_submit) ?>

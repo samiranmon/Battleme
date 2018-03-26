@@ -47,7 +47,9 @@
             </tr>
         </tfoot>
         <tbody>
-            <?php foreach($media as $val) {
+            <?php 
+            if(!empty($media)) {
+                foreach($media as $val) {
                         
                 ?>
             <tr>
@@ -79,7 +81,7 @@
                 <td> <?php echo $val['tournamentdonwload']; ?></td>
                 <td><strong>BB:</strong> <?php echo $val['songbattlebuck']; ?></td>
             </tr>
-                        <?php  } ?>
+                        <?php  } } ?>
         </tbody>
     </table>
 

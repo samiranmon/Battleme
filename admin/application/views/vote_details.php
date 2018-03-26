@@ -43,7 +43,9 @@
             </tr>
         </tfoot>
         <tbody>
-            <?php foreach($vote as $val) {
+            <?php 
+            if(!empty($vote)) {
+                foreach($vote as $val) {
                         if($val['battlename']!=''){
                 ?>
             <tr>
@@ -63,7 +65,7 @@
 ?></td>
                 
             </tr>
-                        <?php } } ?>
+                        <?php } } } ?>
         </tbody>
     </table>
 

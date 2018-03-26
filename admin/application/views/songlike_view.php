@@ -49,7 +49,9 @@
             </tr>
         </tfoot>
         <tbody>
-            <?php foreach($songlike as $val) {?>
+            <?php 
+            if(!empty($songlike)) {
+                foreach($songlike as $val) {?>
             <tr>
                  <td><?php echo $val['title']; ?></td>
                 <td>
@@ -74,7 +76,7 @@
                                 }
                             ?></td>
             </tr>
-           <?php } ?>
+           <?php } } ?>
         </tbody>
     </table>
 

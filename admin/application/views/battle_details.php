@@ -50,7 +50,9 @@
             </tr>
         </tfoot>
         <tbody>
-            <?php foreach($battle as $val) {?>
+            <?php 
+            if(!empty($battle)) {
+                foreach($battle as $val) { ?>
             <tr>
                  <td><?php echo $val['battle_request_id']; ?></td>
                 <td>
@@ -192,7 +194,7 @@
 </div>
                 </td>
             </tr>
-           <?php } ?>
+            <?php } } ?>
         </tbody>
     </table>
 

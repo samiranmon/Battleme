@@ -47,7 +47,9 @@
             </tr>
         </tfoot>
         <tbody>
-            <?php foreach($tour as $val) {
+            <?php 
+            if(!empty($tour)) {
+                foreach($tour as $val) {
                         
                 ?>
             <tr>
@@ -63,7 +65,7 @@
                 <td> <?php echo $val['entry']; ?></td>
                 <td> </td>
             </tr>
-                        <?php  } ?>
+            <?php } } ?>
         </tbody>
     </table>
 

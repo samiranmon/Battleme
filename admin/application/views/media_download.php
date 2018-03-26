@@ -47,7 +47,9 @@
             </tr>
         </tfoot>
         <tbody>
-            <?php foreach($media as $val) {
+            <?php 
+            if(!empty($media)) {
+                foreach($media as $val) {
                         
                 ?>
             <tr>
@@ -82,7 +84,7 @@
                 <td> <?php echo $val['download']; ?></td>
                 
             </tr>
-                        <?php  } ?>
+                        <?php  } } ?>
         </tbody>
     </table>
 
