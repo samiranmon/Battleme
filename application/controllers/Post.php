@@ -69,21 +69,15 @@ class Post extends CI_Controller {
             
             if(!empty($_FILES['media_post']['name'])) {
                 $config['upload_path'] = $this->config->item('post_media_path');
-
-                $config['allowed_types'] = 'jpeg|gif|jpg|png|mp4|ogg|webm|mp3';
-                if(in_array($_SERVER['REMOTE_ADDR'], ['127.0.0.1', "::1"])){
-                    $config['allowed_types'] = 'flv|FLV|mkv|MKV|jpeg|gif|jpg|png|mp4|ogg|ogv|avi|mp3';
-                }
-
+                $config['allowed_types'] = '*';
                 $config['max_size']	= '1024480';
-                $config['max_width']    = 0;
-                $config['max_height']   = 0;
+                $config['max_width']  = 0;
+                $config['max_height']  = 0;
                 $config['remove_spaces']=TRUE;
                 $config['encrypt_name'] = TRUE;
                 $this->load->library('upload', $config);
 
-                if ( ! $this->upload->do_upload('media_post'))
-                {
+                if (! $this->upload->do_upload('media_post')) {
                     $media_error = 1;
                     $data['post_media_error'] = $this->upload->display_errors();
                     //echo '<pre>'; print_r($this->upload->data());
@@ -94,39 +88,55 @@ class Post extends CI_Controller {
                     } else {
                         redirect('profile/view/' . $userid);
                     }
-                }
-                else
-                { 
+                } else { 
                     $mediaArray = $this->upload->data();
                     $media_file = $mediaArray['file_name'];
-                    $ext = pathinfo($media_file, PATHINFO_EXTENSION);
 
-                     $media_type = 3; // for voice
-
-                    if($mediaArray['is_image'] != 1 && in_array($ext, ['flv','FLV','mkv','MKV','mp4','ogg','ogv','avi'])) {
+                     $file_type = explode('/', $mediaArray['file_type']);
+                    if($file_type[0] == 'video') {
                         $media_type = 2; // for video
-                        if(in_array($_SERVER['REMOTE_ADDR'], ['127.0.0.1', "::1"])){
-                            $conv_file_name = 'con_'.time().'.mp4';
-                            $cont_file_path = $this->config->item('post_media_path').$conv_file_name;
-                            shell_exec("ffmpeg -i ".$this->config->item('post_media_path').$media_file." -f mp4 -s 500x400 -strict -2  ".$cont_file_path." 2>&1");
-                            // for deleting the source file
-                            if(file_exists($this->config->item('post_media_path').$media_file)) {
-                                unlink($this->config->item('post_media_path').$media_file);
-                            }
-                            $media_file = $conv_file_name;
-                        }
-                    }
 
-                    if(isset($mediaArray['is_image']) && $mediaArray['is_image'] == 1) {
+                        $conv_file_name = 'con_'.time().'.mp4';
+                        $cont_file_path = $this->config->item('post_media_path').$conv_file_name;
+                        shell_exec("/usr/local/bin/ffmpeg -i ".$this->config->item('post_media_path').$media_file." -y -vcodec libx264 -crf 18 -pix_fmt yuv420p -qcomp 0.8 -preset medium -acodec aac -strict -2 -b:a 400k -x264-params ref=4 -profile:v baseline -level 3.1 -movflags +faststart ".$cont_file_path);
+                        if(file_exists($this->config->item('post_media_path').$media_file)) { unlink($this->config->item('post_media_path').$media_file); } 
+                        $media_file = $conv_file_name;
+
+                    } else if($file_type[0] == 'audio') {
+                        $media_type = 3; // for voice
+                        $conv_file_name = 'con_'.time().'.mp3';
+                        $cont_file_path = $this->config->item('post_media_path').$conv_file_name;
+                        shell_exec("/usr/local/bin/ffmpeg -i ".$this->config->item('post_media_path').$media_file." -f mp3 ".$cont_file_path." 2>&1");
+                        if(file_exists($this->config->item('post_media_path').$media_file)) { unlink($this->config->item('post_media_path').$media_file); } 
+                        $media_file = $conv_file_name;
+
+                    } else if($file_type[0] == 'image' && $mediaArray['is_image'] == 1) {
                         $media_type = 1;
                         // for resize the media image
                         $this->resize_image($media_file);
                         $this->medium_resize_image($media_file);
+
                         if(file_exists($this->config->item('post_media_path').$media_file)) {
                             unlink($this->config->item('post_media_path').$media_file);
                         }
-                    }
+                    } else {
+                        if(file_exists($this->config->item('post_media_path').$media_file)) {
+                            unlink($this->config->item('post_media_path').$media_file); } 
+                        
+                        $this->session->set_flashdata('class' , 'alert-danger');
+                        $this->session->set_flashdata('post_message' , 'File type is not allowed!');
+                        if ($myid === $userid) {
+                            redirect('profile');
+                        } else { redirect('profile/view/' . $userid); }
+                    } 
 
+                    if(!file_exists($this->config->item('post_media_path').$media_file)) {
+                        $this->session->set_flashdata('class', 'alert-danger');
+                        $this->session->set_flashdata('post_message', 'Failed try again!');
+                        if ($myid === $userid) {
+                            redirect('profile');
+                        } else { redirect('profile/view/' . $userid); }
+                    }
                 }
             }
             
@@ -159,7 +169,6 @@ class Post extends CI_Controller {
                     redirect('profile/view/' . $userid);
                 }
             }
-            
             
         }
     }
