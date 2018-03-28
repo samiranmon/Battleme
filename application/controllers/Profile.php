@@ -940,9 +940,6 @@ class Profile extends CI_Controller {
     }
 
     public function add_song() {
-        //if ($this->input->post('Submit') == 'Create') {
-
-
         $data['send_id'] = $user_id = $this->session->userdata('logged_in')['id'];
         $data['post_data'] = $this->Postmodel->getpost($user_id);
         $data['likes'] = $this->Postmodel->get_postlikes();
@@ -973,20 +970,61 @@ class Profile extends CI_Controller {
         $sess_data = get_session_data();
         $user_id = $sess_data['id'];
         if ($this->form_validation->run() == TRUE) {
-            $mediaConfig = array(
-                'upload_path' => $this->config->item('library_media_path'),
-                'allowed_types' => '3gp|aa|aac|aax|act|aiff|amr|ape|au|awb|dct|dss|dvf|flac|gsm|iklax|ivs|m4a|m4b|m4p|mmf|mp3|mpc|msv|ogg|oga|mogg|opus|ra|rm|raw|sln|tta|vox|wav|wma|wv|webm|mp4'
-            );
-            $filename = $this->common_lib->upload_media('media', $mediaConfig);
-            if (!is_array($filename)) {
+            
+            $mediaConfig['upload_path'] = $this->config->item('library_media_path');
+            $mediaConfig['allowed_types'] = '*';
+            $mediaConfig['max_size']	= '1024480';
+            $mediaConfig['remove_spaces']=TRUE;
+            $mediaConfig['encrypt_name'] = TRUE;
+            
+            $mediaData = $this->common_lib->upload_custom_media('media', $mediaConfig);
+            if (array_key_exists("error",$mediaData)) {
+                $this->session->set_flashdata('class', 'alert-danger');
+                $this->session->set_flashdata('song_message', $mediaData['error']);
+                $this->session->set_flashdata('activetab', 'library');
+                redirect('profile/#library');
+            } else {
+                $filename = $mediaData['file_name'];
+                $file_type = explode('/', $mediaData['file_type']);
+//                echo '<pre>';                print_r($file_type); die;
+                if($file_type[0] == 'video') {
+                    $media_type = 2; // for video
+                    $conv_file_name = 'con_'.time().'.mp4';
+                    $cont_file_path = $this->config->item('library_media_path').$conv_file_name;
+                    shell_exec("/usr/local/bin/ffmpeg -i ".$this->config->item('library_media_path').$filename." -y -vcodec libx264 -crf 18 -pix_fmt yuv420p -qcomp 0.8 -preset medium -acodec aac -strict -2 -b:a 400k -x264-params ref=4 -profile:v baseline -level 3.1 -movflags +faststart ".$cont_file_path);
+                    if(file_exists($this->config->item('library_media_path').$filename)) { unlink($this->config->item('library_media_path').$filename); } 
+                    $filename = $conv_file_name;
 
-                copy($this->config->item('library_media_path') . $filename, $this->config->item('battle_media_path') . $filename);
+                } else if($file_type[0] == 'audio') {
+                    $media_type = 1; // for voice
+                    $conv_file_name = 'con_'.time().'.mp3';
+                    $cont_file_path = $this->config->item('library_media_path').$conv_file_name;
+                    shell_exec("/usr/local/bin/ffmpeg -i ".$this->config->item('library_media_path').$filename." -f mp3 ".$cont_file_path." 2>&1");
+                    if(file_exists($this->config->item('library_media_path').$filename)) { unlink($this->config->item('library_media_path').$filename); } 
+                    $filename = $conv_file_name;
+
+                } else {
+                    if(file_exists($this->config->item('library_media_path').$filename)) {
+                        unlink($this->config->item('library_media_path').$filename); } 
+                    $this->session->set_flashdata('class', 'alert-danger');
+                    $this->session->set_flashdata('song_message', 'Unable to add. Please try again');
+                    $this->session->set_flashdata('activetab', 'library');
+                    redirect('profile/#library');
+                }
+                if(!file_exists($this->config->item('library_media_path').$filename)) {
+                    $this->session->set_flashdata('class', 'alert-danger');
+                    $this->session->set_flashdata('song_message', 'Unable to add. Please try again');
+                    $this->session->set_flashdata('activetab', 'library');
+                    redirect('profile/#library');
+                }
+                copy($this->config->item('library_media_path').$filename, $this->config->item('battle_media_path').$filename);
 
                 //save file to users library first
                 $library_data = array(
                     'user_id' => $user_id,
                     'title' => $this->input->post('title'),
                     'media' => $filename,
+                    'file_type' => $media_type,
                     'created_date' => date('Y-m-d H:i:s')
                 );
                 $library_id = $this->library->insert($library_data);
@@ -1001,11 +1039,6 @@ class Profile extends CI_Controller {
                     $this->session->set_flashdata('activetab', 'library');
                     redirect('profile/#library');
                 }
-            } else {
-                $this->session->set_flashdata('class', 'alert-danger');
-                $this->session->set_flashdata('song_message', $filename['error']);
-                $this->session->set_flashdata('activetab', 'library');
-                redirect('profile/#library');
             }
         } else {
             if ($this->input->post('Submit') == 'Create') {
@@ -1016,7 +1049,6 @@ class Profile extends CI_Controller {
 
             $this->load->view('profile_edit', $data);
         }
-        //}
     }
 
     public function delete_library($libraryId = NULL) {

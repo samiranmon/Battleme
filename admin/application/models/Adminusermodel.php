@@ -195,11 +195,9 @@ class Adminusermodel extends CI_Model {
     }
 
     public function get_count_user_battle() {
-        $this->db->select('count(user_memberships.user_id) as count')
-                ->from('user')
-                ->join('user_memberships', 'user.id=user_memberships.user_id');
+        $this->db->select('count(user.id) as count')
+                ->from('user');
         $query = $this->db->get();
-
         $row = $query->row_array('count');
 
         $this->db->select('count(*) as count');
@@ -220,6 +218,7 @@ class Adminusermodel extends CI_Model {
                 ->from('user_memberships')
                 ->join('user', 'user_memberships.user_id=user.id')
                 ->group_by('user_memberships.memberships_id');
+        $this->db->where('user_memberships.status', 1);
         $query3 = $this->db->get();
         $row3 = $query3->result_array();
         //print_r($row3);

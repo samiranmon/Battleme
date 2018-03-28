@@ -293,10 +293,10 @@ class Usermodel extends CI_Model {
         
         $Payments = array();
         $Payment = array(
-            'amt' => 10.00, // Required.  The total cost of the transaction to the customer.  If shipping cost and tax charges are known, include them in this value.  If not, this value should be the current sub-total of the order.
+            'amt' => 0.01, // Required.  The total cost of the transaction to the customer.  If shipping cost and tax charges are known, include them in this value.  If not, this value should be the current sub-total of the order.
             'currencycode' => 'USD', // A three-character currency code.  Default is USD.
             'itemamt' => '', // Required if you specify itemized L_AMT fields. Sum of cost of all items in this order.  
-            'shippingamt' => 10.00, // Total shipping costs for this order.  If you specify SHIPPINGAMT you mut also specify a value for ITEMAMT.
+            'shippingamt' => 0.01, // Total shipping costs for this order.  If you specify SHIPPINGAMT you mut also specify a value for ITEMAMT.
             'shipdiscamt' => 0.00, // Shipping discount for this order, specified as a negative number.
             'insuranceoptionoffered' => '', // If true, the insurance drop-down on the PayPal review page displays the string 'Yes' and the insurance amount.  If true, the total shipping insurance for this order must be a positive number.
             'handlingamt' => '', // Total handling costs for this order.  If you specify HANDLINGAMT you mut also specify a value for ITEMAMT.
@@ -373,7 +373,7 @@ class Usermodel extends CI_Model {
             'l_shippingoptionisdefault' => TRUE, // Shipping option.  Required if specifying the Callback URL.  true or false.  Must be only 1 default!
             'l_shippingoptionname' => 'Battle shipping', // Shipping option name.  Required if specifying the Callback URL.  50 character max.
             'l_shippingoptionlabel' => 'Battle shipping label', // Shipping option label.  Required if specifying the Callback URL.  50 character max.
-            'l_shippingoptionamount' => 10.00,      // Shipping option amount.  Required if specifying the Callback URL.  
+            'l_shippingoptionamount' => 0.01,      // Shipping option amount.  Required if specifying the Callback URL.  
         );
         array_push($ShippingOptions, $Option);
 
@@ -400,9 +400,8 @@ class Usermodel extends CI_Model {
         $PayPalResult = $this->paypal_pro->SetExpressCheckout($PayPalRequestData);
         if (!$this->paypal_pro->APICallSuccessful($PayPalResult['ACK'])) {
             $errors = array('Errors' => $PayPalResult['ERRORS']);
-            
-            //echo '<pre>';
-            //print_r($errors);
+//            echo '<pre>';
+//            print_r($errors); die;
             $this->session->set_flashdata('class', 'alert-danger');
             $this->session->set_flashdata('message', $PayPalResult['ERRORS']);
             redirect(base_url('user/premiumcancel'));
