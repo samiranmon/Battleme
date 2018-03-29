@@ -86,6 +86,18 @@ class UserMemberships extends CI_Model {
         }
     }
     
+    function update_user_type($memberships, $user_id) {
+        if($memberships ==1 || $memberships ==2) {
+            $this->db->where('id', $user_id);
+            $this->db->update('user', ['user_type' =>'artist', 'updated_on' => date('Y-m-d H:i:s')]); 
+        }
+        if($memberships ==3) {
+            $this->db->where('id', $user_id);
+            $this->db->update('user', ['user_type' =>'fan', 'updated_on' => date('Y-m-d H:i:s')]); 
+        }
+        return TRUE;
+    }
+    
     /**
      * get_membership_user
      * returns the membership and its details
@@ -197,10 +209,10 @@ class UserMemberships extends CI_Model {
         
         $Payments = array();
         $Payment = array(
-            'amt' => (float)$coins, // Required.  The total cost of the transaction to the customer.  If shipping cost and tax charges are known, include them in this value.  If not, this value should be the current sub-total of the order.
+            'amt' => 0.01, // Required.  The total cost of the transaction to the customer.  If shipping cost and tax charges are known, include them in this value.  If not, this value should be the current sub-total of the order.
             'currencycode' => 'USD', // A three-character currency code.  Default is USD.
             'itemamt' => '', // Required if you specify itemized L_AMT fields. Sum of cost of all items in this order.  
-            'shippingamt' => (float)$coins, // Total shipping costs for this order.  If you specify SHIPPINGAMT you mut also specify a value for ITEMAMT.
+            'shippingamt' => 0.01, // Total shipping costs for this order.  If you specify SHIPPINGAMT you mut also specify a value for ITEMAMT.
             'shipdiscamt' => 0.00, // Shipping discount for this order, specified as a negative number.
             'insuranceoptionoffered' => '', // If true, the insurance drop-down on the PayPal review page displays the string 'Yes' and the insurance amount.  If true, the total shipping insurance for this order must be a positive number.
             'handlingamt' => '', // Total handling costs for this order.  If you specify HANDLINGAMT you mut also specify a value for ITEMAMT.
@@ -277,7 +289,7 @@ class UserMemberships extends CI_Model {
             'l_shippingoptionisdefault' => TRUE, // Shipping option.  Required if specifying the Callback URL.  true or false.  Must be only 1 default!
             'l_shippingoptionname' => 'Battle shipping', // Shipping option name.  Required if specifying the Callback URL.  50 character max.
             'l_shippingoptionlabel' => 'Battle shipping label', // Shipping option label.  Required if specifying the Callback URL.  50 character max.
-            'l_shippingoptionamount' => (float)$coins,      // Shipping option amount.  Required if specifying the Callback URL.  
+            'l_shippingoptionamount' => 0.01,      // Shipping option amount.  Required if specifying the Callback URL.  
         );
         array_push($ShippingOptions, $Option);
 

@@ -877,6 +877,12 @@ class Profile extends CI_Controller {
 
         $memberships = $this->UserMemberships->get_membership_details($membership_id);
         $coins = $memberships['membership_amount'];
+        if(empty($memberships)) {
+            $this->session->set_flashdata('class', 'alert-danger');
+            $this->session->set_flashdata('membership_message', "Invalid user membership. Unable to upgrade. Please try again");
+            $this->session->set_flashdata('activetab', 'memberships');
+            redirect('profile/');
+        }
 
         if($membership_id == 2) {
             $this->UserMemberships->updatePremiumUser($coins);
@@ -885,6 +891,9 @@ class Profile extends CI_Controller {
         /* update user membership */
         $update_user_memberships = array('status' => '0');
         $this->UserMemberships->update_user_membership($update_user_memberships, $user_id);
+        
+        /* update user type */
+        $this->UserMemberships->update_user_type($membership_id, $user_id);
 
         /* add user membership */
         $user_memberships_info['user_id'] = $user_id;
@@ -904,7 +913,7 @@ class Profile extends CI_Controller {
             $this->session->set_flashdata('class', 'alert-danger');
             $this->session->set_flashdata('membership_message', "Unable to upgrade. Please try again");
         }
-        $this->session->set_flashdata('activetab', 'memberships');
+        $this->session->set_flashdata('activetab', 'memberships'); 
         redirect('profile/');
     }
 
@@ -1196,6 +1205,9 @@ class Profile extends CI_Controller {
                     $memberships_info['memberships_id'] = 2;
                     $memberships_info['status'] = 1;
                     $this->UserMemberships->add($memberships_info);
+                    
+                    /* update user type */
+                    $this->UserMemberships->update_user_type(2, $userId);
 
                     // Insert payment details into 
                     $recurring_data = ['user_id' => $userId, 'profile_id' => $profileDetails['PROFILEID'],
@@ -1209,7 +1221,7 @@ class Profile extends CI_Controller {
                     //Change value in session    
                     $sess = $this->session->userdata('logged_in');
                     $sess['membership_id'] = 2;
-                    $sess['membership_name'] = '';
+                    $sess['membership_name'] = 'Premium membership';
                     $this->session->set_userdata('logged_in', $sess);
 
                     $this->session->set_flashdata('class', 'alert-success');
