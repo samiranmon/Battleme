@@ -61,10 +61,10 @@
 	 $this->db->join('user' , 'user.id = song_library.user_id' , 'LEFT');
          $this->db->join('(select * from user_memberships where user_memberships.status=1) um' , 'um.user_id = user.id', 'LEFT');
          $this->db->where(['um.memberships_id' => 2]);
+         $this->db->having("likeCount > 0");
 	 $this->db->order_by('likeCount' , 'desc');
-	 $resObj = $this->db->get() ;
-	 if($resObj->num_rows() > 0 )
-	 {
+	 $resObj = $this->db->get();
+	 if($resObj->num_rows() > 0) {
 	     $result = $resObj->result_array();
 	 }
 	 return $result ;

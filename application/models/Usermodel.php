@@ -188,7 +188,7 @@ class Usermodel extends CI_Model {
     public function get_top_user()
     {
 	//$sql = "select * from user WHERE user_type = 'artist' ORDER BY win_cnt desc limit 100 " ;
-	$sql = "select user.* from user inner join user_memberships um on user.id = um.user_id  WHERE um.memberships_id = 2 and um.status = 1 group by user.id ORDER BY user.win_cnt desc limit 100" ;
+	$sql = "select user.* from user inner join user_memberships um on user.id = um.user_id  WHERE user.win_cnt >0 and um.memberships_id = 2 and um.status = 1 group by user.id ORDER BY user.win_cnt desc limit 100" ;
         
 	$res = $this->db->query($sql);
 	if($res->num_rows() > 0 )
