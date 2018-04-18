@@ -125,6 +125,7 @@ $data_submit = array(
                             <input name="challenger_user_id" value="<?= $battle_details['user_id'] ?>" type="hidden">
                             <input type="hidden" name="battle_id" value="<?= $battle_details['battle_request_id'] ?>">
                             <input type="hidden" name="media_count" value="0">
+                            <input type="hidden" name="serial_number" value="0">
 
                             <div class="form-group"> 
                                 
@@ -351,6 +352,7 @@ $data_submit = array(
                 formData.append('battle_id', $("input[name='battle_id']").val());
                 formData.append('title', $("input[name='title']").val());
                 formData.append('media_count', $("input[name='media_count']").val());
+                formData.append('serial_number', $("input[name='serial_number']").val());
                 //var _uploadStatus = 0;
 
                 $.ajax({
@@ -422,6 +424,7 @@ $data_submit = array(
                                  $('#mute_button').trigger('click');
                                  <?php if($sess_data['id'] == $battle_details['user_id']) { ?>
                                      $("input[name='media_count']").val(1);
+                                     $("input[name='serial_number']").val(1);
                                      $('#save:not(.disabled)').trigger('click');
                                  <?php } ?>
                                      
@@ -432,6 +435,7 @@ $data_submit = array(
                             $('#mute_button').trigger('click');
                             <?php if($sess_data['id'] == $battle_details['friend_user_id']) { ?>
                                  $("input[name='media_count']").val(1);
+                                 $("input[name='serial_number']").val(2);
                                  $('#save:not(.disabled)').trigger('click');
                             <?php } ?>
                             <?php if($sess_data['id'] == $battle_details['user_id']) { ?>
@@ -442,6 +446,7 @@ $data_submit = array(
                             $('#mute_button').trigger('click');
                             <?php if($sess_data['id'] == $battle_details['user_id']) { ?>
                                  $("input[name='media_count']").val(2);
+                                 $("input[name='serial_number']").val(3);
                                  $('#save:not(.disabled)').trigger('click');
                             <?php } ?>
                             <?php if($sess_data['id'] == $battle_details['friend_user_id']) { ?>
@@ -452,6 +457,7 @@ $data_submit = array(
                             <?php if($sess_data['id'] == $battle_details['friend_user_id']) { ?>
                                 $('#mute_button').trigger('click');
                                 $("input[name='media_count']").val(2);
+                                $("input[name='serial_number']").val(4);
                                 $('#save:not(.disabled)').trigger('click');
                             <?php } ?>
                                 $('#stop:not(.disabled)').trigger('click');

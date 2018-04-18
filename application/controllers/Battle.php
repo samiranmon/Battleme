@@ -960,6 +960,7 @@ class Battle extends CI_Controller {
                 
             $battle_id = $this->input->post('battle_id');
             $sequence_number = $this->input->post('media_count');
+            $serial_number = $this->input->post('serial_number');
                 
             if ($this->form_validation->run() == TRUE && isset($user_id)) {
                 
@@ -983,7 +984,7 @@ class Battle extends CI_Controller {
                     /* for upload in freestyle composer directory and insert into track database */
                      $uploadAck = $this->common_lib->upload_custom_media('media', $mediaConfig);
                         if (isset($uploadAck['file_name']) && isset($uploadAck['file_type'])) {
-                            $this->battles->set_freestyle_media_track(['battle_id' =>$battle_id, 'user_id'=>$user_id,'sequence_number'=>$sequence_number,'filename'=>$uploadAck['file_name'],'created_on'=>date('Y-m-d H:i:s')]);
+                            $this->battles->set_freestyle_media_track(['battle_id' =>$battle_id, 'user_id'=>$user_id,'sequence_number'=>$sequence_number,'serial_number'=>$serial_number, 'filename'=>$uploadAck['file_name'],'created_on'=>date('Y-m-d H:i:s')]);
                         }
                 }
                 
@@ -995,7 +996,7 @@ class Battle extends CI_Controller {
                             $track_info = $this->battles->get_freestyle_media_track(['battle_id' =>$battle_id, 'user_id'=>$user_id,'sequence_number'=>1]);
                             if(!empty($track_info)) {
                                 // Insert second media file
-                                $this->battles->set_freestyle_media_track(['battle_id' =>$battle_id, 'user_id'=>$user_id,'sequence_number'=>$sequence_number,'filename'=>$uploadAck['file_name'],'created_on'=>date('Y-m-d H:i:s')]);
+                                $this->battles->set_freestyle_media_track(['battle_id' =>$battle_id, 'user_id'=>$user_id,'sequence_number'=>$sequence_number,'serial_number'=>$serial_number,'filename'=>$uploadAck['file_name'],'created_on'=>date('Y-m-d H:i:s')]);
                                 
                                 $first_media = $this->config->item('freestyle_composer').$track_info['filename'];
                                 $second_media = $this->config->item('freestyle_composer').$uploadAck['file_name'];
