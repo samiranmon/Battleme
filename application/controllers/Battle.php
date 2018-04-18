@@ -994,6 +994,8 @@ class Battle extends CI_Controller {
                             
                             $track_info = $this->battles->get_freestyle_media_track(['battle_id' =>$battle_id, 'user_id'=>$user_id,'sequence_number'=>1]);
                             if(!empty($track_info)) {
+                                // Insert second media file
+                                $this->battles->set_freestyle_media_track(['battle_id' =>$battle_id, 'user_id'=>$user_id,'sequence_number'=>$sequence_number,'filename'=>$uploadAck['file_name'],'created_on'=>date('Y-m-d H:i:s')]);
                                 
                                 $first_media = $this->config->item('freestyle_composer').$track_info['filename'];
                                 $second_media = $this->config->item('freestyle_composer').$uploadAck['file_name'];
@@ -1027,14 +1029,13 @@ class Battle extends CI_Controller {
                                             $this->session->set_flashdata('success', 'Song has been added to battle');
                                             
                                             // delete data from freestyle composer and database
-                                            if(file_exists($first_media)) { 
+                                            /* if(file_exists($first_media)) { 
                                                 unlink($first_media); 
                                             }
                                             if(file_exists($second_media)) { 
                                                 unlink($second_media); 
                                             }
-                                            $this->battles->delete_freestyle_media_track(['id'=> $track_info['id']]);
-                                            
+                                            $this->battles->delete_freestyle_media_track(['id'=> $track_info['id']]); */
                                             
                                             $return_status = ['status'=>1, 'url'=>  base_url().'battle/request/' . $battle_id];
                                             echo json_encode($return_status); die();
