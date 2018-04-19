@@ -521,7 +521,18 @@
         }
     }
     
-    public function get_freestyle_media_track($where = []) {
+    public function getBattleById($id=null) {
+        $this->db->select('*');
+        $this->db->from('battle_request');
+        $this->db->where('battle_request_id', $id );
+        $query = $this->db->get();
+        if ( $query->num_rows() > 0 ) {
+            $row = $query->row_array();
+            return $row;
+        }
+    }
+
+        public function get_freestyle_media_track($where = []) {
          $this->db->select('*');
         $this->db->from('freestyle_media_tracker');
         $this->db->where($where);

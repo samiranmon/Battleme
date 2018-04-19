@@ -196,27 +196,72 @@ class Cron extends CI_Controller {
             foreach ($uncompileArray as $val) {
                 
                 $freestyle_lib = $this->battles->getFerrstyleSingle($val['battle_id']);
-                //echo base_url().$this->config->item('freestyle_library').$freestyle_lib['media'];
+                $lib_path = $this->config->item('freestyle_library').$freestyle_lib['media'];
                         
+                $battleDtl = $this->battles->getBattleById($val['battle_id']);
+                
                 $media_all = $this->battles->get_freestyle_media_all(['battle_id'=>$val['battle_id']]);
                 $a = $this->config->item('freestyle_composer').$media_all[0]['filename'];
                 $b = $this->config->item('freestyle_composer').$media_all[1]['filename'];
                 $c = $this->config->item('freestyle_composer').$media_all[2]['filename'];
                 $d = $this->config->item('freestyle_composer').$media_all[3]['filename'];
                 
-                $filename = time()."_samiran.mp3";
-                $finl_dest = $this->config->item('freestyle_composer').$filename;
-                shell_exec("/usr/local/bin/ffmpeg -i ".$a." -i ".$b." -filter_complex '[0:0][1:0]concat=n=2:v=0:a=1[out]' -map '[out]' ".$finl_dest." 2>&1");
-                if(file_exists($finl_dest)) { 
-                    echo base_url().$finl_dest;
+                $filename = time().".mp3";
+                $concat_path = $this->config->item('freestyle_composer').$filename;
+//                shell_exec("/usr/local/bin/ffmpeg -i ".$a." -i ".$b." -filter_complex '[0:0][1:0]concat=n=2:v=0:a=1[out]' -map '[out]' ".$finl_dest." 2>&1");
+                shell_exec("/usr/local/bin/ffmpeg -i ".$a." -i ".$b." -i ".$c." -i ".$d." -filter_complex '[0:0][1:0]concat=n=4:v=0:a=1[out]' -map '[out]' ".$concat_path." 2>&1");
+                if(file_exists($concat_path)) {
+                    
+                    $filename = time()."_marge.mp3";
+                    $marge_path = $this->config->item('library_media_path').$filename;
+                    shell_exec("/usr/local/bin/ffmpeg -i ".$lib_path." -i ".$concat_path." -filter_complex amerge -ac 2 -c:a libmp3lame -q:a 4 ".$marge_path." 2>&1");
+                    if(file_exists($marge_path)) {
+                        //echo base_url().$marge_path;  
+                        // delete previous library and battle media
+                        
+                        //save file to users library first
+                        $library_id = $this->library->insert([
+                            'user_id' => $battleDtl['user_id'],
+                            'title' => 'Freestyle',
+                            'media' => $filename,
+                            'created_date' => date('Y-m-d H:i:s')
+                        ]);
+                        if ($library_id > 0) {
+                            //save media in battle 
+                            copy($this->config->item('library_media_path') . $filename, $this->config->item('battle_media_path') . $filename);
+                            $status = $this->battles->add_battle_media([
+                                'battle_id' => $val['battle_id'],
+                                'artist_id' => $battleDtl['user_id'],
+                                'fk_song_id' => $library_id,
+                                'created_date' => date('Y-m-d H:i:s')]);
+                        }
+                        
+                        // For Friend user
+                        $friend_file_name = time()."_marge.mp3";
+                        copy($marge_path, $this->config->item('library_media_path') . $friend_file_name);
+                        //save file to users library first
+                        $library_id = $this->library->insert([
+                            'user_id' => $battleDtl['friend_user_id'],
+                            'title' => 'Freestyle',
+                            'media' => $friend_file_name,
+                            'created_date' => date('Y-m-d H:i:s')
+                        ]);
+                        if ($library_id > 0) {
+                            //save media in battle 
+                            copy($this->config->item('library_media_path') . $friend_file_name, $this->config->item('battle_media_path') . $friend_file_name);
+                            $status = $this->battles->add_battle_media([
+                                'battle_id' => $val['battle_id'],
+                                'artist_id' => $battleDtl['friend_user_id'],
+                                'fk_song_id' => $library_id,
+                                'created_date' => date('Y-m-d H:i:s')]);
+                        }
+                        
+                        // Update compile status
+                        $this->battles->update_freestyle_media_track(['battle_id'=>$val['battle_id']]);
+                        
+                    }
                 }
                 
-                
-                
-                
-                
-                // Update compile status
-                //$this->battles->update_freestyle_media_track(['battle_id'=>$val['battle_id']]);
             }
         }
     }
