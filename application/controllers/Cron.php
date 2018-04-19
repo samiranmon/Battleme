@@ -180,7 +180,7 @@ class Cron extends CI_Controller {
         $request = $_POST;
          $this->load->library('email');
 
-        $this->email->from('noreply@battleme.hiphop', 'SKRILL');
+        $this->email->from('noreply@battleyou.hiphop', 'SKRILL');
         $this->email->to('samiran.brainium@gmail.com');
 
         $this->email->subject('SKRILL Email Test');
@@ -188,6 +188,37 @@ class Cron extends CI_Controller {
         $this->email->message(json_encode($request));
 
         $this->email->send(); 
+    }
+    
+    public function compile_freestyle() {
+        $uncompileArray = $this->battles->get_uncompile_freestyle();
+        if(!empty($uncompileArray)) {
+            foreach ($uncompileArray as $val) {
+                
+                $freestyle_lib = $this->battles->getFerrstyleSingle($val['battle_id']);
+                //echo base_url().$this->config->item('freestyle_library').$freestyle_lib['media'];
+                        
+                $media_all = $this->battles->get_freestyle_media_all(['battle_id'=>$val['battle_id']]);
+                $a = $this->config->item('freestyle_composer').$media_all[0]['filename'];
+                $b = $this->config->item('freestyle_composer').$media_all[1]['filename'];
+                $c = $this->config->item('freestyle_composer').$media_all[2]['filename'];
+                $d = $this->config->item('freestyle_composer').$media_all[3]['filename'];
+                
+                $filename = time()."_samiran.mp3";
+                $finl_dest = $this->config->item('freestyle_composer').$filename;
+                shell_exec("/usr/local/bin/ffmpeg -i ".$a." -i ".$b." -filter_complex '[0:0][1:0]concat=n=2:v=0:a=1[out]' -map '[out]' ".$finl_dest." 2>&1");
+                if(file_exists($finl_dest)) { 
+                    echo base_url().$finl_dest;
+                }
+                
+                
+                
+                
+                
+                // Update compile status
+                //$this->battles->update_freestyle_media_track(['battle_id'=>$val['battle_id']]);
+            }
+        }
     }
 
 

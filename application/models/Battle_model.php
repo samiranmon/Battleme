@@ -545,6 +545,35 @@
         $this->db->delete('freestyle_media_tracker');
     }
     
+    public function update_freestyle_media_track($where = []) {
+        $this->db->where($where);
+        $this->db->update('freestyle_media_tracker', array('status' => 1));
+        return true;
+    }
+    
+    public function get_uncompile_freestyle() {
+         $sql = "SELECT count(`battle_id`) count_serial_number, battle_id FROM `freestyle_media_tracker` WHERE status=0 group by `battle_id` HAVING count_serial_number = 4";
+	 $query =  $this->db->query($sql);
+        if ( $query->num_rows() > 0 ) {
+            return $query->result_array();
+        } else {
+            return false;
+        }
+    }
+    
+    public function get_freestyle_media_all($where = []) {
+        $this->db->select('*');
+        $this->db->from('freestyle_media_tracker');
+        $this->db->where($where);
+        $this->db->order_by('serial_number' , 'asc');
+        $query = $this->db->get();
+        if ( $query->num_rows() > 0 ) {
+            return $query->result_array();
+        } else {
+            return false;
+        }
+    }
+    
     
  }
  
