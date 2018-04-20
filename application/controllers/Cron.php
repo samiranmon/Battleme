@@ -199,6 +199,7 @@ class Cron extends CI_Controller {
                 $lib_path = $this->config->item('freestyle_library').$freestyle_lib['media'];
                         
                 $battleDtl = $this->battles->getBattleById($val['battle_id']);
+                //$this->battles->remove_previous_battle_media($val['battle_id'],$battleDtl['user_id']); die(); // test
                 
                 $media_all = $this->battles->get_freestyle_media_all(['battle_id'=>$val['battle_id']]);
                 $a = $this->config->item('freestyle_composer').$media_all[0]['filename'];
@@ -218,6 +219,8 @@ class Cron extends CI_Controller {
                     if(file_exists($marge_path)) {
                         //echo base_url().$marge_path;  
                         // delete previous library and battle media
+                        $this->battles->remove_previous_battle_media($val['battle_id'],$battleDtl['user_id']);
+                        $this->battles->remove_previous_battle_media($val['battle_id'],$battleDtl['friend_user_id']);
                         
                         //save file to users library first
                         $library_id = $this->library->insert([

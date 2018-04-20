@@ -585,6 +585,43 @@
         }
     }
     
+    public function remove_previous_battle_media($battleId,$userId) {
+        $this->db->select('media_id, fk_song_id');
+        $this->db->from('battle_media');
+        $this->db->where(['battle_id'=>$battleId, 'artist_id'=>$userId]);
+        $query = $this->db->get();
+        if ($query->num_rows() > 0) {
+            $result = $query->result_array();
+            if(!empty($result)) {
+                foreach ($result as $val) {
+                    
+                    $this->db->select('song_id, media');
+                    $this->db->from('song_library');
+                    $this->db->where(['song_id'=>$val['fk_song_id']]);
+                    $query = $this->db->get();
+                    if ($query->num_rows() > 0) {
+                        $rs = $query->result_array();
+                        foreach ($rs as $val2) {
+
+                            $lib_path = $this->config->item('library_media_path').$val2['media'];
+                            $battle_path = $this->config->item('battle_media_path').$val2['media'];
+                            if(file_exists($battle_path)) { unlink($battle_path); }
+                            if(file_exists($lib_path)) { unlink($lib_path); }
+
+                            // delete record
+                            $this->db->where(['song_id'=>$val2['song_id']]);
+                            $this->db->delete('song_library');
+                        }
+                    }
+                            
+                    // delete record
+                    $this->db->where(['media_id'=>$val['media_id']]);
+                    $this->db->delete('battle_media');        
+                }
+            }
+        } 
+    }
+    
     
  }
  
