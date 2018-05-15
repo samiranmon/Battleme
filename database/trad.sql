@@ -103,3 +103,5 @@ ALTER TABLE `script_price`
 ALTER TABLE `script_volume`
   ADD PRIMARY KEY (`id`),
   ADD KEY `script_id` (`script_id`);
+
+ALTER TABLE `script_delivery` ADD `delivery_qty` INT(11) NULL DEFAULT '0' AFTER `script_id`;

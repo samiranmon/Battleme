@@ -42,15 +42,18 @@
                      $_date = date("Y-m-d", strtotime($tVal[2])); 
                      # for volume 10
                      $scriptVolume = $tVal[10];
+                     # for delevery Quantity 13
+                     $scriptDelivQuantity = $tVal[13];
                      # for delevery percented 14
                      $scriptDelivPer = $tVal[14];
+                     
                      
                     // Insert price for script
                     $this->script->set_script_price($scriptId, $scriptPrice, $_date);
                     // Insert volume for script
                     $this->script->set_script_volume($scriptId, $scriptVolume, $_date);
                     // Insert price for script
-                    $this->script->set_script_deliv_per($scriptId, $scriptDelivPer, $_date);
+                    $this->script->set_script_deliv_per($scriptId, $scriptDelivQuantity, $scriptDelivPer, $_date);
                      
                 }
             }
@@ -62,8 +65,5 @@
          }
          	 
      }
-    
-  
-     
+        
  }
- 

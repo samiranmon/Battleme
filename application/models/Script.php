@@ -53,10 +53,10 @@ class Script extends CI_Model {
     }
   }
   
-  public function set_script_deliv_per($scriptId, $scriptDelivPer, $_date) {
+  public function set_script_deliv_per($scriptId, $scriptDelivQuantity, $scriptDelivPer, $_date) {
    $result = $this->db->get_where('script_delivery', array('script_id' => $scriptId, 'date'=>$_date))->row_array();
     if(empty($result)){
-        $this->db->insert('script_delivery', ['script_id'=>$scriptId,'delivery_percentage'=>$scriptDelivPer, 'date'=>$_date, 'created_on'=> date('Y-m-d H:i:s')]);
+        $this->db->insert('script_delivery', ['script_id'=>$scriptId, 'delivery_qty'=>$scriptDelivQuantity, 'delivery_percentage'=>$scriptDelivPer, 'date'=>$_date, 'created_on'=> date('Y-m-d H:i:s')]);
         return $this->db->insert_id();
     }
   }
