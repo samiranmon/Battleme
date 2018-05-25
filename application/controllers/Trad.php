@@ -163,5 +163,15 @@ class Trad extends CI_Controller {
             }
         }
     }
+    
+    // send mail 
+    public function send_email_for_buy_sell() {
+        $scripts = $this->script->get_volume_price_increase();
+        if(isset($scripts) && !empty($scripts)) {
+            //echo '<pre>';            print_r($scripts);
+            $data['stocks'] = $scripts;
+            $mail_content = $this->load->view('stock/volume_price_increase', $data, TRUE);
+        }
+    }
 
 }

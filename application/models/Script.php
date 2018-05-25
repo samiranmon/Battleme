@@ -127,5 +127,34 @@ class Script extends CI_Model {
             return FALSE;
         }
     }
+    
+    public function get_volume_price_increase() {
+        $sql  = "SELECT s.name,
+         (SELECT price from script_price where script_price.script_id = s.id ORDER by date asc limit 0,1) as p1,
+         (SELECT price from script_price where script_price.script_id = s.id ORDER by date asc limit 1,1) as p2,
+         (SELECT price from script_price where script_price.script_id = s.id ORDER by date asc limit 2,1) as p3,
+
+         (SELECT delivery_percentage from script_delivery sd where sd.script_id = s.id ORDER by date asc limit 0,1) as d1,
+         (SELECT delivery_percentage from script_delivery sd where sd.script_id = s.id ORDER by date asc limit 1,1) as d2,
+         (SELECT delivery_percentage from script_delivery sd where sd.script_id = s.id ORDER by date asc limit 2,1) as d3,
+
+         (SELECT volume from script_volume sv where sv.script_id = s.id ORDER by date asc limit 0,1) as v1,
+         (SELECT volume from script_volume sv where sv.script_id = s.id ORDER by date asc limit 1,1) as v2,
+         (SELECT volume from script_volume sv where sv.script_id = s.id ORDER by date asc limit 2,1) as v3
+
+        FROM `script_price` as sp inner join `script` as s
+        on sp.script_id = s.id inner join script_delivery as sd
+        on sd.script_id = s.id inner join script_volume as sv
+        on sv.script_id = s.id
+        GROUP BY sp.script_id HAVING p1 <= 1000 AND p2 > p1 AND p3 > p2 AND v2 > v1 AND v3 > v2 order by v3 desc";
+       $query = $this->db->query($sql);
+       if($query->num_rows() > 0) {
+           return $query->result_array();
+       } else {
+           return FALSE;
+       }
+    }
+            
+            
 
 }
