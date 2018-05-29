@@ -18,6 +18,7 @@ class Trad extends CI_Controller {
         $this->load->model('Script', 'script');
         $this->load->library('Common_lib');
         $this->sessionData = get_session_data();
+        $this->load->library('email');
     }
 
     /**
@@ -42,12 +43,28 @@ class Trad extends CI_Controller {
                     $scriptPrice = $tVal[8];
                     # for Date field 2
                     $_date = date("Y-m-d", strtotime($tVal[2]));
+                    
                     # for volume 10
-                    $scriptVolume = $tVal[10];
+                     try {
+                      $scriptVolume = (int)$tVal[10];
+                    } catch(Exception $e) {
+                      echo 'Message: ' .$e->getMessage();
+                      die();
+                    }
                     # for delevery Quantity 13
-                    $scriptDelivQuantity = $tVal[13];
+                    try {
+                      $scriptDelivQuantity = (int)$tVal[13];
+                    } catch(Exception $e) {
+                      echo 'Message: ' .$e->getMessage();
+                      die();
+                    }
                     # for delevery percented 14
-                    $scriptDelivPer = $tVal[14];
+                     try {
+                      $scriptDelivPer = (float)$tVal[14];
+                    } catch(Exception $e) {
+                      echo 'Message: ' .$e->getMessage();
+                      die();
+                    }
 
 
                     // Insert price for script
@@ -88,7 +105,7 @@ class Trad extends CI_Controller {
         if (isset($csv_rows) && !empty($csv_rows)) {
             unset($csv_rows[0]);
             $excel_date = date('Y-m-d', strtotime($csv_rows[1][2]));
-            if ($excel_date == date('Y-m-d')) {
+            if ($excel_date == date('Y-m-d') && count($csv_rows) > 1800) {
                 $status = $this->script->check_nse_file($file_name);
                 if ($status) {
                     unlink($temp_file);
@@ -143,15 +160,32 @@ class Trad extends CI_Controller {
                 $scriptId = $this->script->set_script($tVal[0]);
 
                 # for close price 8
-                $scriptPrice = $tVal[8];
+                $scriptPrice = (float)$tVal[8];
                 # for Date field 2
                 $_date = date("Y-m-d", strtotime($tVal[2]));
                 # for volume 10
-                $scriptVolume = $tVal[10];
+                //$scriptVolume = $tVal[10]==''?0:$tVal[10];
+                
+                try {
+                  $scriptVolume = (int)$tVal[10];
+                } catch(Exception $e) {
+                  echo 'Message: ' .$e->getMessage();
+                }
+                
                 # for delevery Quantity 13
-                $scriptDelivQuantity = $tVal[13];
+                try {
+                  $scriptDelivQuantity = (int)$tVal[13];
+                } catch(Exception $e) {
+                  echo 'Message: ' .$e->getMessage();
+                }
+                
                 # for delevery percented 14
-                $scriptDelivPer = $tVal[14];
+                try {
+                  $scriptDelivPer = (float)$tVal[14];
+                } catch(Exception $e) {
+                  echo 'Message: ' .$e->getMessage();
+                }
+                
 
 
                 // Insert price for script
@@ -167,10 +201,30 @@ class Trad extends CI_Controller {
     // send mail 
     public function send_email_for_buy_sell() {
         $scripts = $this->script->get_volume_price_increase();
+        $sell_scripts = $this->script->get_sell_script();
+        $buy_scripts = $this->script->get_buy_script();
+        
         if(isset($scripts) && !empty($scripts)) {
             //echo '<pre>';            print_r($scripts);
+            
             $data['stocks'] = $scripts;
-            $mail_content = $this->load->view('stock/volume_price_increase', $data, TRUE);
+            if(isset($sell_scripts)) {
+                $data['sell_stocks'] = $sell_scripts;
+            }
+            if(isset($buy_scripts)) {
+                $data['buy_stocks'] = $buy_scripts;
+            }
+            echo $mail_content = $this->load->view('stock/volume_price_increase', $data, TRUE);
+            
+            // prepare email
+            $this->email
+                ->from('samiran@stockonline.in', 'Stock Online.')
+                ->to('samiran.mmondal@gmail.com')
+                ->subject('Stock prediction ('.date('Y/m/d').')')
+                ->message($mail_content)
+                ->set_mailtype('html');
+            // send email
+            $this->email->send();
         }
     }
 
