@@ -4,7 +4,7 @@
  * Description of Wallet
  * 
  */
-class Trad extends CI_Controller {
+class Intraday_scanner extends CI_Controller {
 
     //put your code here
     public $sessionData;
@@ -27,6 +27,24 @@ class Trad extends CI_Controller {
      * @param 
      * */
     public function index() {
+         
+        $ch = curl_init(); 
+        curl_setopt($ch, CURLOPT_URL, "https://docs.google.com/spreadsheets/d/1J6YSSg6Dq0BKF30rRzTXSud4CdQ6uG5x1ZVJ1lY5i98/edit?chrome=false&rm=demo&format=csv#gid=2068381642"); 
+        curl_setopt($ch, CURLOPT_REFERER, "http://www.example.org/yay.htm");
+        curl_setopt($ch, CURLOPT_USERAGENT, "MozillaXYZ/1.0");
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 100);
+
+        $csv = curl_exec($ch); 
+        curl_close($ch);
+        var_dump($csv);
+        
+        
+        
 
         if ($this->input->post('Submit')) {
 

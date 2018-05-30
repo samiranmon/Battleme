@@ -36,6 +36,24 @@ class Script extends CI_Model {
             return $result['id'];
         }
     }
+    
+    public function set_nifty100($_scriptName) {
+        $result = $this->db->get_where('script', array('name' => $_scriptName))->row_array();
+        if (!empty($result)) {
+            $this->db->where('id', $result['id']);
+            $this->db->update('script', array('nifty100' => 1));
+            return TRUE;
+        } 
+    }
+    
+     public function get_script($_scriptName) {
+        $result = $this->db->get_where('script', array('name' => $_scriptName))->row_array();
+        if (empty($result)) {
+            return FALSE;
+        } else {
+            return $result['id'];
+        }
+    }
 
     public function set_script_price($scriptId, $scriptPrice, $_date) {
         $result = $this->db->get_where('script_price', array('script_id' => $scriptId, 'date' => $_date))->row_array();
@@ -70,12 +88,37 @@ class Script extends CI_Model {
             return TRUE;
         }
     }
+    
+    public function check_volatility_file($file_name = null, $rows=0) {
+        $result = $this->db->get_where('volatility_file', array('DATE(created_on)' => date('Y-m-d')))->row_array();
+        if (empty($result)) {
+            $this->db->insert('volatility_file', ['name' => $file_name, 'no_of_row'=>$rows, 'created_on' => date('Y-m-d H:i:s')]);
+            return FALSE;
+        } else {
+            return TRUE;
+        }
+    }
 
     public function is_present_nse_file() {
         $result = $this->db->get_where('nse_file', array('DATE(created_on)' => date('Y-m-d')))->row_array();
         if (!empty($result)) {
 
             $file_path = getcwd() . '/uploads/nse_stock/' . $result['name'];
+            if (file_exists($file_path)) {
+                return TRUE;
+            } else {
+                return FALSE;
+            }
+        } else {
+            return FALSE;
+        }
+    }
+    
+    public function is_present_volatility_file() {
+        $result = $this->db->get_where('volatility_file', array('DATE(created_on)' => date('Y-m-d')))->row_array();
+        if (!empty($result)) {
+
+            $file_path = getcwd() . '/uploads/volatility_csv/' . $result['name'];
             if (file_exists($file_path)) {
                 return TRUE;
             } else {
@@ -92,6 +135,13 @@ class Script extends CI_Model {
             return $result['name'];
         }
     }
+    
+    public function get_current_volatility_file() {
+        $result = $this->db->get_where('volatility_file', array('DATE(created_on)' => date('Y-m-d')))->row_array();
+        if (!empty($result)) {
+            return $result['name'];
+        }
+    }
 
     public function is_sheet_uploaded() {
         $result = $this->db->get_where('script_price', array('date' => date('Y-m-d')))->row_array();
@@ -99,6 +149,23 @@ class Script extends CI_Model {
             return TRUE;
         } else {
             return FALSE;
+        }
+    }
+    
+    public function is_volatility_sheet_uploaded() {
+        $result = $this->db->get_where('volatility', array('sheet_date' => date('Y-m-d')))->row_array();
+        if (!empty($result)) {
+            return TRUE;
+        } else {
+            return FALSE;
+        }
+    }
+    
+    public function set_volatility($scriptId, $_date, $preVolatility, $currVolatility, $annuVolatility) {
+        $result = $this->db->get_where('volatility', array('script_id' => $scriptId, 'sheet_date' => $_date))->row_array();
+        if (empty($result)) {
+            $this->db->insert('volatility', ['script_id' => $scriptId, 'sheet_date' => $_date, 'previous_volatility' => $preVolatility*100, 'current_volatility' => $currVolatility*100, 'annualised_volatility' => $annuVolatility*100, 'created_on' => date('Y-m-d H:i:s')]);
+            return $this->db->insert_id();
         }
     }
 

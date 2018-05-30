@@ -4,7 +4,7 @@
  * Description of Wallet
  * 
  */
-class Trad extends CI_Controller {
+class Volatility extends CI_Controller {
 
     //put your code here
     public $sessionData;
@@ -14,7 +14,6 @@ class Trad extends CI_Controller {
     public function __construct() {
         parent::__construct();
 
-        $this->load->model('Usermodel', 'user');
         $this->load->model('Script', 'script');
         $this->load->library('Common_lib');
         $this->sessionData = get_session_data();
@@ -27,52 +26,18 @@ class Trad extends CI_Controller {
      * @param 
      * */
     public function index() {
-
+        
         if ($this->input->post('Submit')) {
-
+            // Update nifty 100 stock
             $csv = array_map('str_getcsv', file($_FILES['sheet']['tmp_name']));
             unset($csv[0]);
 //            echo '<pre>';
 //            print_r($csv); die;
             if (!empty($csv)) {
                 foreach ($csv as $tVal) {
-                    // Insert trad script
-                    $scriptId = $this->script->set_script($tVal[0]);
+                    // Update nifty100 script
+                    $scriptId = $this->script->set_nifty100($tVal[2]);
 
-                    # for close price 8
-                    $scriptPrice = $tVal[8];
-                    # for Date field 2
-                    $_date = date("Y-m-d", strtotime($tVal[2]));
-                    
-                    # for volume 10
-                     try {
-                      $scriptVolume = (int)$tVal[10];
-                    } catch(Exception $e) {
-                      echo 'Message: ' .$e->getMessage();
-                      die();
-                    }
-                    # for delevery Quantity 13
-                    try {
-                      $scriptDelivQuantity = (int)$tVal[13];
-                    } catch(Exception $e) {
-                      echo 'Message: ' .$e->getMessage();
-                      die();
-                    }
-                    # for delevery percented 14
-                     try {
-                      $scriptDelivPer = (float)$tVal[14];
-                    } catch(Exception $e) {
-                      echo 'Message: ' .$e->getMessage();
-                      die();
-                    }
-
-
-                    // Insert price for script
-                    $this->script->set_script_price($scriptId, $scriptPrice, $_date);
-                    // Insert volume for script
-                    $this->script->set_script_volume($scriptId, $scriptVolume, $_date);
-                    // Insert price for script
-                    $this->script->set_script_deliv_per($scriptId, $scriptDelivQuantity, $scriptDelivPer, $_date);
                 }
             }
         } else {
@@ -82,14 +47,15 @@ class Trad extends CI_Controller {
         }
     }
 
-    public function download_nse_file() {
-        $file_name = 'stock_file_' . str_replace(' ', '_', date('Y-m-d h:i:s a')) . '.csv';
-        $temp_file = getcwd() . '/uploads/nse_stock/' . $file_name; // return something like '/tmp/file_BQDfep'
+    public function download() {
+        $file_name = 'volatility_file_' . str_replace(' ', '_', date('Y-m-d h:i:s a')) . '.csv';
+        $temp_file = getcwd() . '/uploads/volatility_csv/' . $file_name; // return something like '/tmp/file_BQDfep'
 
         $fp = fopen($temp_file, 'w+') or die("Unable to open file!");
         chmod($temp_file, 0777);
 
-        $ch = curl_init("https://www.nseindia.com/products/content/sec_bhavdata_full.csv");
+        $ch = curl_init("https://www.nseindia.com/archives/nsccl/volt/CMVOLT_".date("dmY").".CSV");
+//        $ch = curl_init("https://www.nseindia.com/archives/nsccl/volt/CMVOLT_29052018.CSV");
         curl_setopt($ch, CURLOPT_TIMEOUT, 50);
         curl_setopt($ch, CURLOPT_FILE, $fp);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
@@ -104,13 +70,13 @@ class Trad extends CI_Controller {
         $csv_rows = array_map('str_getcsv', file($temp_file));
         if (isset($csv_rows) && !empty($csv_rows)) {
             unset($csv_rows[0]);
-            $excel_date = date('Y-m-d', strtotime($csv_rows[1][2]));
-            if ($excel_date == date('Y-m-d') && count($csv_rows) > 1800) {
-                $status = $this->script->check_nse_file($file_name);
+            $excel_date = date('Y-m-d', strtotime($csv_rows[1][0]));
+            if ($excel_date == date('Y-m-d') && count($csv_rows) > 1600) {
+                $status = $this->script->check_volatility_file($file_name, count($csv_rows));
                 if ($status) {
                     unlink($temp_file);
                 }
-                echo 'nse file uploaded';
+                echo 'Volatility file uploaded';
             } else {
                 if (file_exists($temp_file)) {
                     unlink($temp_file);
@@ -121,21 +87,21 @@ class Trad extends CI_Controller {
     }
 
     // Inport csv file
-    public function import_nse_file() {
+    public function import_volatility() {
         // check file is present for current date
-        $status = $this->script->is_present_nse_file();
+        $status = $this->script->is_present_volatility_file();
         if ($status) {
             // check sheet is uploaded or not
-            $status = $this->script->is_sheet_uploaded();
+            $status = $this->script->is_volatility_sheet_uploaded();
             if ($status == FALSE) {
 
                 // get current nse file
-                $nse_file = $this->script->get_current_nse_file();
-                $file_path = getcwd() . '/uploads/nse_stock/' . $nse_file;
+                $vola_file = $this->script->get_current_volatility_file();
+                $file_path = getcwd() . '/uploads/volatility_csv/' . $vola_file;
                 if (file_exists($file_path)) {
 
-                    // delete previous file
-                    $this->script->delete_three_days_old_data();
+                    // delete previous day data from volatility table
+//                    $this->script->delete_three_days_old_data();
                     
                     // set csv file
                     $this->set_import($file_path);
@@ -157,43 +123,36 @@ class Trad extends CI_Controller {
         if (!empty($csv)) {
             foreach ($csv as $tVal) {
                 // Insert trad script
-                $scriptId = $this->script->set_script($tVal[0]);
+                $scriptId = $this->script->get_script($tVal[1]);
+                if($scriptId) {
+                   
+                    # for sheet date 0
+                    $_date = date("Y-m-d", strtotime($tVal[0]));
+                    
+                    # for previous volatility 5
+                    try {
+                      $preVolatility = (float)$tVal[5];
+                    } catch(Exception $e) {
+                      echo 'Message: ' .$e->getMessage(); die();
+                    }
 
-                # for close price 8
-                $scriptPrice = (float)$tVal[8];
-                # for Date field 2
-                $_date = date("Y-m-d", strtotime($tVal[2]));
-                # for volume 10
-                //$scriptVolume = $tVal[10]==''?0:$tVal[10];
-                
-                try {
-                  $scriptVolume = (int)$tVal[10];
-                } catch(Exception $e) {
-                  echo 'Message: ' .$e->getMessage();
-                }
-                
-                # for delevery Quantity 13
-                try {
-                  $scriptDelivQuantity = (int)$tVal[13];
-                } catch(Exception $e) {
-                  echo 'Message: ' .$e->getMessage();
-                }
-                
-                # for delevery percented 14
-                try {
-                  $scriptDelivPer = (float)$tVal[14];
-                } catch(Exception $e) {
-                  echo 'Message: ' .$e->getMessage();
-                }
-                
+                    # for current volatility 6
+                    try {
+                      $currVolatility = (float)$tVal[6];
+                    } catch(Exception $e) {
+                      echo 'Message: ' .$e->getMessage(); die();
+                    }
 
+                    # for annualised volatility 7
+                    try {
+                      $annuVolatility = (float)$tVal[7];
+                    } catch(Exception $e) {
+                      echo 'Message: ' .$e->getMessage(); die();
+                    }
 
-                // Insert price for script
-                $this->script->set_script_price($scriptId, $scriptPrice, $_date);
-                // Insert volume for script
-                $this->script->set_script_volume($scriptId, $scriptVolume, $_date);
-                // Insert price for script
-                $this->script->set_script_deliv_per($scriptId, $scriptDelivQuantity, $scriptDelivPer, $_date);
+                    // Insert data in to volatility
+                    $this->script->set_volatility($scriptId, $_date, $preVolatility, $currVolatility, $annuVolatility);
+                }
             }
         }
     }
