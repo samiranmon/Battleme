@@ -168,6 +168,10 @@ class Script extends CI_Model {
             return $this->db->insert_id();
         }
     }
+    
+    public function delete_volatility_data() {
+        $this->db->truncate('volatility');
+    }
 
     public function delete_three_days_old_data() {
         $this->db->select('id,date');
@@ -269,6 +273,20 @@ class Script extends CI_Model {
         on sd.script_id = s.id inner join script_volume as sv
         on sv.script_id = s.id
         GROUP BY sp.script_id HAVING p1 <= 1000 AND p3 - p2 >= 10 AND v3 > v2 order by v3 desc;";
+        
+        $query = $this->db->query($sql);
+       if($query->num_rows() > 0) {
+           return $query->result_array();
+       } else {
+           return FALSE;
+       }
+    }
+    
+    public function get_top_volatility_stock() {
+        $sql  = "SELECT s.name, v.`current_volatility`, v.`annualised_volatility`,
+            (select sv.volume from script_volume sv where sv.script_id = s.id order by sv.`date` desc limit 0,1) volume 
+            FROM `volatility` v inner join script s on s.id = v.script_id 
+            where s.nifty100 = 1 and v.`current_volatility` >= 2 order by v.`current_volatility` desc;";
         
         $query = $this->db->query($sql);
        if($query->num_rows() > 0) {

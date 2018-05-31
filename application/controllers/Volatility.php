@@ -101,7 +101,7 @@ class Volatility extends CI_Controller {
                 if (file_exists($file_path)) {
 
                     // delete previous day data from volatility table
-//                    $this->script->delete_three_days_old_data();
+                    $this->script->delete_volatility_data();
                     
                     // set csv file
                     $this->set_import($file_path);
@@ -158,28 +158,21 @@ class Volatility extends CI_Controller {
     }
     
     // send mail 
-    public function send_email_for_buy_sell() {
-        $scripts = $this->script->get_volume_price_increase();
-        $sell_scripts = $this->script->get_sell_script();
-        $buy_scripts = $this->script->get_buy_script();
+    public function send_email_volatility() {
+        $scripts = $this->script->get_top_volatility_stock();
         
         if(isset($scripts) && !empty($scripts)) {
-            //echo '<pre>';            print_r($scripts);
+//            echo '<pre>';            print_r($scripts);
             
             $data['stocks'] = $scripts;
-            if(isset($sell_scripts)) {
-                $data['sell_stocks'] = $sell_scripts;
-            }
-            if(isset($buy_scripts)) {
-                $data['buy_stocks'] = $buy_scripts;
-            }
-            echo $mail_content = $this->load->view('stock/volume_price_increase', $data, TRUE);
+            
+            echo $mail_content = $this->load->view('stock/volatility_stock', $data, TRUE);
             
             // prepare email
             $this->email
                 ->from('samiran@stockonline.in', 'Stock Online.')
                 ->to('samiran.mmondal@gmail.com')
-                ->subject('Stock prediction ('.date('Y/m/d').')')
+                ->subject('Volatility stock prediction ('.date('Y/m/d').')')
                 ->message($mail_content)
                 ->set_mailtype('html');
             // send email
